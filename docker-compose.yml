@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:14.5
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: greenwheel_user
+      POSTGRES_PASSWORD: GreenWheel
+      POSTGRES_DB: greenwheel
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
