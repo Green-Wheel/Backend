@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'api.bikes',
     'api.users',
     'api.bookings',
-    'api.charges',
+    'api.chargers',
     'api.chats',
     'api.ratings',
     'api.reports',
