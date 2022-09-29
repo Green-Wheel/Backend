@@ -1,0 +1,1 @@
+Directori de recursos (nomes util per la web d'administracio)
