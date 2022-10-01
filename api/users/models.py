@@ -14,8 +14,8 @@ class LoginMethods(models.Model):
         return self.name
 
 class Languages(models.Model):
+    shortname = models.CharField(max_length=3, null=False, blank=False, primary_key=True)
     name = models.CharField(max_length=50, null=False, blank=False)
-    shortname = models.CharField(max_length=3, null=False, blank=False)
     class Meta:
         verbose_name = "Language"
         verbose_name_plural = "Languages"
@@ -26,10 +26,10 @@ class Users(AbstractUser):
     about = models.TextField(null=True, blank=True)
     phone = models.CharField(max_length=20, null=True, blank=True)
     birthdate = models.DateField(null=True, blank=True)
-    language = models.ForeignKey(Languages, on_delete=models.CASCADE, null=True, blank=True)
+    language = models.ForeignKey(Languages, on_delete=models.CASCADE, null=True, blank=True, default=1)
     profile_picture = models.TextField(null=True, blank=True)
     api_key = models.TextField(null=True, blank=True)
-    login_method = models.ForeignKey(LoginMethods, on_delete=models.CASCADE, null=True, blank=True)
+    login_method = models.ForeignKey(LoginMethods, on_delete=models.CASCADE, null=True, blank=True, default=1)
 
     class Meta:
         verbose_name = "User"
