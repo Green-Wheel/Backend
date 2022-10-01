@@ -16,4 +16,4 @@ virtualenv==20.16.5
 whitenoise==6.2.0
 djangorestframework==3.14.0
 django-cors-headers==3.13.0
-environ==1.0.0
+python-environ==0.4.54
