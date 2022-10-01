@@ -57,9 +57,6 @@ Si voleu podeu usar el Community, però ja que sou estudiants, jo de vosaltres a
 2. Anar al fitxers settings.py i ja ens dirà si volem instalar les llibreries, allà, li donarem que si (les agafa del fitxer requirements.txt).
 3. (Per si no funciona la 2) Si no ens ho diu, anar al terminal i posar `pip install -r requirements.txt` i ens instal·larà totes les llibreries necessàries.
 
-### Executar projecte
-1. Anar al terminal i posar `python manage.py runserver` i ens obrirà un servidor local.
-2. Anar al navegador i posar [localhost:8000](http://localhost:8000/) i ens hauria de sortir la pàgina principal del projecte.
 
 ### Executar projecte des de PyCharm (Opcional)
 1. Anar a Run -> Edit Configurations
@@ -80,6 +77,10 @@ Si voleu podeu usar el Community, però ja que sou estudiants, jo de vosaltres a
 1. Anar al terminal i posar `docker-compose up -d` i ens hauria de crear la base de dades (ja configurada).
 2. Executar la comanda python `python manage.py migrate` per a crear les taules de la base de dades.
 3. Executar la comanda python `python manage.py createsuperuser` per a crear un usuari administrador de la base de dades. Seguiu les instruccions del terminal
+
+### Executar projecte
+1. Anar al terminal i posar `python manage.py runserver` i ens obrirà un servidor local.
+2. Anar al navegador i posar [localhost:8000](http://localhost:8000/) i ens hauria de sortir la pàgina principal del projecte.
 
 ## Connectar Base de Dades a PyCharm (opcional)
 PyCharm permet crear una connexio a la base de dades, la qual nomes serveix per a poder veure la base de dades des del programa. Això pot anar bé si voleu veure com va quedant la base de dades o el que necessiteu. És opcional, ja que la connexió amb Django ve donada per els arxius de configuració d'aquests i no per el IDE.
