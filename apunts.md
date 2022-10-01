@@ -215,7 +215,7 @@ Exemple:
   2. post
   3. put
   4. delete
-
+ 
 Qualsevol altre element que no s'hagi mencionat, s'escriurà seguint el conveni de [PEP8](https://www.python.org/dev/peps/pep-0008/)
 
 
