@@ -16,11 +16,6 @@ class Migration(migrations.Migration):
             name='id',
         ),
         migrations.AlterField(
-            model_name='languages',
-            name='shortname',
-            field=models.CharField(max_length=3, primary_key=True, serialize=False, unique=True),
-        ),
-        migrations.AlterField(
             model_name='users',
             name='language',
             field=models.ForeignKey(blank=True, default='es', null=True, on_delete=django.db.models.deletion.CASCADE, to='users.languages'),

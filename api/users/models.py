@@ -30,6 +30,9 @@ class Users(AbstractUser):
     profile_picture = models.TextField(null=True, blank=True)
     api_key = models.TextField(null=True, blank=True)
     login_method = models.ForeignKey(LoginMethods, on_delete=models.CASCADE, null=True, blank=True, default=1)
+    level = models.IntegerField(null=False, blank=False, default=1)
+    xp = models.IntegerField(null=False, blank=False, default=0)
+
 
     class Meta:
         verbose_name = "User"

@@ -11,4 +11,7 @@ services:
       POSTGRES_PASSWORD: GreenWheel
       POSTGRES_DB: greenwheel
     volumes:
-      - ./db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
