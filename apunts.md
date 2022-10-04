@@ -7,6 +7,7 @@ Jo ja us ho he deixat tot configurat, per tal que només us calgui implementar. 
 <br><br>
 Per tal de fer la REST API, us recomano seguir el següent [enllaç](https://blog.logrocket.com/django-rest-framework-create-api/#restful-structure-get-post-put-delete-methods), el qual està molt bé i us pot servir per aprendre a utilitzar-ho. També us podeu guiar pel que he fet jo, el qual està basat en l'enllaç.
 ## Models i Migrations
+### Models
 Els models, son representacions de les taules de la base de dades, i els camps de cada model, son representacions de les columnes de la taula.<br>
 Per tal de crear els models, cal implementar el fitxer `models.py`, que estan dins de cada app.<br>
 Un exemple de model podria ser el següent:
@@ -30,11 +31,57 @@ class Submission(models.Model):
 Si us hi fixeu, de normal no assignem PK, ja que ho farà automaticament i posara id. En cas que el volguem modificar, ho podem fer.<br>
 Tota la documentació de models la podeu trobar [aquí](https://docs.djangoproject.com/en/4.1/topics/db/models/).<br>
 
-Les migrations, son els fitxers que s'encarreguen de crear les taules a la base de dades, i per tant, cal crear-les sempre que es modifiqui algun model. Per tal de crear-les, cal executar el següent codi:
+### Migrations
+Les migrations, son els fitxers que s'encarreguen de crear les taules a la base de dades, i per tant, cal crear-les sempre que es modifiqui algun model.
+Una vegada tingueu el model fet o almenys allò que volieu, per a generar la migration (un script que es llença contra la BBDD), cal executar:
 ```bash
 python manage.py makemigrations
+```
+Això només generarà el fitxer, però no crearà les taules (no s'ha executat). Per a fer-ho, cal que executeu:
+```bash
 python manage.py migrate
 ```
+Aquesta comanda l'haureu de fer cada cop que algú faci una migration nova, per tal de que tingui efecte sobre el nostre sistema.
+### Crear migration de dades inicials per una taula
+A vegades necessitarem omplir una taula amb varis valors només crear-la (sobretot quan son taules que provenen de enums).
+Per a fer-ho, executarem:
+```bash
+python manage.py makemigrations --empty appname
+```
+A appname posarem el nom de la carpeta de l'app que volem crear la migration. Això ens crearà un fitxer de migration buit, que haurà de tenir el següent contingut:
+```python
+from django.db import migrations
+
+def load_initial_data(apps, schema_editor):
+    language_model = apps.get_model('users', 'Languages')
+    language_model.objects.create (
+        name = "Catala", shortname = "ca"
+        )
+    language_model.objects.create(
+        name="Castellano", shortname="es"
+    )
+    language_model.objects.create(
+        name="English", shortname="en"
+    )
+
+class Migration(migrations.Migration):
+    dependencies = [
+        ('users', '0001_initial'), # Migration anterior
+    ]
+
+    operations = [
+        migrations.RunPython(load_initial_data),
+    ]
+```
+### Automatitzar migrations
+Per tal de no haver de fer manualment les migrations, cal que configurem el fitxer `settings.py` de la següent manera:
+1. Anirem a les configuracions d'execució i li donarem a editar configuració (Està a dalt a la dreta, abans de les opcions de git).
+2. Allà, afegirem una nova configuració de tipus python. Li donarem el nom que vulguem, per exemple, `Migrate on run`. A la opció script path, seleccionarem el fitxer de la carpeta root del projecte anomenat pre_run.py.
+3. Apliquem els canvis.
+4. Anem a la opció de configuració de django i la seleccionem. A sota de tot, ens surt per afegir que s'executi algo abans de l'execució. Pulsarem el + i seleccionarem run another configuration.
+5. Seleccioanrem la que hem creat fa uns instants.
+6. Apliquem els canvis.
+
 ## Estructura RESTful que seguirem
 L'estructura restful simplement ens serveix per quedar entre nosaltres com nombrem les coses, per tal que estigui estandaritzat. Si no m'equivoco la openAPI també diu quelcom, però mirant-ho rapid no ho he trobat, si algú ho veu, que ho apunti per aquí.
 ### Exemple de requests per endpoint:
