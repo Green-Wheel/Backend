@@ -1,5 +1,6 @@
 /db_data/
 /venv/
+.env
 # Created by https://www.toptal.com/developers/gitignore/api/pycharm+iml
 # Edit at https://www.toptal.com/developers/gitignore?templates=pycharm+iml
 
@@ -45,6 +46,11 @@
 # .idea/modules
 # *.iml
 # *.ipr
+
+*.iml
+*.ipr
+*.iws
+.idea/
 
 # CMake
 cmake-build-*/
