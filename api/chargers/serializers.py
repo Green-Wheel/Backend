@@ -6,3 +6,8 @@ class NameSerializer(serializers.ModelSerializer):
         model = "pass"
         fields = []
 """
+
+class ChargersTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChargersType
+        fields = ["id", "name", "current_id", "type_vehicle_id"]

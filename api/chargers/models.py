@@ -108,6 +108,9 @@ class Chargers(Publication):
         verbose_name = "Charger"
         verbose_name_plural = "Chargers"
 
+    def __str__(self):
+        return self.name
+
 
 class PublicChargers(Chargers):
     agent = models.CharField(max_length=50, null=False, blank=False)
