@@ -58,6 +58,9 @@ class Localizations(models.Model):
         verbose_name_plural = "Localizations"
         unique_together = ["latitude", "longitude"]
 
+    def __str__(self):
+        return self.latitude, self.longitude
+
 
 class Publication(models.Model):
     title = models.CharField(max_length=50, null=True, blank=False)
@@ -94,13 +97,21 @@ class Chargers(Publication):
         verbose_name = "Charger"
         verbose_name_plural = "Chargers"
 
+    def __str__(self):
+        return self.id
+
 
 class PublicChargers(Chargers):
     agent = models.CharField(max_length=50, null=True, blank=False)
     identifier = models.CharField(max_length=50, null=True, blank=False)
     access = models.CharField(max_length=50, null=True, blank=False)
 
+    def __str__(self):
+        return self.id
+
 
 class PrivateChargers(Chargers):
     price = models.FloatField(null=True, blank=False)
 
+    def __str__(self):
+        return self.id
