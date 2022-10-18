@@ -19,4 +19,5 @@ from . import views
 
 urlpatterns = [
     path('add/', views.AddChargerView.as_view()),
+    path("public/", ChargersView.as_view())
 ]
