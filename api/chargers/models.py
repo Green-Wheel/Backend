@@ -21,7 +21,7 @@ class ConnectionsType(models.Model):
         verbose_name_plural = "ConnectionsTypes"
 
     def __str__(self):
-        return self.id
+        return self.name
 
 
 class Province(models.Model):
@@ -32,7 +32,7 @@ class Province(models.Model):
         verbose_name_plural = "Provinces"
 
     def __str__(self):
-        return self.id
+        return self.name
 
 
 class Town(models.Model):
@@ -44,7 +44,7 @@ class Town(models.Model):
         verbose_name_plural = "Towns"
 
     def __str__(self):
-        return self.id
+        return self.name
 
 
 class Localizations(models.Model):
@@ -57,6 +57,9 @@ class Localizations(models.Model):
         verbose_name = "Localization"
         verbose_name_plural = "Localizations"
         unique_together = ["latitude", "longitude"]
+
+    def __str__(self):
+        return self.latitude, self.longitude
 
 
 class Publication(models.Model):
@@ -94,13 +97,21 @@ class Chargers(Publication):
         verbose_name = "Charger"
         verbose_name_plural = "Chargers"
 
+    def __str__(self):
+        return self.id
+
 
 class PublicChargers(Chargers):
     agent = models.CharField(max_length=50, null=True, blank=False)
     identifier = models.CharField(max_length=50, null=True, blank=False)
     access = models.CharField(max_length=50, null=True, blank=False)
 
+    def __str__(self):
+        return self.id
+
 
 class PrivateChargers(Chargers):
     price = models.FloatField(null=True, blank=False)
 
+    def __str__(self):
+        return self.id
