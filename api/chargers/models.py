@@ -21,7 +21,7 @@ class ConnectionsType(models.Model):
         verbose_name_plural = "ConnectionsTypes"
 
     def __str__(self):
-        return self.id
+        return self.name
 
 
 class Province(models.Model):
@@ -32,7 +32,7 @@ class Province(models.Model):
         verbose_name_plural = "Provinces"
 
     def __str__(self):
-        return self.id
+        return self.name
 
 
 class Town(models.Model):
@@ -44,7 +44,7 @@ class Town(models.Model):
         verbose_name_plural = "Towns"
 
     def __str__(self):
-        return self.id
+        return self.name
 
 
 class Localizations(models.Model):
@@ -69,7 +69,7 @@ class Publication(models.Model):
         verbose_name_plural = "Publications"
 
     def __str__(self):
-        return self.id
+        return self.title
 
 
 class SpeedsType(models.Model):
