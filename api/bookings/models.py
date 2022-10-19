@@ -19,3 +19,6 @@ class Bookings(models.Model):
         verbose_name = "Booking"
         verbose_name_plural = "Bookings"
 
+
+class FinishedBookings(Bookings):
+    pass
