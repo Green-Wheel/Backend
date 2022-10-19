@@ -1,5 +1,10 @@
 import requests
 import logging
+import re
+
+from django.db import IntegrityError
+from psycopg2.errorcodes import UNIQUE_VIOLATION
+from psycopg2 import errors
 
 from api.chargers.models import PublicChargers, ConnectionsType, Localizations, Town, Province, SpeedsType, CurrentsType
 
@@ -7,105 +12,136 @@ from api.chargers.models import PublicChargers, ConnectionsType, Localizations, 
 def get():
     # petició api i actualitzar base de dades
     response = requests.get("https://analisi.transparenciacatalunya.cat/resource/tb2m-m33b.json?")
-
-    return response.json()
-
-
-def get_public_charger_info(charger):
-    agent = charger.get("promotor_gestor")
-    identifier = charger.get("ide_pdr")
-    access = charger.get("acces")
-    return agent, identifier, access
+    if response.status_code == 200:
+        return response.json()
+    else:
+        logging.error("Error getting data from API")
+        return None
 
 
 def get_all_speeds(speed):
-    speeds = speed.split(" i ")
     all_speeds = []
-    for speed in speeds:
-        all_speeds.append(SpeedsType.objects.get_or_create(name=speed))
+    if speed is not None:
+        speeds = speed.split(" i ")
+        for s in speeds:
+            try:
+                obj_speed = SpeedsType.objects.filter(name=s)[0]
+            except Exception:
+                obj_speed = SpeedsType(name=s)
+                obj_speed.save()
+            all_speeds.append(obj_speed)
     return all_speeds
 
 
 def get_all_connections(connection_type):
-    connections = connection_type.split("+")
     all_connections = []
-    for connection in connections:
-        all_connections.append(ConnectionsType.objects.get_or_create(name=connection))
+    if connection_type is not None:
+        connections = re.split('\+| i ', connection_type)
+        for connection in connections:
+            try:
+                obj_connection = ConnectionsType.objects.filter(name=connection)[0]
+            except Exception:
+                obj_connection = ConnectionsType(name=connection)
+                obj_connection.save()
+            all_connections.append(obj_connection)
     return all_connections
 
 
 def get_all_currents(current_type):
-    currents = current_type.split("-")
     all_currents = []
-    for current in currents:
-        all_currents.append(CurrentsType.objects.get_or_create(name=current))
+    if current_type is not None:
+        currents = current_type.split("-")
+        for current in currents:
+            try:
+                obj_current = CurrentsType.objects.filter(name=current)[0]
+            except Exception:
+                obj_current = CurrentsType(name=current)
+                obj_current.save()
+            all_currents.append(obj_current)
     return all_currents
 
 
-def get_charger_info(charger):
-    power = charger.get("kw")
-    speed = charger.get("tipus_velocitat")
-    if speed == "FORA DE SERVEI":
+def get_charger_info(c_speed, c_connection, c_current):
+    if c_speed == "FORA DE SERVEI":
         available = False
-        speed = None
+        c_speed = None
     else:
         available = True
-    all_speeds = get_all_speeds(speed)
-    connection_type = charger.get("tipus_connexi")
-    all_connections = get_all_connections(connection_type)
-
-    current_type = charger.get("ac_dc")
-    all_currents = get_all_currents(current_type)
-
-    return power, all_speeds, available, all_connections, all_currents
+    all_speeds = get_all_speeds(c_speed)
+    all_connections = get_all_connections(c_connection)
+    all_currents = get_all_currents(c_current)
+    return all_speeds, available, all_connections, all_currents
 
 
-def get_publication_info(charger):
-    title = None
-    description = charger.get("designaci_descriptiva")
-    province, created = Province.objects.get_or_create(name=charger.get("provincia"))
-    town, created = Town.objects.get_or_create(name=charger.get("municipi"), province_id=province.id)
-    localization, created = Localizations.objects.get_or_create(latitude=charger.get("latitud"),
-                                                                longitude=charger.get("longitud"),
-                                                                direction=charger.get("adre_a"), town_id=town.id)
-    print(charger.get("latitud"), charger.get("longitud"), charger.get("adre_a"), town.id)
-    print("created: " + str(created))
-    return title, description, localization
+def get_publication_info(c_province, c_town, c_latitude, c_longitude):
+    try:
+        obj_province = Province.objects.filter(name=c_province)[0]
+    except Exception:
+        obj_province = Province(name=c_province)
+        obj_province.save()
+
+    try:
+        obj_town = Town.objects.filter(name=c_town, province_id=obj_province.id)[0]
+    except Exception:
+        obj_town = Town(name=c_town, province_id=obj_province.id)
+        obj_town.save()
+
+    try:
+        obj_localization = \
+            Localizations.objects.filter(latitude=c_latitude, longitude=c_longitude)[0]
+    except Exception:
+        obj_localization = Localizations(latitude=c_latitude, longitude=c_longitude)
+        obj_localization.save()
+
+    return obj_town, obj_localization
 
 
-def filter_localization(charger):
-    latitude = charger.get("latitud")
-    longitude = charger.get("longitud")
-    return PublicChargers.objects.filter(localization__latitude=latitude, localization__longitude=longitude)
+def filter_localization(c_latitude, c_longitude, c_direction):
+    try:
+        obj_pc = PublicChargers.objects.filter(localization__latitude=c_latitude, localization__longitude=c_longitude,
+                                               direction=c_direction)[0]
+    except Exception:
+        obj_pc = None
+    return obj_pc
+
+
+def create_charger(agent, identifier, access, power, all_speeds, available, all_connections,
+                   all_currents, title, description, direction, town, localization):
+    public_charger = filter_localization(localization.latitude, localization.longitude, direction)
+
+    if public_charger is None:
+        public_charger = PublicChargers(agent=agent, identifier=identifier, access=access, power=power,
+                                        available=available, title=title, description=description,
+                                        localization=localization, town=town, direction=direction)
+    else:
+        public_charger.agent = agent
+        public_charger.identifier = identifier
+        public_charger.access = access
+        public_charger.power = power
+        public_charger.available = available
+        public_charger.title = title
+        public_charger.description = description
+        public_charger.localization = localization
+        public_charger.town = town
+        public_charger.direction = direction
+
+    public_charger.save()
+
+    if len(all_speeds) > 0:
+        public_charger.speed.set(all_speeds)
+    if len(all_connections) > 0:
+        public_charger.connection_type.set(all_connections)
+    if len(all_currents) > 0:
+        public_charger.current_type.set(all_currents)
+
+    public_charger.save()
 
 
 def save_chargers_to_db():
     response = get()
     for charger in response:
-        public_charger = filter_localization(charger)
-        agent, identifier, access = get_public_charger_info(charger)
-        power, all_speeds, available, all_connections, all_currents = get_charger_info(charger)
-        title, description, localization = get_publication_info(charger)
-        if not public_charger.exists():
-            public_charger = PublicChargers.objects.create(agent=agent, identifier=identifier,
-                                                           access=access, power=power, available=available, title=title,
-                                                           description=description, localization=localization)
-            print("Public charger created")
-            print(public_charger)
-        else:
-            public_charger.update(agent=agent, identifier=identifier,
-                                  access=access, power=power, available=available, title=title,
-                                  description=description, localization=localization, speed=all_speeds)
-            print(localization.longitude)
-            print("Public charger updated")
-        public_charger.speed.add(all_speeds)
-        # public_charger.speed.set(all_speeds)
-        public_charger.connection_type.set(all_connections)
-        public_charger.current_type.set(all_currents)
-        print("public charger saved")
-        print(public_charger)
-        public_charger.save()
-
-
-#if __name__ == '__main__':
-    # print(save_chargers_to_db())
+        agent, identifier, access, power = charger.get("agent"), charger.get("ide_pdr"), charger.get("access"), charger.get("kw")
+        all_speeds, available, all_connections, all_currents = get_charger_info(charger.get("tipus_velocitat"), charger.get("tipus_connexi"), charger.get("ac_dc"))
+        title, description, direction = None, charger.get("designaci_descriptiva"), charger.get("adre_a")
+        town, localization = get_publication_info(charger.get("provincia"), charger.get("municipi"), charger.get("latitud"), charger.get("longitud"))
+        create_charger(agent, identifier, access, power, all_speeds, available, all_connections, all_currents, title, description, direction, town, localization)
