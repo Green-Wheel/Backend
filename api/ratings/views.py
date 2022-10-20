@@ -8,7 +8,9 @@ from .models import Ratings
 # Create your views here.
 class RatingsApiView(APIView):
     def get(self, request):
-        rating_instance = Ratings.objects.filter(client=1)
+        rating_instance = Ratings.objects.all().filter()
+        # rating_instance = Ratings.objects.filter(booking=1)
+        # rating_instance = Ratings.objects.filter(booking=booking_id)
         serializer = RatingsSerializer(rating_instance, many=True)
         if not rating_instance:
             return Response(
