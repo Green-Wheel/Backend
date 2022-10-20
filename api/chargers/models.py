@@ -36,7 +36,7 @@ class Province(models.Model):
 
 
 class Town(models.Model):
-    name = models.CharField(max_length=50, null=True, blank=False, unique=True)
+    name = models.CharField(max_length=50, null=True, blank=False)
     province = models.ForeignKey(Province, on_delete=models.CASCADE, null=False, blank=False)
 
     class Meta:
@@ -50,8 +50,6 @@ class Town(models.Model):
 class Localizations(models.Model):
     latitude = models.FloatField(null=True, blank=False)
     longitude = models.FloatField(null=True, blank=False)
-    direction = models.CharField(max_length=100, null=True, blank=False)
-    town = models.ForeignKey(Town, on_delete=models.CASCADE, null=True, blank=False)
 
     class Meta:
         verbose_name = "Localization"
@@ -65,6 +63,8 @@ class Localizations(models.Model):
 class Publication(models.Model):
     title = models.CharField(max_length=50, null=True, blank=False)
     description = models.TextField(null=True, blank=True)
+    direction = models.CharField(max_length=100, null=True, blank=False)
+    town = models.ForeignKey(Town, on_delete=models.CASCADE, null=True, blank=False)
     localization = models.ForeignKey(Localizations, on_delete=models.CASCADE, null=True, blank=False, related_name='+')
 
     class Meta:
@@ -72,7 +72,7 @@ class Publication(models.Model):
         verbose_name_plural = "Publications"
 
     def __str__(self):
-        return self.title
+        return str(self.id)
 
 
 class SpeedsType(models.Model):
@@ -91,27 +91,35 @@ class Chargers(Publication):
     speed = models.ManyToManyField(SpeedsType)
     connection_type = models.ManyToManyField(ConnectionsType)
     current_type = models.ManyToManyField(CurrentsType)
-    available = models.BooleanField(null=True, blank=False, default=True)
 
     class Meta:
         verbose_name = "Charger"
         verbose_name_plural = "Chargers"
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class PublicChargers(Chargers):
-    agent = models.CharField(max_length=50, null=True, blank=False)
+    agent = models.TextField(null=True, blank=False)
     identifier = models.CharField(max_length=50, null=True, blank=False)
     access = models.CharField(max_length=50, null=True, blank=False)
+    available = models.BooleanField(null=True, blank=False, default=True)
+
+    class Meta:
+        verbose_name = "PublicCharger"
+        verbose_name_plural = "PublicChargers"
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class PrivateChargers(Chargers):
     price = models.FloatField(null=True, blank=False)
 
+    class Meta:
+        verbose_name = "PrivateCharger"
+        verbose_name_plural = "PrivateChargers"
+
     def __str__(self):
-        return self.id
+        return str(self.price)
