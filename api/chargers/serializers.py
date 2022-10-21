@@ -1,4 +1,5 @@
 from rest_framework import serializers
+import from api.chargers.models
 
 """
 class NameSerializer(serializers.ModelSerializer):
@@ -54,3 +55,8 @@ class privateChargersSerializer(serializers.ModelSerializer):
     class Meta:
         model = PrivateChargers
         fields = "__all__"
+
+class PublicChargerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PublicChargers
+        fields = ["title", "description", "direction", "town", "localization", "power", "speed", "connection_type", "current_type", "agent", "identifier", "access", "available"]

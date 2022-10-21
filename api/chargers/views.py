@@ -1,9 +1,6 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
-from rest_framework import status
-from rest_framework.response import Response
-from . import serializers
-from .models import Chargers, PublicChargers, PrivateChargers, Publication, Localizations, SpeedsType, CurrentsType, ConnectionsType
+from . import requests_api
+from api.chargers.models import PublicChargers, Chargers, PrivateChargers
 
 class ChargersView(APIView):
     def set_if_not_none(self, mapping, key, value):
@@ -12,21 +9,23 @@ class ChargersView(APIView):
 
     def get(self, request):
         # Agafar de la base de dades
+        requests_api.save_chargers_to_db()
         filters = {}
-        type = request.GET.get('type')
+        charger_type = request.GET.get('charger_type')
         # town = request.GET.get('town')
         # self.set_if_not_none(filters, 'town', town)
         # self.set_if_not_none(filters, 'speed', speed)
-        # self.set_if_not_none(filters, 'charger_type', charger_type)
-        #
-        if type == "public":
+        self.set_if_not_none(filters, 'charger_type', charger_type)
+
+        if charger_type == "public":
             chargers = PublicChargers.objects.filter(**filters)
-        elif type == "private":
+        elif charger_type == "private":
             chargers = PrivateChargers.objects.filter(**filters)
         else:
             chargers = Chargers.objects.filter(**filters)
 
-        #requests_api.save_chargers_to_db()
+        charger_serializer = PublicChargerSerializer(chargers, many=True)
+        return Response(charger_serializer.data, status=status.HTTP_200_OK)
 
 class AddChargerView(APIView):
     def get_localization(self, localization_id):
