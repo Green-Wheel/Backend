@@ -1,5 +1,5 @@
 from rest_framework import serializers
-import from api.chargers.models
+from . import models
 
 """
 class NameSerializer(serializers.ModelSerializer):
