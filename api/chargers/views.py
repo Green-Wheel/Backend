@@ -2,7 +2,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from .models import Publication, Chargers, ChargersType, TypeSpeed, Localizations
+from . import serializers
+from .models import Chargers, PublicChargers, PrivateChargers, Publication, Localizations, SpeedsType, CurrentsType, ConnectionsType
 
 class ChargersView(APIView):
     def set_if_not_none(self, mapping, key, value):
@@ -57,18 +58,50 @@ class AddChargerView(APIView):
             return None
 
     def post(self, request):
-        print("request.data")
-        user_id = 1
+        localization = Localizations.objects.get(id=1)#request.data["localization"])
+        speed_type = SpeedsType.objects.get(id=1)#request.data["speed_type"])
+        connection_type = ConnectionsType.objects.get(id=1)#request.data["connection_type"])
+        current_type = CurrentsType.objects.get(id=1)#request.data["current_type"])
+
+        publication = PublicationSerializer(data={title: request.data["title"],
+                                                  description: request.data["description"],
+                                                  localization: localization})
+        if publication.is_valid():
+            charger = ChargersSerializer(data={publication_ptr_id: publication,
+                                               connection_type_id: connection_type.id,
+                                               current_type_id: current_type.id,
+                                               speed_type_id: speed_type.id})
+            if charger.is_valid():
+                private_charger = PrivateChargersSerializer(data={charger_ptr_id: charger.id,
+                                                                  price: request.data["price"]})
+                if private_charger.is_valid():
+                    publication.save()
+                    charger.save()
+                    private_charger.save()
+                    return Response({"res": "Charger added"}, status=status.HTTP_201_CREATED)
+
+        #try:
+        data = {
+            "title": request.data["title"],
+            "description": request.data["description"],
+        }
         publication = Publication(title=request.data['title'],
                                   description=request.data['description'],
-                                  latitude_id=1,
-                                  longitude_id=1,
-                                  price=request.data['price'])
+                                  localization=Localizations.objects.get(id=1),)
         publication.save()
-        charger = Chargers(publication_ptr_id=publication, power=request.data['power'], available=True,
-                                          charger_type=self.get_charger_type(1), speed=self.get_type_speed(1))
+
+        charger = Chargers(publication_ptr_id=publication,
+                           power=request.data["power"],
+                           available=True)
         charger.save()
-        return Response({"res": "Language changed"}, status=status.HTTP_200_OK)
+
+        private = PrivateChargers(charger_ptr_id=charger,
+                                  price=request.data["price"])
+        private.save()
+        return Response({"res": "Charger added"}, status=status.HTTP_200_OK)
+        #except Exception as e:
+            #print(e)
+            #return Response({"res": "Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get(self, request):
         types = ChargersType.objects.all()
@@ -81,3 +114,26 @@ class AddChargerView(APIView):
         #        return self.get_types_speeds()
         #    case _:
         #        return Response({"res": "Action not found"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
