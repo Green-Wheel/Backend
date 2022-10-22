@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from . import models
+from api.chargers.models import PublicChargers, Chargers, PrivateChargers, ConnectionsType, Localizations, Town, Province, SpeedsType, CurrentsType, Publication
 
 """
 class NameSerializer(serializers.ModelSerializer):
@@ -11,50 +11,56 @@ class NameSerializer(serializers.ModelSerializer):
 class PublicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Publication
-        fields = "__all__"
+        fields = ["title", "description", "direction", "town", "localization"]
 
-class LocalizationsSerializer(serializers.ModelSerializer):
+
+class LocalizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Localizations
-        fields = "__all__"
+        fields = ["latitude", "longitude"]
+
+
 class TownSerializer(serializers.ModelSerializer):
     class Meta:
         model = Town
-        fields = "__all__"
+        fields = ["name", "province"]
+
 
 class ProvinceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Province
-        fields = "__all__"
+        fields = ["name"]
 
-class ChargersSerializer(serializers.ModelSerializer):
+
+class ChargerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chargers
-        fields = "__all__"
+        fields = ["title", "description", "direction", "town", "localization", "speed", "connection_type", "current_type", "power"]
+
+
 class SpeedTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = SpeedsType
-        fields = "__all__"
+        fields = ["name"]
+
 
 class connectionTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConnectionsType
-        fields = "__all__"
+        fields = ["name"]
+
 
 class CurrentTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CurrentsType
-        fields = "__all__"
+        fields = ["name"]
 
-class PublicChargersSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PublicChargers
-        fields = "__all__"
 
-class privateChargersSerializer(serializers.ModelSerializer):
+class privateChargerSerializer(serializers.ModelSerializer):
     class Meta:
         model = PrivateChargers
-        fields = "__all__"
+        fields =  ["title", "description", "direction", "town", "localization", "speed", "connection_type", "current_type", "power", "price"]
+
 
 class PublicChargerSerializer(serializers.ModelSerializer):
     class Meta:

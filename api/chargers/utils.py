@@ -57,3 +57,50 @@ def get_all_currents(current_type):
         for current in currents:
             all_currents.append(get_current(current))
     return all_currents
+
+def get_localization(latitude, longuitude):
+    try:
+        obj_localization = Localizations.objects.filter(latitude=latitude, longitude=longuitude)[0]
+    except Exception:
+        obj_localization = Localizations(latitude=latitude, longitude=longuitude)
+        obj_localization.save()
+    return obj_localization
+
+
+def get_town(town_name, province_name):
+    try:
+        obj_province = Province.objects.filter(name=province_name)[0]
+    except Exception:
+        obj_province = Province(name=province_name)
+        obj_province.save()
+    try:
+        obj_town = Town.objects.filter(name=town_name, province=obj_province)[0]
+    except Exception:
+        obj_town = Town(name=town_name, province=obj_province)
+        obj_town.save()
+    return obj_town
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

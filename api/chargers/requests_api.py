@@ -7,7 +7,7 @@ from psycopg2.errorcodes import UNIQUE_VIOLATION
 from psycopg2 import errors
 
 from api.chargers.models import PublicChargers, ConnectionsType, Localizations, Town, Province, SpeedsType, CurrentsType
-from . import utils
+from api.chargers.utils import get_all_speeds, get_all_connections, get_all_currents
 
 
 def get():
