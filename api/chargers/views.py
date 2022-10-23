@@ -82,26 +82,3 @@ class AddChargerView(APIView):
         #        return self.get_types_speeds()
         #    case _:
         #        return Response({"res": "Action not found"}, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

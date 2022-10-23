@@ -1,13 +1,6 @@
 from rest_framework import serializers
 from api.chargers.models import PublicChargers, Chargers, PrivateChargers, ConnectionsType, Localizations, Town, Province, SpeedsType, CurrentsType, Publication
 
-"""
-class NameSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = "pass"
-        fields = []
-"""
-
 class PublicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Publication
@@ -63,6 +56,12 @@ class privateChargerSerializer(serializers.ModelSerializer):
 
 
 class PublicChargerSerializer(serializers.ModelSerializer):
+    localization = serializers.SerializerMethodField("get_localization")
+
+    def get_localization(self, obj):
+        return LocalizationsSerializer(obj.localization).data
+
     class Meta:
         model = PublicChargers
-        fields = ["title", "description", "direction", "town", "localization", "power", "speed", "connection_type", "current_type", "agent", "identifier", "access", "available"]
+        fields = ["title", "description", "direction", "town", "localization", "power", "speed", "connection_type",
+                  "current_type", "agent", "identifier", "access", "available"]
