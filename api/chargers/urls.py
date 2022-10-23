@@ -16,8 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
-from .views import ChargersView
 
 urlpatterns = [
-    path("public/", ChargersView.as_view())
+    path('add/', views.AddChargerView.as_view()),
+    path("public/", views.ChargersView.as_view())
 ]
