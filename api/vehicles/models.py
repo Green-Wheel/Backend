@@ -1,7 +1,7 @@
 from django.db import models
 
 from api.users.models import Users
-# from api.chargers.models import ChargersType
+# from api.chargers.models import ConnectionType
 from config import settings
 
 
@@ -23,7 +23,7 @@ class CarsModel(models.Model):
     autonomy = models.FloatField(null=True, blank=True)
     car_brand = models.ForeignKey(CarsBrand, on_delete=models.CASCADE, null=False, blank=False)
 
-    # charger_type = models.ManyToManyField(ChargersType)
+    # charger_type = models.ManyToManyField(ConnectionType)
 
     class Meta:
         verbose_name = "CarModel"
