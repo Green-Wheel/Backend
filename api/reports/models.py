@@ -6,6 +6,7 @@ from django.conf import settings
 
 
 class Report(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
     message = models.TextField(null=False, blank=False)
     image = models.TextField(null=True, blank=True)
     data_reported = models.DateTimeField(auto_now_add=True)
