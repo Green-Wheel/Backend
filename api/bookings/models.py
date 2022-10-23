@@ -4,7 +4,7 @@ from api.users.models import Users
 from api.chargers.models import Publication
 
 
-# Create your models here.
+
 class Bookings(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
     publication = models.ForeignKey(Publication, on_delete=models.CASCADE, null=False, blank=False)
