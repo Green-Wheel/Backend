@@ -59,7 +59,7 @@ class PublicChargerSerializer(serializers.ModelSerializer):
     localization = serializers.SerializerMethodField("get_localization")
 
     def get_localization(self, obj):
-        return LocalizationsSerializer(obj.localization).data
+        return LocalizationSerializer(obj.localization).data
 
     class Meta:
         model = PublicChargers
