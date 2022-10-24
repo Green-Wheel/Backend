@@ -124,3 +124,15 @@ class PrivateChargers(Chargers):
 
     def __str__(self):
         return str(self.price)
+
+
+class Configs(models.Model):
+    key = models.CharField(max_length=50, null=True, blank=False, unique=True)
+    value = models.CharField(max_length=150, null=True, blank=False)
+
+    class Meta:
+        verbose_name = "Config"
+        verbose_name_plural = "Configs"
+
+    def __str__(self):
+        return str(self.id)
