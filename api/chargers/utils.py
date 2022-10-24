@@ -1,8 +1,6 @@
-from django.db import IntegrityError
-from psycopg2.errorcodes import UNIQUE_VIOLATION
-from psycopg2 import errors
+import re
 
-from api.chargers.models import PublicChargers, ConnectionsType, Localizations, Town, Province, SpeedsType, CurrentsType
+from api.chargers.models import ConnectionsType, Localizations, Town, Province, SpeedsType, CurrentsType
 
 
 def get_speed(speed_name):
@@ -58,6 +56,7 @@ def get_all_currents(current_type):
             all_currents.append(get_current(current))
     return all_currents
 
+
 def get_localization(latitude, longuitude):
     try:
         obj_localization = Localizations.objects.filter(latitude=latitude, longitude=longuitude)[0]
@@ -79,28 +78,3 @@ def get_town(town_name, province_name):
         obj_town = Town(name=town_name, province=obj_province)
         obj_town.save()
     return obj_town
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

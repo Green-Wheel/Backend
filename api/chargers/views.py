@@ -13,7 +13,7 @@ class ChargersView(APIView):
 
     def get(self, request):
         # Agafar de la base de dades
-        requests_api.save_chargers_to_db()
+
         filters = {}
         charger_type = request.GET.get('charger_type')
         # town = request.GET.get('town')
@@ -29,7 +29,10 @@ class ChargersView(APIView):
             chargers = Chargers.objects.filter(**filters)
 
         charger_serializer = PublicChargerSerializer(chargers, many=True)
+        requests_api.save_chargers_to_db()
+        # create threat: save_chargers_to_db(), dins d'aqui hi haura la comprovacio si s'ha d'actualitzar o no a bd (si la data ultima posada es de fa mes de 1 hora) --> puc posaru fora
         return Response(charger_serializer.data, status=status.HTTP_200_OK)
+
 
 class AddChargerView(APIView):
     def post(self, request):
@@ -70,15 +73,3 @@ class AddChargerView(APIView):
         except Exception as e:
             print(e)
             return Response({"res": "Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    def get(self, request):
-        types = ChargersType.objects.all()
-        serializer = ChargersTypeSerializer(types, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-        #match request.data["action"]:
-        #    case "chargerType":
-        #        return self.get_chargers_types()
-        #    case "typeSpeed":
-        #        return self.get_types_speeds()
-        #    case _:
-        #        return Response({"res": "Action not found"}, status=status.HTTP_400_BAD_REQUEST)

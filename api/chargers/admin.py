@@ -1,6 +1,4 @@
 from django.contrib import admin
-
-
 from api.chargers.models import Chargers, Publication, SpeedsType, Localizations, Town, Province, ConnectionsType, CurrentsType
 
 
@@ -19,14 +17,19 @@ class ChargersAdmin(admin.ModelAdmin):
         return "\n".join([p.name for p in obj.current_type.all()])
 
 
+class PubliChargerAdmin(admin.ModelAdmin):
+    search_fields = ('agent', 'identifier', 'access', 'available')
+    list_display = ('agent', 'identifier', 'access', 'available')
+
+
 class SpeedsTypeAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
 
 
 class PublicationAdmin(admin.ModelAdmin):
-    list_display = ('title', 'description', 'direction', 'town', 'localization')
-    search_fields = ('title', 'description', 'direction', 'town', 'localization')
+    list_display = ('title', 'description', 'localization', 'direction', 'town')
+    search_fields = ('title', 'description', 'localization', 'direction', 'town')
 
 
 class LocalizationsAdmin(admin.ModelAdmin):
