@@ -15,7 +15,7 @@ class ChargersView(APIView):
 
     def get(self, request):
         # Agafar de la base de dades
-        requests_api.save_chargers_to_db()
+
         filters = {}
         charger_type = request.GET.get('charger_type')
         # town = request.GET.get('town')
@@ -31,7 +31,10 @@ class ChargersView(APIView):
             chargers = Chargers.objects.filter(**filters)
 
         charger_serializer = PublicChargerSerializer(chargers, many=True)
+        requests_api.save_chargers_to_db()
+        # create threat: save_chargers_to_db(), dins d'aqui hi haura la comprovacio si s'ha d'actualitzar o no a bd (si la data ultima posada es de fa mes de 1 hora) --> puc posaru fora
         return Response(charger_serializer.data, status=status.HTTP_200_OK)
+
 
 def get_all_speed(self, speed):
     return map(lambda s: get_speed(s), speed)
