@@ -75,6 +75,7 @@ class Publication(models.Model):
         return str(self.id)
 
 
+
 class SpeedsType(models.Model):
     name = models.CharField(max_length=50, null=True, blank=False, unique=True)
 

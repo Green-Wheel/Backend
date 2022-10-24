@@ -7,6 +7,7 @@ from psycopg2.errorcodes import UNIQUE_VIOLATION
 from psycopg2 import errors
 
 from api.chargers.models import PublicChargers, ConnectionsType, Localizations, Town, Province, SpeedsType, CurrentsType
+from api.chargers.utils import get_all_speeds, get_all_connections, get_all_currents
 
 
 def get():
@@ -17,48 +18,6 @@ def get():
     else:
         logging.error("Error getting data from API")
         return None
-
-
-def get_all_speeds(speed):
-    all_speeds = []
-    if speed is not None:
-        speeds = speed.split(" i ")
-        for s in speeds:
-            try:
-                obj_speed = SpeedsType.objects.filter(name=s)[0]
-            except Exception:
-                obj_speed = SpeedsType(name=s)
-                obj_speed.save()
-            all_speeds.append(obj_speed)
-    return all_speeds
-
-
-def get_all_connections(connection_type):
-    all_connections = []
-    if connection_type is not None:
-        connections = re.split('\+| i ', connection_type)
-        for connection in connections:
-            try:
-                obj_connection = ConnectionsType.objects.filter(name=connection)[0]
-            except Exception:
-                obj_connection = ConnectionsType(name=connection)
-                obj_connection.save()
-            all_connections.append(obj_connection)
-    return all_connections
-
-
-def get_all_currents(current_type):
-    all_currents = []
-    if current_type is not None:
-        currents = current_type.split("-")
-        for current in currents:
-            try:
-                obj_current = CurrentsType.objects.filter(name=current)[0]
-            except Exception:
-                obj_current = CurrentsType(name=current)
-                obj_current.save()
-            all_currents.append(obj_current)
-    return all_currents
 
 
 def get_charger_info(c_speed, c_connection, c_current):

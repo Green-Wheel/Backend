@@ -5,7 +5,7 @@ from api.chargers.models import Publication
 # from api.ratings.models import Ratings
 
 
-# Create your models here.
+
 class Bookings(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
     publication = models.ForeignKey(Publication, on_delete=models.CASCADE, null=False, blank=False)
