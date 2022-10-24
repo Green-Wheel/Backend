@@ -2,8 +2,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from . import requests_api
-from api.chargers.models import PublicChargers, Chargers, PrivateChargers, Localizations, Town, Publication
-from api.chargers.serializers import PublicChargerSerializer, ChargerSerializer, privateChargerSerializer, PublicationSerializer
+from api.chargers.models import PublicChargers, Chargers, PrivateChargers, Localizations, Town, Publication, \
+    SpeedsType, CurrentsType
+from api.chargers.serializers import PublicChargerSerializer, ChargerSerializer, privateChargerSerializer, \
+    PublicationSerializer, SpeedTypeSerializer, CurrentTypeSerializer, connectionTypeSerializer
 from api.chargers.utils import get_localization, get_speed, get_connection, get_current, get_town
 
 class ChargersView(APIView):
@@ -31,32 +33,27 @@ class ChargersView(APIView):
         charger_serializer = PublicChargerSerializer(chargers, many=True)
         return Response(charger_serializer.data, status=status.HTTP_200_OK)
 
+def get_all_speed(self, speed):
+    return map(lambda s: get_speed(s), speed)
+
+def get_all_connection(self, connection):
+    return map(lambda c: get_connection(c), connection)
+
+def get_all_current(self, current):
+    return map(lambda c: get_current(c), current)
+
 class AddChargerView(APIView):
     def post(self, request):
         localization = get_localization(request.data["Latitude"], request.data["Longitude"])
         speed_type = get_speed(request.data["velocity"])
         connection_type = get_connection(request.data["tipusCarregador"])
-        current_type = get_current('AC')
+        current_type = get_current(request.data["current"])
         town = get_town("Barcelona", "Barcelona")
 
         try:
-            # publication = Publication(title=request.data['title'],
-            #                           description=request.data['description'],
-            #                           direction="directon de prueva",
-            #                           town=town,
-            #                           localization=localization)
-            # publication.save()
-            #
-            # charger = Chargers(publication_ptr_id=publication.id,
-            #                    power=request.data["power"])
-            # charger.save()
-            # charger.speed.set([speed_type])
-            # charger.connection_type.set([connection_type])
-            # charger.current_type.set([current_type])
-
             private = PrivateChargers(title=request.data['title'],
                                       description=request.data['description'],
-                                      direction="directon de prueva",
+                                      direction=request.data['direction'],
                                       town=town,
                                       localization=localization,
                                       power=request.data["power"],
@@ -66,19 +63,56 @@ class AddChargerView(APIView):
             private.connection_type.set([connection_type])
             private.current_type.set([current_type])
             private_serializaer = privateChargerSerializer(private, many=False)
+
+            #add charger to user
+
+
             return Response({"res": "Charger added", "data":private_serializaer.data}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response({"res": "Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get(self, request):
-        types = ChargersType.objects.all()
-        serializer = ChargersTypeSerializer(types, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-        #match request.data["action"]:
-        #    case "chargerType":
-        #        return self.get_chargers_types()
-        #    case "typeSpeed":
-        #        return self.get_types_speeds()
-        #    case _:
-        #        return Response({"res": "Action not found"}, status=status.HTTP_400_BAD_REQUEST)
+        speeds = SpeedTypeSerializer(SpeedsType.objects.all(), many=True)
+        currents = CurrentTypeSerializer(CurrentsType.objects.all(), many=True)
+        connections = connectionTypeSerializer(ConnectionsType.objects.all(), many=True)
+
+        return Response({"speeds":speeds.data, "currents":currents.data, "connections":connections.data}, status=status.HTTP_200_OK)
+
+
+class DeletePrivateChargerView(APIView):
+    def delete(self, request):
+        try:
+            private = PrivateChargers.objects.get(id=request.data["id"])
+            private.delete()
+            return Response({"res": "Charger deleted"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"res": "Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class EditPrivateCharfer(APIView):
+    def put(self, request):
+        localization = get_localization(request.data["Latitude"], request.data["Longitude"])
+        speed_type = get_all_speed(request.data["velocity"])
+        connection_type = get_all_connection(request.data["tipusCarregador"])
+        current_type = get_all_current(request.data["current"])
+        town = get_town("Barcelona", "Barcelona")
+
+        try:
+            private = PrivateChargers.objects.get(id=request.data["id"])
+
+            private.title = request.data["title"]
+            private.description = request.data["description"]
+            private.direction = request.data["direction"]
+            private.power = request.data["power"]
+            private.price = request.data["price"]
+            private.localization = localization
+            private.speed.set(speed_type)
+            private.connection_type.set(connection_type)
+            private.current_type.set(current_type)
+
+            private_serializaer = privateChargerSerializer(private, many=False)
+            return Response({"res": "Charger edited"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"res": "Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
