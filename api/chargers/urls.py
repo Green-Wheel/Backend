@@ -18,10 +18,11 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
+    path("public/", views.PublicChargersView.as_view()),
     path("private/", views.PrivateChargerView.as_view()),
-    path("public/", views.ChargersView.as_view()),
     path("private/<int:charger_id>/", views.DetailedPrivateChargerAppView.as_view()),
     path("speed/",  views.SpeedTypeView.as_view()),
     path("current/",  views.CurrentTypeView.as_view()),
     path("connection/",  views.ConnectionTypeView.as_view()),
+    path("", views.ChargersView.as_view()),
 ]

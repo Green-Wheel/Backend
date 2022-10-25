@@ -1,12 +1,7 @@
 import requests
 import logging
-import re
 
-from django.db import IntegrityError
-from psycopg2.errorcodes import UNIQUE_VIOLATION
-from psycopg2 import errors
-
-from api.chargers.models import PublicChargers, ConnectionsType, Localizations, Town, Province, SpeedsType, CurrentsType
+from api.chargers.models import PublicChargers, Localizations, Town, Province
 from api.chargers.utils import get_all_speeds, get_all_connections, get_all_currents
 
 
@@ -46,8 +41,7 @@ def get_publication_info(c_province, c_town, c_latitude, c_longitude):
         obj_town.save()
 
     try:
-        obj_localization = \
-            Localizations.objects.filter(latitude=c_latitude, longitude=c_longitude)[0]
+        obj_localization = Localizations.objects.filter(latitude=c_latitude, longitude=c_longitude)[0]
     except Exception:
         obj_localization = Localizations(latitude=c_latitude, longitude=c_longitude)
         obj_localization.save()
@@ -97,6 +91,7 @@ def create_charger(agent, identifier, access, power, all_speeds, available, all_
 
 
 def save_chargers_to_db():
+    print("Getting data from API")
     response = get()
     for charger in response:
         agent, identifier, access, power = charger.get("agent"), charger.get("ide_pdr"), charger.get("access"), charger.get("kw")
