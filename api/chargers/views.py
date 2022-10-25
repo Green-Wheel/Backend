@@ -45,7 +45,7 @@ def get_all_connection(self, connection):
 def get_all_current(self, current):
     return map(lambda c: get_current(c), current)
 
-class AddChargerView(APIView):
+class PrivateChargerView(APIView):
     def post(self, request):
         localization = get_localization(request.data["Latitude"], request.data["Longitude"])
         speed_type = get_speed(request.data["velocity"])
@@ -75,26 +75,19 @@ class AddChargerView(APIView):
             print(e)
             return Response({"res": "Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def get(self, request):
-        speeds = SpeedTypeSerializer(SpeedsType.objects.all(), many=True)
-        currents = CurrentTypeSerializer(CurrentsType.objects.all(), many=True)
-        connections = connectionTypeSerializer(ConnectionsType.objects.all(), many=True)
 
-        return Response({"speeds":speeds.data, "currents":currents.data, "connections":connections.data}, status=status.HTTP_200_OK)
-
-
-class DeletePrivateChargerView(APIView):
-    def delete(self, request):
+class DetailedPrivateChargerAppView(APIView):
+    def get(selfself, request, charger_id):
         try:
-            private = PrivateChargers.objects.get(id=request.data["id"])
-            private.delete()
-            return Response({"res": "Charger deleted"}, status=status.HTTP_200_OK)
+            private = PrivateChargers.objects.get(id=charger_id)
+            private_serializaer = privateChargerSerializer(private, many=False)
+            return Response({"res": "Charger found", "data": private_serializaer.data}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response({"res": "Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class EditPrivateCharfer(APIView):
-    def put(self, request):
+
+    def put(self, request,  charger_id):
         localization = get_localization(request.data["Latitude"], request.data["Longitude"])
         speed_type = get_all_speed(request.data["velocity"])
         connection_type = get_all_connection(request.data["tipusCarregador"])
@@ -102,7 +95,7 @@ class EditPrivateCharfer(APIView):
         town = get_town("Barcelona", "Barcelona")
 
         try:
-            private = PrivateChargers.objects.get(id=request.data["id"])
+            private = PrivateChargers.objects.get(id=charger_id)
 
             private.title = request.data["title"]
             private.description = request.data["description"]
@@ -119,3 +112,41 @@ class EditPrivateCharfer(APIView):
         except Exception as e:
             print(e)
             return Response({"res": "Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def delete(self, request, charger_id):
+        try:
+            private = PrivateChargers.objects.get(id=charger_id)
+            private.delete()
+            return Response({"res": "Charger deleted"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"res": "Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class SpeedTypeView(APIView):
+    def get(self, request):
+        try:
+            speeds = SpeedTypeSerializer(SpeedsType.objects.all(), many=True)
+            return Response(speeds.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"res": "Error", "message":e}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class CurrentTypeView(APIView):
+    def get(self, request):
+        try:
+            currents = CurrentTypeSerializer(CurrentsType.objects.all(), many=True)
+            return Response(currents.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"res": "Error", "message":e}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class ConnectionTypeView(APIView):
+    def get(self, request):
+        try:
+            connections = connectionTypeSerializer(ConnectionsType.objects.all(), many=True)
+            return Response(connections.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"res": "Error", "message":e}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
