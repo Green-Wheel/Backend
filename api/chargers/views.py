@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from . import requests_api
 from api.chargers.models import PublicChargers, Chargers, PrivateChargers, Localizations, Town, Publication, \
-    SpeedsType, CurrentsType
+    SpeedsType, CurrentsType, ConnectionsType
 from api.chargers.serializers import PublicChargerSerializer, ChargerSerializer, privateChargerSerializer, \
     PublicationSerializer, SpeedTypeSerializer, CurrentTypeSerializer, connectionTypeSerializer
 from api.chargers.utils import get_localization, get_speed, get_connection, get_current, get_town
@@ -47,11 +47,12 @@ def get_all_current(self, current):
 
 class PrivateChargerView(APIView):
     def post(self, request):
+        #charger = PrivateChargersSerializer(data=request.data)
         localization = get_localization(request.data["Latitude"], request.data["Longitude"])
-        speed_type = get_speed(request.data["velocity"])
-        connection_type = get_connection(request.data["tipusCarregador"])
-        current_type = get_current(request.data["current"])
-        town = get_town("Barcelona", "Barcelona")
+        speed_type = get_speed(request.data["speed"])
+        connection_type = get_connection(request.data["connection_type"])
+        current_type = get_current(request.data["current_type"])
+        town = get_town(request.data["town"], "Barcelona")
 
         try:
             private = PrivateChargers(title=request.data['title'],
@@ -98,10 +99,10 @@ class DetailedPrivateChargerAppView(APIView):
 
     def put(self, request,  charger_id):
         localization = get_localization(request.data["Latitude"], request.data["Longitude"])
-        speed_type = get_all_speed(request.data["velocity"])
-        connection_type = get_all_connection(request.data["tipusCarregador"])
-        current_type = get_all_current(request.data["current"])
-        town = get_town("Barcelona", "Barcelona")
+        speed_type = get_all_speed(request.data["speed"])
+        connection_type = get_all_connection(request.data["connection_type"])
+        current_type = get_all_current(request.data["current_type"])
+        town = get_town(request.data["town"], "Barcelona")
 
         try:
             private = PrivateChargers.objects.get(id=charger_id)
