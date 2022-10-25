@@ -75,6 +75,15 @@ class PrivateChargerView(APIView):
             print(e)
             return Response({"res": "Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def get(self, request):
+        try:
+            chargers = PrivateChargers.objects.all()
+            charger_serializer = privateChargerSerializer(chargers, many=True)
+            return Response(charger_serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"res": "Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class DetailedPrivateChargerAppView(APIView):
     def get(selfself, request, charger_id):
