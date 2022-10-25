@@ -5,14 +5,14 @@ from .models import Bookings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .serializers import BookingsSerializer
+from .serializers import BookingsSerializer, BookingsDetailedSerializer
 
 
 # Create your views here.
 class BookingsApiView(APIView):
     def get(self, request):
         booking_instance = Bookings.objects.filter(user=1)
-        serializer = BookingsSerializer(booking_instance, many=True)
+        serializer = BookingsDetailedSerializer(booking_instance, many=True)
         if not booking_instance:
             return Response(
                 {"res": "Booking with the id doesn't exist"},
@@ -20,3 +20,14 @@ class BookingsApiView(APIView):
             )
         return Response(serializer.data, status=status.HTTP_200_OK)
         # return Response({"booking": booking_instance}, status=status.HTTP_200_OK)
+
+    def delete(self, request, id):
+        booking_instance = Bookings.objects.get(id=id)
+        if not booking_instance:
+            return Response(
+                {"res": "Booking with the id doesn't exist"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        booking_instance.cancelled = True
+        booking_instance.save()
+        return Response({"res": "Booking deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
