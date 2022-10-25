@@ -17,20 +17,39 @@ def set_if_not_none(mapping, key, value):
         mapping[key] = value
 
 
+def get_all_parameters_from_url(parameter):
+    if parameter is not None:
+        parameter_splitted = parameter.split('_')
+        values = []
+        for p in parameter_splitted:
+            values.append(p)
+        return values
+    else:
+        return None
+
+
 def get_filtered_chargers(request, charger_type):
     filters = {}
+
     current_type = request.GET.get('current')
-    set_if_not_none(filters, 'current_type__name', current_type)
+    currents = get_all_parameters_from_url(current_type)
+    set_if_not_none(filters, 'current_type__name__in', currents)
+
     speed_type = request.GET.get('speed')
-    set_if_not_none(filters, 'speed', speed_type)
+    speeds = get_all_parameters_from_url(speed_type)
+    set_if_not_none(filters, 'speed__name__in', speeds)
+
     connection_type = request.GET.get('connection')
-    set_if_not_none(filters, 'connection_type__name__in', connection_type)
+    connections = get_all_parameters_from_url(connection_type)
+    set_if_not_none(filters, 'connection_type__name__in', connections)
 
     if charger_type == "public":
+        available = request.GET.get('available')
+        set_if_not_none(filters, 'available', available)
         chargers = PublicChargers.objects.filter(**filters)
     elif charger_type == "private":
         price = request.GET.get('price')
-        set_if_not_none(filters, 'price', price)
+        set_if_not_none(filters, 'price__lte', price)
         chargers = PrivateChargers.objects.filter(**filters)
     else:
         chargers = Chargers.objects.filter(**filters)
@@ -48,9 +67,7 @@ def sincronize_data_with_API():
 
     last_date = date_obj.value
     if (now_date - datetime.strptime(last_date, "%Y-%m-%d %H:%M:%S.%f")) > timedelta(hours=1):
-        thread = Thread(target=requests_api.save_chargers_to_db)
-        thread.start()
-        # requests_api.save_chargers_to_db()
+        requests_api.save_chargers_to_db()
         date_obj.value = now_date
         date_obj.save()
 
@@ -69,17 +86,18 @@ def get_all_current(self, current):
 
 class ChargersView(APIView):
     def get(self, request):
-        sincronize_data_with_API()
+        thread = Thread(target=sincronize_data_with_API)
+        thread.start()
         chargers = get_filtered_chargers(request, "all")
         charger_serializer = ChargerSerializer(chargers, many=True)
 
-        # create threat: save_chargers_to_db(), dins d'aqui hi haura la comprovacio si s'ha d'actualitzar o no a bd (si la data ultima posada es de fa mes de 1 hora) --> puc posaru fora
         return Response(charger_serializer.data, status=status.HTTP_200_OK)
 
 
 class PublicChargersView(APIView):
     def get(self, request):
-        sincronize_data_with_API()
+        thread = Thread(target=sincronize_data_with_API())
+        thread.start()
         chargers = get_filtered_chargers(request, "public")
         charger_serializer = PublicChargerSerializer(chargers, many=True)
         return Response(charger_serializer.data, status=status.HTTP_200_OK)

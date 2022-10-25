@@ -35,6 +35,8 @@ def get_all_connections(connection_type):
     if connection_type is not None:
         connections = re.split('\+| i ', connection_type)
         for connection in connections:
+            connection.replace(",", ".")
+            connection = connection.strip().upper()
             all_connections.append(get_connection(connection))
     return all_connections
 
