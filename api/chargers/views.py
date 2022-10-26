@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from threading import Thread
+from time import strptime
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -58,16 +59,16 @@ def get_filtered_chargers(request, charger_type):
 
 
 def sincronize_data_with_API():
-    now_date = datetime.now()
+    now_date = datetime.now() - timedelta(hours=1)
     try:
         date_obj = Configs.objects.filter(key="last_date_checked")[0]
-        last_date = date_obj.value
+        last_date = datetime.strptime(date_obj.value, "%Y-%m-%d %H:%M:%S.%f")
     except Exception:
         date_obj = Configs(key="last_date_checked", value=now_date)
         date_obj.save()
         last_date = datetime(1970, 1, 1)
 
-    if (now_date - last_date) > timedelta(hours=1):
+    if now_date > last_date:
         requests_api.save_chargers_to_db()
         date_obj.value = now_date
         date_obj.save()
