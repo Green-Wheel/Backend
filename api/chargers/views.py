@@ -61,12 +61,13 @@ def sincronize_data_with_API():
     now_date = datetime.now()
     try:
         date_obj = Configs.objects.filter(key="last_date_checked")[0]
+        last_date = date_obj.value
     except Exception:
         date_obj = Configs(key="last_date_checked", value=now_date)
         date_obj.save()
+        last_date = datetime(1970, 1, 1)
 
-    last_date = date_obj.value
-    if (now_date - datetime.strptime(last_date, "%Y-%m-%d %H:%M:%S.%f")) > timedelta(hours=1):
+    if (now_date - last_date) > timedelta(hours=1):
         requests_api.save_chargers_to_db()
         date_obj.value = now_date
         date_obj.save()
