@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from . import requests_api
 from api.chargers.models import PublicChargers, Chargers, PrivateChargers, Localizations, Town, Publication, \
-    SpeedsType, CurrentsType, ConnectionsType, configs
+    SpeedsType, CurrentsType, ConnectionsType, Configs
 from api.chargers.serializers import PublicChargerSerializer, ChargerSerializer, privateChargerSerializer, \
     SpeedTypeSerializer, CurrentTypeSerializer, connectionTypeSerializer
 from api.chargers.utils import get_localization, get_speed, get_connection, get_current, get_town
