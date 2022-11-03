@@ -11,6 +11,7 @@ from api.chargers.models import PublicChargers, Chargers, PrivateChargers, Local
 from api.chargers.serializers import PublicChargerSerializer, ChargerSerializer, privateChargerSerializer, \
     SpeedTypeSerializer, CurrentTypeSerializer, connectionTypeSerializer
 from api.chargers.utils import get_localization, get_speed, get_connection, get_current, get_town
+from django.core.signals import request_finished
 
 
 def set_if_not_none(mapping, key, value):
@@ -58,7 +59,7 @@ def get_filtered_chargers(request, charger_type):
     return chargers
 
 
-def sincronize_data_with_API():
+def sincronize_data_with_API(signal,**kwargs):
     now_date = datetime.now() - timedelta(hours=1)
     try:
         date_obj = Configs.objects.filter(key="last_date_checked")[0]
@@ -88,20 +89,18 @@ def get_all_current(self, current):
 
 class ChargersView(APIView):
     def get(self, request):
-        thread = Thread(target=sincronize_data_with_API)
-        thread.start()
         chargers = get_filtered_chargers(request, "all")
         charger_serializer = ChargerSerializer(chargers, many=True)
-
+        request_finished.connect(sincronize_data_with_API)
         return Response(charger_serializer.data, status=status.HTTP_200_OK)
 
 
 class PublicChargersView(APIView):
     def get(self, request):
-        thread = Thread(target=sincronize_data_with_API())
-        thread.start()
+
         chargers = get_filtered_chargers(request, "public")
         charger_serializer = PublicChargerSerializer(chargers, many=True)
+        request_finished.connect(sincronize_data_with_API)
         return Response(charger_serializer.data, status=status.HTTP_200_OK)
 
 
@@ -110,6 +109,7 @@ class PrivateChargerView(APIView):
         try:
             chargers = get_filtered_chargers(request, "private")
             charger_serializer = privateChargerSerializer(chargers, many=True)
+            request_finished.connect(sincronize_data_with_API)
             return Response(charger_serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)

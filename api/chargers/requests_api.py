@@ -99,3 +99,5 @@ def save_chargers_to_db():
         title, description, direction = None, charger.get("designaci_descriptiva"), charger.get("adre_a")
         town, localization = get_publication_info(charger.get("provincia"), charger.get("municipi"), charger.get("latitud"), charger.get("longitud"))
         create_charger(agent, identifier, access, power, all_speeds, available, all_connections, all_currents, title, description, direction, town, localization)
+
+    print("Finished  get data from API")
