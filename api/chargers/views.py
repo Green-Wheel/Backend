@@ -8,10 +8,12 @@ from rest_framework.views import APIView
 from . import requests_api
 from api.chargers.models import PublicChargers, Chargers, PrivateChargers, Localizations, Town, Publication, \
     SpeedsType, CurrentsType, ConnectionsType, Configs
-from api.chargers.serializers import PublicChargerSerializer, ChargerSerializer, privateChargerSerializer, \
+from api.chargers.serializers import PublicChargerSerializer, ChargerSerializer, PrivateChargerSerializer, \
     SpeedTypeSerializer, CurrentTypeSerializer, connectionTypeSerializer
 from api.chargers.utils import get_localization, get_speed, get_connection, get_current, get_town
 from django.core.signals import request_finished
+
+from ..users.permissions import Check_API_KEY_Auth
 
 
 def set_if_not_none(mapping, key, value):
@@ -88,6 +90,7 @@ def get_all_current(self, current):
 
 
 class ChargersView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
     def get(self, request):
         chargers = get_filtered_chargers(request, "all")
         charger_serializer = ChargerSerializer(chargers, many=True)
@@ -108,7 +111,7 @@ class PrivateChargerView(APIView):
     def get(self, request):
         try:
             chargers = get_filtered_chargers(request, "private")
-            charger_serializer = privateChargerSerializer(chargers, many=True)
+            charger_serializer = PrivateChargerSerializer(chargers, many=True)
             request_finished.connect(sincronize_data_with_API)
             return Response(charger_serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
@@ -135,7 +138,7 @@ class PrivateChargerView(APIView):
             private.speed.set([speed_type])
             private.connection_type.set([connection_type])
             private.current_type.set([current_type])
-            private_serializer = privateChargerSerializer(private, many=False)
+            private_serializer = PrivateChargerSerializer(private, many=False)
 
             # add charger to user
             return Response({"res": "Charger added", "data": private_serializer.data}, status=status.HTTP_200_OK)
@@ -148,7 +151,7 @@ class DetailedPrivateChargerAppView(APIView):
     def get(self, request, charger_id):
         try:
             private = PrivateChargers.objects.get(id=charger_id)
-            private_serializer = privateChargerSerializer(private, many=False)
+            private_serializer = PrivateChargerSerializer(private, many=False)
             return Response({"res": "Charger found", "data": private_serializer.data}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
@@ -174,7 +177,7 @@ class DetailedPrivateChargerAppView(APIView):
             private.connection_type.set(connection_type)
             private.current_type.set(current_type)
 
-            private_serializer = privateChargerSerializer(private, many=False)
+            private_serializer = PrivateChargerSerializer(private, many=False)
             return Response({"res": "Charger edited"}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
