@@ -1,5 +1,7 @@
 from django.db import models
 
+from config import settings
+
 
 # Create your models here.
 class CurrentsType(models.Model):
@@ -66,6 +68,7 @@ class Publication(models.Model):
     direction = models.CharField(max_length=100, null=True, blank=False)
     town = models.ForeignKey(Town, on_delete=models.CASCADE, null=True, blank=False)
     localization = models.ForeignKey(Localizations, on_delete=models.CASCADE, null=True, blank=False, related_name='+')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=False)
 
     class Meta:
         verbose_name = "Publication"

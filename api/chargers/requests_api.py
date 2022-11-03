@@ -65,7 +65,7 @@ def create_charger(agent, identifier, access, power, all_speeds, available, all_
     if public_charger is None:
         public_charger = PublicChargers(agent=agent, identifier=identifier, access=access, power=power,
                                         available=available, title=title, description=description,
-                                        localization=localization, town=town, direction=direction)
+                                        localization=localization, town=town, direction=direction, owner=None)
     else:
         public_charger.agent = agent
         public_charger.identifier = identifier
