@@ -49,6 +49,8 @@ class ChargerSerializer(serializers.ModelSerializer):
     connection_type = serializers.SerializerMethodField("get_connection")
     current_type = serializers.SerializerMethodField("get_current")
     speed = serializers.SerializerMethodField("get_speed")
+    charger_type = serializers.SerializerMethodField("get_type")
+    child = serializers.SerializerMethodField("get_child")
 
     def get_localization(self, obj):
         return LocalizationSerializer(obj.localization).data
@@ -73,10 +75,26 @@ class ChargerSerializer(serializers.ModelSerializer):
         for speed in obj.speed.all():
             speeds.append(SpeedTypeSerializer(speed).data)
         return speeds
+
+    def get_type(self, obj):
+        try:
+            PublicChargers.objects.get(pk=obj.id)
+            return "public"
+        except:
+            return "private"
+
+    def get_child(self, obj):
+        try:
+            public_charger = PublicChargers.objects.get(pk=obj.id)
+            return PublicChargerSerializer(public_charger).data
+        except:
+            private_charger = PrivateChargers.objects.get(pk=obj.id)
+            return PrivateChargerSerializer(private_charger).data
+
     class Meta:
         model = Chargers
         fields = ["id","title", "description", "direction", "town", "localization", "speed", "connection_type",
-                  "current_type", "power"]
+                  "current_type", "power", "charger_type", "child"]
 
 
 class SpeedTypeSerializer(serializers.ModelSerializer):

@@ -1,14 +1,13 @@
 from config import settings
 from django.db import models
 from api.users.models import Users
-from api.chargers.models import Publication
 # from api.ratings.models import Ratings
 
 
 
 class Bookings(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
-    publication = models.ForeignKey(Publication, on_delete=models.CASCADE, null=False, blank=False)
+    publication = models.ForeignKey(to='chargers.Publication', on_delete=models.CASCADE, null=False, blank=False)
     start_date = models.DateTimeField(null=False, blank=False)
     end_date = models.DateTimeField(null=False, blank=False)
     confirmed = models.BooleanField(default=True)

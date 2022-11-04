@@ -63,6 +63,7 @@ def get_filtered_chargers(request, charger_type):
 
 def sincronize_data_with_API(signal,**kwargs):
     now_date = datetime.now() - timedelta(hours=1)
+    an_hour_ago = now_date - timedelta(hours=1)
     try:
         date_obj = Configs.objects.filter(key="last_date_checked")[0]
         last_date = datetime.strptime(date_obj.value, "%Y-%m-%d %H:%M:%S.%f")
@@ -71,7 +72,7 @@ def sincronize_data_with_API(signal,**kwargs):
         date_obj.save()
         last_date = datetime(1970, 1, 1)
 
-    if now_date > last_date:
+    if an_hour_ago > last_date:
         requests_api.save_chargers_to_db()
         date_obj.value = now_date
         date_obj.save()
@@ -94,7 +95,7 @@ class ChargersView(APIView):
     def get(self, request):
         chargers = get_filtered_chargers(request, "all")
         charger_serializer = ChargerSerializer(chargers, many=True)
-        request_finished.connect(sincronize_data_with_API)
+        request_finished.connect(sincronize_data_with_API,dispatch_uid="sincronize_data_with_API")
         return Response(charger_serializer.data, status=status.HTTP_200_OK)
 
 
@@ -103,7 +104,7 @@ class PublicChargersView(APIView):
 
         chargers = get_filtered_chargers(request, "public")
         charger_serializer = PublicChargerSerializer(chargers, many=True)
-        request_finished.connect(sincronize_data_with_API)
+        request_finished.connect(sincronize_data_with_API,dispatch_uid="sincronize_data_with_API")
         return Response(charger_serializer.data, status=status.HTTP_200_OK)
 
 
@@ -112,7 +113,7 @@ class PrivateChargerView(APIView):
         try:
             chargers = get_filtered_chargers(request, "private")
             charger_serializer = PrivateChargerSerializer(chargers, many=True)
-            request_finished.connect(sincronize_data_with_API)
+            request_finished.connect(sincronize_data_with_API,dispatch_uid="sincronize_data_with_API")
             return Response(charger_serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
