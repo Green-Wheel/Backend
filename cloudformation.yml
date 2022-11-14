@@ -47,8 +47,8 @@ Resources:
         - !GetAtt SecurityGroup.GroupId
       #SecurityGroupIds : [!Ref SecurityGroup]
 
-  Subnet:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref DefaultVPC
-      CidrBlock: 172.31.0.0/16
+#  Subnet:
+#    Type: AWS::EC2::Subnet
+#    Properties:
+#      VpcId: !Ref DefaultVPC
+#      CidrBlock: 172.31.0.0/16
