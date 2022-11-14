@@ -39,8 +39,6 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
-      #SecurityGroups:
-      #  - !Ref SecurityGroup
       ImageId: ami-0f29c8402f8cce65c
       Tags:
         - Key: Name
@@ -48,3 +46,9 @@ Resources:
       SecurityGroupIds:
         - !GetAtt SecurityGroup.GroupId
       #SecurityGroupIds : [!Ref SecurityGroup]
+
+  Subnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref DefaultVPC
+      CidrBlock: 172.31.0.0/16
