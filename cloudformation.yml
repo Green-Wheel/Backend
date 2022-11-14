@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion : "2010-09-09"
+
+Parameters:
+  VpcCIDR:
+    Description: IP range (CIDR notation) for this VPC
+    Type: String
+    Default: 172.31.0.0/16
+
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+################################################
+#                Resources for EC2             #
+################################################
+  DefaultVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow access from the VPC
+      VpcId: !Ref DefaultVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          CidrIp: 0.0.0.0/0
+
+  EC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      SecurityGroups: [!Ref SecurityGroup]
