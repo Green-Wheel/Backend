@@ -23,7 +23,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Allow access from the VPC
-      #VpcId: !Ref DefaultVPC
+      VpcId: !Ref DefaultVPC
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
@@ -39,12 +39,12 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
-      SecurityGroups:
-        - !Ref SecurityGroup
+      #SecurityGroups:
+      #  - !Ref SecurityGroup
       ImageId: ami-0f29c8402f8cce65c
       Tags:
         - Key: Name
           Value: EC2
       SecurityGroupIds:
-        - Fn::GetAtt [SecurityGroup, GroupId]
+        - !GetAtt SecurityGroup.GroupId
       #SecurityGroupIds : [!Ref SecurityGroup]
