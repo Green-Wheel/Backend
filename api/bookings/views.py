@@ -4,30 +4,43 @@ from rest_framework import status
 from .models import Bookings
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
-from .serializers import BookingsSerializer, BookingsDetailedSerializer
+from .services import cancel_booking, get_booking, get_user_bookings, get_owner_bookings
 
 
 # Create your views here.
-class BookingsApiView(APIView):
+class UserBookingsApiView(APIView):
     def get(self, request):
-        booking_instance = Bookings.objects.filter(user=1)
-        serializer = BookingsDetailedSerializer(booking_instance, many=True)
-        if not booking_instance:
+        order = request.query_params.get('orderby', None)
+        bookings = get_user_bookings(request.user.id,order)
+        return Response(bookings, status=status.HTTP_200_OK)
+
+
+class OwnerBookingsApiView(APIView):
+    def get(self, request):
+        booking_type = request.query_params.get('type', None)
+        bookings = get_owner_bookings(request.user.id,booking_type)
+        return Response(bookings, status=status.HTTP_200_OK)
+
+
+class ConcreteBookingApiView(APIView):
+    def get(self, request, booking_id):
+        try:
+            booking = get_booking(booking_id)
+
+            return Response(booking, status=status.HTTP_200_OK)
+        except:
             return Response(
                 {"res": "Booking with the id doesn't exist"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        return Response(serializer.data, status=status.HTTP_200_OK)
-        # return Response({"booking": booking_instance}, status=status.HTTP_200_OK)
 
     def delete(self, request, id):
-        booking_instance = Bookings.objects.get(id=id)
-        if not booking_instance:
+        try:
+            booking = cancel_booking(id)
+            return Response(booking, status=status.HTTP_204_NO_CONTENT)
+
+        except:
             return Response(
                 {"res": "Booking with the id doesn't exist"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        booking_instance.cancelled = True
-        booking_instance.save()
-        return Response({"res": "Booking deleted successfully"}, status=status.HTTP_204_NO_CONTENT)

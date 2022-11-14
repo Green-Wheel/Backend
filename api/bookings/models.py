@@ -11,7 +11,6 @@ class Bookings(models.Model):
     start_date = models.DateTimeField(null=False, blank=False)
     end_date = models.DateTimeField(null=False, blank=False)
     confirmed = models.BooleanField(default=True)
-    finished = models.BooleanField(default=False)
     cancelled = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
 
