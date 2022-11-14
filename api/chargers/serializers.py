@@ -61,7 +61,7 @@ class ChargerSerializer(serializers.ModelSerializer):
     def get_connection(self, obj):
         connections = []
         for connection in obj.connection_type.all():
-            connections.append(connectionTypeSerializer(connection).data)
+            connections.append(ConnectionTypeSerializer(connection).data)
         return connections
 
     def get_current(self, obj):
@@ -104,7 +104,7 @@ class SpeedTypeSerializer(serializers.ModelSerializer):
         fields = ["id","name"]
 
 
-class connectionTypeSerializer(serializers.ModelSerializer):
+class ConnectionTypeSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     class Meta:
         model = ConnectionsType
@@ -135,7 +135,7 @@ class PrivateChargerSerializer(serializers.ModelSerializer):
     def get_connection(self, obj):
         connections = []
         for connection in obj.connection_type.all():
-            connections.append(connectionTypeSerializer(connection).data)
+            connections.append(ConnectionTypeSerializer(connection).data)
         return connections
 
     def get_current(self, obj):
@@ -172,7 +172,7 @@ class PublicChargerSerializer(serializers.ModelSerializer):
     def get_connection(self, obj):
         connections = []
         for connection in obj.connection_type.all():
-            connections.append(connectionTypeSerializer(connection).data)
+            connections.append(ConnectionTypeSerializer(connection).data)
         return connections
 
     def get_current(self, obj):

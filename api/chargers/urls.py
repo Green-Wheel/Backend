@@ -19,7 +19,7 @@ from . import views
 
 urlpatterns = [
     path("public/", views.PublicChargersView.as_view()),
-    path("private/", views.PrivateChargerView.as_view()),
+    path("private/", views.PrivateChargersView.as_view()),
     path("private/<int:charger_id>/", views.DetailedPrivateChargerAppView.as_view()),
     path("speed/",  views.SpeedTypeView.as_view()),
     path("current/",  views.CurrentTypeView.as_view()),
