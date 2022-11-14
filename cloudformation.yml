@@ -24,16 +24,15 @@ Resources:
     Properties:
       GroupDescription: Allow access from the VPC
       VpcId: !Ref DefaultVPC
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
-      SecurityGroupEgress:
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
+
+  InstanceIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref SecurityGroup.GroupId
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      CidrIp: 0.0.0.0/0
 
   EC2:
     Type: AWS::EC2::Instance
@@ -45,10 +44,3 @@ Resources:
           Value: EC2
       SecurityGroupIds:
         - !GetAtt SecurityGroup.GroupId
-      #SecurityGroupIds : [!Ref SecurityGroup]
-
-#  Subnet:
-#    Type: AWS::EC2::Subnet
-#    Properties:
-#      VpcId: !Ref DefaultVPC
-#      CidrBlock: 172.31.0.0/16
