@@ -28,7 +28,7 @@ Resources:
   InstanceIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
-      GroupId: !Ref SecurityGroup.GroupId
+      GroupId: !Ref SecurityGroup
       IpProtocol: tcp
       FromPort: 80
       ToPort: 80
