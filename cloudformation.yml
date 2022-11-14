@@ -46,7 +46,5 @@ Resources:
         - Key: Name
           Value: EC2
       SecurityGroupIds:
-        - Fn::GetAtt:
-            - SecurityGroup
-            - GroupId
+        - Fn::GetAtt [SecurityGroup, GroupId]
       #SecurityGroupIds : [!Ref SecurityGroup]
