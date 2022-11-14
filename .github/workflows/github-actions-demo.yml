@@ -2,9 +2,9 @@ name: Django CI
 
 on:
   push:
-    branches: [dev, main]
+    branches: [dev, main, feature-162-AWSClouformation]
   pull_request:
-    branches: [dev, main]
+    branches: [dev, main, feature-162-AWSClouformation]
 
 jobs:
   build:
@@ -15,7 +15,6 @@ jobs:
         python-version: [3.7, 3.8, 3.9]
 
   development-deploy:
-    if: github.ref == 'refs/heads/dev'
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
