@@ -45,5 +45,6 @@ Resources:
       Tags:
         - Key: Name
           Value: EC2
-      SecurityGroupIds: !GetAtt SecurityGroup.GroupId
+      SecurityGroupIds:
+        - !GetAtt SecurityGroup.GroupId
       #SecurityGroupIds : [!Ref SecurityGroup]
