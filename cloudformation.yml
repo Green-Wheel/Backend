@@ -4,7 +4,7 @@ Parameters:
   VpcCIDR:
     Description: IP range (CIDR notation) for this VPC
     Type: String
-    Default: 0.0.0.0/0
+    Default: 172.31.0.0/16
 
 Transform: AWS::Serverless-2016-10-31
 
@@ -28,12 +28,12 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: 0.0.0.0/0
+          CidrIp: 172.31.0.0/16
       SecurityGroupEgress:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: 0.0.0.0/0
+          CidrIp: 172.31.0.0/16
 
   EC2:
     Type: AWS::EC2::Instance
