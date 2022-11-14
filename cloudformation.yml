@@ -23,7 +23,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Allow access from the VPC
-      VpcId: !Ref DefaultVPC
+      #VpcId: !Ref DefaultVPC
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
