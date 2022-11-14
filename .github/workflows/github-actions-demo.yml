@@ -13,15 +13,15 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [3.7, 3.8, 3.9]
-
-  development-deploy:
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
-    - run: pip install flake8
+    - name: Install flake8
+      run: pip install flake8
     - name: Install flake
       run: flake8 . # run flake8 test
     - name: Install Dependencies
