@@ -81,7 +81,7 @@ Resources:
       DBInstanceClass: db.t2.micro
       AllocatedStorage: '5'
       Engine: postgres
-      EngineVersion: "15.0"
+      EngineVersion: "14.5"
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       Port: '5432'
