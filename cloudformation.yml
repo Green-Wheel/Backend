@@ -22,7 +22,7 @@ Resources:
   GreenWheelS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: pes_bucket
+      BucketName: pesbucket
 
   S3BucketPolicy:
     Type: AWS::S3::BucketPolicy
