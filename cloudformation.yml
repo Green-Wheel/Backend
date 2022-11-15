@@ -19,15 +19,15 @@ Resources:
   ################################################
   #           Resources for S3 Bucket            #
   ################################################
-  S3Bucket:
+  GreenWheelS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: PES-Bucket
+      BucketName: pes-bucket
 
   S3BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: !Ref S3Bucket
+      Bucket: !Ref GreenWheelS3Bucket
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -35,5 +35,5 @@ Resources:
             Action:
               - 's3:*'
             Resource:
-              - !Sub 'arn:aws:s3:::${S3Bucket}'
-              - !Sub 'arn:aws:s3:::${S3Bucket}/*'
+              - !Sub 'arn:aws:s3:::${GreenWheelS3Bucket}'
+              - !Sub 'arn:aws:s3:::${GreenWheelS3Bucket}/*'
