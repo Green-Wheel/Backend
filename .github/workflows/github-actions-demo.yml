@@ -51,7 +51,9 @@ jobs:
       with:
         name: cloudformation-stack
         template: cloudformation.yml
+        parameter-overrides: "DBUsername=greenwheel,MyParam2=${{ secrets.DB_PASSWORD }}"
         capabilities: CAPABILITY_NAMED_IAM, CAPABILITY_AUTO_EXPAND
+
 
 
 

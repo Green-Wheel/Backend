@@ -2,6 +2,35 @@ AWSTemplateFormatVersion : "2010-09-09"
 
 Transform: AWS::Serverless-2016-10-31
 
+Parameters:
+  DBAllocatedStorage:
+    Default: '50'
+    Description: The size of the database (GiB)
+    Type: Number
+    MinValue: '20'
+    MaxValue: '65536'
+    ConstraintDescription: must be between 20 and 65536 GiB.
+  DBUsername:
+    NoEcho: 'true'
+    Description: Username for MySQL database access
+    Type: String
+    MinLength: '1'
+    MaxLength: '16'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+  DBPassword:
+    NoEcho: 'true'
+    Description: Password MySQL database access
+    Type: String
+    MinLength: '8'
+    MaxLength: '41'
+    AllowedPattern: '[a-zA-Z0-9]*'
+    ConstraintDescription: must contain only alphanumeric characters.
+  TcpPort:
+    Description: Enter RDS Listening TCP Port number.
+    Type: Number
+    Default: '5432'
+
 Resources:
 ################################################
 #                Resources for EC2             #
@@ -38,3 +67,22 @@ Resources:
             Resource:
               - !Sub 'arn:aws:s3:::${GreenWheelS3Bucket}'
               - !Sub 'arn:aws:s3:::${GreenWheelS3Bucket}/*'
+
+  ################################################
+  #           Resources for RDS                  #
+  ################################################
+  MyDB:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Snapshot
+    Properties:
+      BackupRetentionPeriod: 5
+      DBInstanceIdentifier: myrds
+      DBName: "GreenWheelDB"
+      DBInstanceClass: db.t2.micro
+      AllocatedStorage: '5'
+      Engine: postgres
+      EngineVersion: "15.0"
+      MasterUsername: !Ref DBUsername
+      MasterUserPassword: !Ref DBPassword
+      Port: '5432'
+      VPCSecurityGroups: [sg-09b6ca72aa4c8436a]
