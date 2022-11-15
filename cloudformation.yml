@@ -6,7 +6,7 @@ Resources:
 ################################################
 #                Resources for EC2             #
 ################################################
-  EC2:
+  GreenWheelEC2:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
@@ -15,5 +15,3 @@ Resources:
       Tags:
         - Key: Name
           Value: EC2
-      SecurityGroupIds:
-        - !GetAtt SecurityGroup.GroupId
