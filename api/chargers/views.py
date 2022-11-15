@@ -1,27 +1,42 @@
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.chargers.models import Chargers
+from .pagination import PaginationHandlerMixin
+from .serializers import ChargerSerializer
 
 from .services import get_filtered_chargers, create_private_charger, get_charger_by_id, update_private_charger, \
     delete_private_charger, get_speeds, get_connections, get_currents
 from ..users.permissions import Check_API_KEY_Auth
 
+class BasicPagination(PageNumberPagination):
+    page_size_query_param = 'limit'
 
-class ChargersView(APIView):
+class ChargersView(APIView,PaginationHandlerMixin):
     permission_classes = [Check_API_KEY_Auth]
+    pagination_class = BasicPagination
 
     def get(self, request):
-        chargers = get_filtered_chargers(request.query_params)
-        return Response(chargers, status=status.HTTP_200_OK)
+        try:
+            chargers = get_filtered_chargers(request.query_params)
+            page = self.paginate_queryset(chargers)
+            if page is not None:
+                serializer = ChargerSerializer(page, many=True)
+                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+            else:
+                serializer = ChargerSerializer(chargers, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class DetailedChargerView(APIView):
     permission_classes = [Check_API_KEY_Auth]
 
-    def get(self, request, id):
+    def get(self, request, charger_id):
         try:
-            charger = get_charger_by_id(id)
+            charger = get_charger_by_id(charger_id)
             return Response(charger, status=status.HTTP_200_OK)
         except Chargers.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -29,6 +44,7 @@ class DetailedChargerView(APIView):
 
 class PrivateChargersView(APIView):
     permission_classes = [Check_API_KEY_Auth]
+
     def post(self, request):
         try:
             new_private_charger = create_private_charger(request.data)
@@ -36,7 +52,7 @@ class PrivateChargersView(APIView):
             return Response({new_private_charger}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
-            return Response({"res": "Error: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class DetailedPrivateChargerAppView(APIView):
@@ -46,7 +62,7 @@ class DetailedPrivateChargerAppView(APIView):
             return Response(private_charger, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
-            return Response({"res": "Error: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, charger_id):
         try:
@@ -54,7 +70,7 @@ class DetailedPrivateChargerAppView(APIView):
             return Response({"res": "Charger deleted"}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
-            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_404_NOT_FOUND)
 
 
 class SpeedTypeView(APIView):
@@ -64,7 +80,7 @@ class SpeedTypeView(APIView):
             return Response(speeds, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
-            return Response({"res": "Error: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_404_NOT_FOUND)
 
 
 class CurrentTypeView(APIView):
@@ -74,7 +90,7 @@ class CurrentTypeView(APIView):
             return Response(currents, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
-            return Response({"res": "Error: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_404_NOT_FOUND)
 
 
 class ConnectionTypeView(APIView):
@@ -84,4 +100,4 @@ class ConnectionTypeView(APIView):
             return Response(connections, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
-            return Response({"res": "Error: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_404_NOT_FOUND)

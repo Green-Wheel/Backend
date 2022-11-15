@@ -13,9 +13,10 @@ class PublicationSerializer(serializers.ModelSerializer):
 
     def get_town(self, obj):
         return TownSerializer(obj.town).data
+
     class Meta:
         model = Publication
-        fields = ["id","title", "description", "direction", "town", "localization"]
+        fields = ["id", "title", "description", "direction", "town", "localization"]
 
 
 class LocalizationSerializer(serializers.ModelSerializer):
@@ -30,19 +31,40 @@ class TownSerializer(serializers.ModelSerializer):
 
     def get_province(self, obj):
         return ProvinceSerializer(obj.province).data
+
     class Meta:
         model = Town
-        fields = ["id","name", "province"]
+        fields = ["id", "name", "province"]
 
 
 class ProvinceSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Province
-        fields = ["id","name"]
+        fields = ["id", "name"]
 
 
 class ChargerSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    localization = serializers.SerializerMethodField("get_localization")
+    charger_type = serializers.SerializerMethodField("get_type")
+
+    def get_localization(self, obj):
+        return LocalizationSerializer(obj.localization).data
+
+    def get_type(self, obj):
+        try:
+            PublicChargers.objects.get(pk=obj.id)
+            return "public"
+        except:
+            return "private"
+    class Meta:
+        model = Chargers
+        fields = ["id","localization", "charger_type"]
+
+
+class DetailedChargerSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     localization = serializers.SerializerMethodField("get_localization")
     town = serializers.SerializerMethodField("get_town")
@@ -93,32 +115,40 @@ class ChargerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chargers
-        fields = ["id","title", "description", "direction", "town", "localization", "speed", "connection_type",
+        fields = ["id", "title", "description", "direction", "town", "localization", "speed", "connection_type",
                   "current_type", "power", "charger_type", "child"]
 
 
 class SpeedTypeSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = SpeedsType
-        fields = ["id","name"]
+        fields = ["id", "name"]
 
 
 class ConnectionTypeSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = ConnectionsType
-        fields = ["id","name"]
+        fields = ["id", "name"]
 
 
 class CurrentTypeSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = CurrentsType
-        fields = ["id","name"]
-
+        fields = ["id", "name"]
 
 class PrivateChargerSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = PrivateChargers
+        fields = ["price", "owner"]
+class FullPrivateChargerSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     localization = serializers.SerializerMethodField("get_localization")
     town = serializers.SerializerMethodField("get_town")
@@ -149,9 +179,10 @@ class PrivateChargerSerializer(serializers.ModelSerializer):
         for speed in obj.speed.all():
             speeds.append(SpeedTypeSerializer(speed).data)
         return speeds
+
     class Meta:
         model = PrivateChargers
-        fields = ["id","title", "description", "direction", "town", "localization", "speed", "connection_type",
+        fields = ["id", "title", "description", "direction", "town", "localization", "speed", "connection_type",
                   "current_type", "power", "price"]
 
 

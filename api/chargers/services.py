@@ -8,7 +8,8 @@ import logging
 
 from api.chargers.models import PublicChargers, Localizations, Town, Province
 from api.chargers.serializers import ChargerSerializer, PublicChargerSerializer, PrivateChargerSerializer, \
-    SpeedTypeSerializer, CurrentTypeSerializer, ConnectionTypeSerializer
+    SpeedTypeSerializer, CurrentTypeSerializer, ConnectionTypeSerializer, DetailedChargerSerializer, \
+    FullPrivateChargerSerializer
 from api.chargers.utils import get_all_speeds, get_all_connections, get_all_currents, get_speed, get_connection, \
     get_current, get_localization, get_town
 
@@ -179,20 +180,20 @@ def get_all_chargers():
     return ChargerSerializer(Chargers.objects.all(), many=True).data
 
 
-def get_filtered_chargers(filter):
-    filters, charger_type = __get_filter(filter)
+def get_filtered_chargers(filter_params):
+    filters, charger_type = __get_filter(filter_params)
     if charger_type == "public":
-        chargers = PublicChargerSerializer(PublicChargers.objects.filter(**filters), many=True).data
+        chargers = PublicChargers.objects.filter(**filters)
     elif charger_type == "private":
-        chargers = PrivateChargerSerializer(PrivateChargers.objects.filter(**filters), many=True).data
+        chargers = PrivateChargers.objects.filter(**filters)
     else:
-        chargers = ChargerSerializer(Chargers.objects.filter(**filters), many=True).data
+        chargers = Chargers.objects.filter(**filters)
     request_finished.connect(__sincronize_data_with_API, dispatch_uid="sincronize_data_with_API")
     return chargers
 
 
-def get_charger_by_id(id):
-    return ChargerSerializer(Chargers.objects.get(id=id)).data
+def get_charger_by_id(charge_id):
+    return DetailedChargerSerializer(Chargers.objects.get(id=charge_id), many=False).data
 
 
 def create_private_charger(data):
@@ -213,7 +214,7 @@ def create_private_charger(data):
     private.speed.set([speed_type])
     private.connection_type.set([connection_type])
     private.current_type.set([current_type])
-    return PrivateChargerSerializer(private).data
+    return FullPrivateChargerSerializer(private).data
 
 
 def update_private_charger(id, data):
