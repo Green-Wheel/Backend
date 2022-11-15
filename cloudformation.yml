@@ -1,5 +1,11 @@
 AWSTemplateFormatVersion : "2010-09-09"
 
+Parameters:
+  VpcCIDR:
+    Description: IP range (CIDR notation) for this VPC
+    Type: String
+    Default: 172.31.0.0/16
+
 Transform: AWS::Serverless-2016-10-31
 
 Resources:
@@ -10,7 +16,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Allow access from the VPC
-      VpcId: "007370652384"
+      VpcId: default
 
   InstanceIngress:
     Type: AWS::EC2::SecurityGroupIngress
