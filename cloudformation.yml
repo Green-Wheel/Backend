@@ -16,7 +16,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Allow access from the VPC
-      VpcId: default
+      VpcId: vpc-022164a387da5510e
 
   InstanceIngress:
     Type: AWS::EC2::SecurityGroupIngress
