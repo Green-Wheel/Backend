@@ -79,9 +79,9 @@ Resources:
       DBInstanceIdentifier: myrds
       DBName: "GreenWheelDB"
       DBInstanceClass: db.t2.micro
-      AllocatedStorage: '5'
+      AllocatedStorage: '1'
       Engine: postgres
-      EngineVersion: "14.5"
+      EngineVersion: "12.12"
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       Port: '5432'
