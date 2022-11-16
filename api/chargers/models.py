@@ -7,7 +7,7 @@ from config import settings
 
 # Create your models here.
 class CurrentsType(models.Model):
-    name = models.CharField(max_length=50, null=True, blank=False, unique=True)
+    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
 
     class Meta:
         verbose_name = "CurrentsType"
@@ -18,7 +18,7 @@ class CurrentsType(models.Model):
 
 
 class ConnectionsType(models.Model):
-    name = models.CharField(max_length=50, null=True, blank=False, unique=True)
+    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
 
     class Meta:
         verbose_name = "ConnectionsType"
@@ -29,7 +29,7 @@ class ConnectionsType(models.Model):
 
 
 class Province(models.Model):
-    name = models.CharField(max_length=50, null=True, blank=False, unique=True)
+    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
 
     class Meta:
         verbose_name = "Province"
@@ -40,7 +40,7 @@ class Province(models.Model):
 
 
 class Town(models.Model):
-    name = models.CharField(max_length=50, null=True, blank=False)
+    name = models.CharField(max_length=50, null=False, blank=False)
     province = models.ForeignKey(Province, on_delete=models.CASCADE, null=False, blank=False)
 
     class Meta:
@@ -80,7 +80,7 @@ class Publication(models.Model):
         return str(self.id)
 
 class OccupationRangesType(models.Model):
-    name = models.CharField(max_length=50, null=True, blank=False, unique=True)
+    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
 
     class Meta:
         verbose_name = "OccupationRangesType"
@@ -118,7 +118,7 @@ class OccupationRanges(models.Model):
 
 
 class SpeedsType(models.Model):
-    name = models.CharField(max_length=50, null=True, blank=False, unique=True)
+    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
 
     class Meta:
         verbose_name = "SpeedsType"
@@ -129,7 +129,7 @@ class SpeedsType(models.Model):
 
 
 class Chargers(Publication):
-    power = models.FloatField(null=True, blank=False)
+    power = models.FloatField(null=False, blank=False)
     speed = models.ManyToManyField(SpeedsType)
     connection_type = models.ManyToManyField(ConnectionsType)
     current_type = models.ManyToManyField(CurrentsType)
@@ -153,7 +153,7 @@ class PublicChargers(Chargers):
         verbose_name_plural = "PublicChargers"
 
     def __str__(self):
-        return str(self.id)
+        return self.title
 
 
 class PrivateChargers(Chargers):
@@ -168,8 +168,8 @@ class PrivateChargers(Chargers):
 
 
 class Configs(models.Model):
-    key = models.CharField(max_length=50, null=True, blank=False, unique=True)
-    value = models.CharField(max_length=150, null=True, blank=False)
+    key = models.CharField(max_length=50, null=False, blank=False, unique=True)
+    value = models.CharField(max_length=150, null=False, blank=False)
 
     class Meta:
         verbose_name = "Config"

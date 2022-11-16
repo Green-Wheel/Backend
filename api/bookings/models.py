@@ -1,7 +1,6 @@
 from config import settings
 from django.db import models
 from api.users.models import Users
-# from api.ratings.models import Ratings
 
 
 
@@ -13,14 +12,11 @@ class Bookings(models.Model):
     confirmed = models.BooleanField(default=True)
     cancelled = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Booking"
         verbose_name_plural = "Bookings"
 
     def __int__(self):
-        return self.id
-
-
-class FinishedBookings(Bookings):
-    pass
+        return str(self.start_date) + " - " + str(self.end_date)

@@ -47,8 +47,6 @@ INSTALLED_APPS = [
     'api.chats',
     'api.ratings',
     'api.reports',
-    'api.routes',
-    'api.searches',
     'api.vehicles',
     'rest_framework',
     'corsheaders',

@@ -18,18 +18,10 @@ class BikeTypes(models.Model):
 
 class Bikes(Publication):
     bike_type = models.ForeignKey(BikeTypes, on_delete=models.CASCADE, null=False, blank=False)
+    power = models.FloatField(null=True, blank=False)
     class Meta:
         verbose_name = "Bike"
         verbose_name_plural = "Bikes"
 
     def __str__(self):
-        return str(self.id)
-
-class ElectricBikes(Bikes):
-    power = models.FloatField(null=True, blank=False)
-    class Meta:
-        verbose_name = "ElectricBike"
-        verbose_name_plural = "ElectricBikes"
-
-    def __str__(self):
-        return str(self.id)
+        return str(self.title)
