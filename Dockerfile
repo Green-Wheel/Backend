@@ -7,8 +7,9 @@ RUN apk add curl gpg gpg-agent
 
 WORKDIR /usr/src/app
 
-COPY requirements.txt /usr/src/app/
-RUN pip install --requirement /usr/src/app/requirements.txt
+RUN pip install --upgrade pip
+COPY ./requirements.txt /usr/src/app
+RUN pip install -r requirements.txt
 
 COPY . /usr/src/app
 COPY docker/settings.py config/settings.py
