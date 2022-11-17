@@ -5,7 +5,7 @@ WORKDIR /tmp
 
 RUN apk add curl gpg gpg-agent
 
-WORKDIR /usr/src/app
+#WORKDIR /usr/src/app
 
 RUN pip install --upgrade pip
 COPY ./requirements.txt /usr/src/app
