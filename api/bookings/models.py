@@ -1,3 +1,6 @@
+from django.forms import forms
+
+from api.chargers.models import Publication
 from config import settings
 from django.db import models
 from api.users.models import Users
@@ -20,3 +23,4 @@ class Bookings(models.Model):
 
     def __int__(self):
         return str(self.start_date) + " - " + str(self.end_date)
+

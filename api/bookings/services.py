@@ -11,7 +11,7 @@ def get_user_bookings(user_id, order):
     elif order == 'town':
         bookings= bookings.order_by('publication__town')
 
-    return BookingsDetailedSerializer(bookings, many=True).data
+    return bookings
 
 
 def get_owner_bookings(owner_id, booking_type):
@@ -25,15 +25,15 @@ def get_owner_bookings(owner_id, booking_type):
     elif booking_type == 'cancelled':
         bookings = bookings.filter(publication__owner_id=owner_id, cancelled=True)
     bookings = bookings.order_by('start_date')
-    return BookingsDetailedSerializer(bookings, many=True).data
+    return bookings
 
 
 def get_booking(booking_id):
-    return BookingsDetailedSerializer(Bookings.objects.get(id=booking_id)).data
+    return Bookings.objects.get(id=booking_id)
 
 
 def cancel_booking(booking_id):
     booking_instance = Bookings.objects.get(id=booking_id)
     booking_instance.cancelled = True
     booking_instance.save()
-    return BookingsDetailedSerializer(booking_instance).data
+    return booking_instance

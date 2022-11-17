@@ -4,6 +4,8 @@ from rest_framework import status
 from .models import Bookings
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
+from .serializers import BookingsDetailedSerializer
 from .services import cancel_booking, get_booking, get_user_bookings, get_owner_bookings
 
 
@@ -12,14 +14,14 @@ class UserBookingsApiView(APIView):
     def get(self, request):
         order = request.query_params.get('orderby', None)
         bookings = get_user_bookings(request.user.id,order)
-        return Response(bookings, status=status.HTTP_200_OK)
+        return Response(BookingsDetailedSerializer(bookings,many=True).data, status=status.HTTP_200_OK)
 
 
 class OwnerBookingsApiView(APIView):
     def get(self, request):
         booking_type = request.query_params.get('type', None)
         bookings = get_owner_bookings(request.user.id,booking_type)
-        return Response(bookings, status=status.HTTP_200_OK)
+        return Response(BookingsDetailedSerializer(bookings,many=True).data, status=status.HTTP_200_OK)
 
 
 class ConcreteBookingApiView(APIView):
@@ -27,7 +29,7 @@ class ConcreteBookingApiView(APIView):
         try:
             booking = get_booking(booking_id)
 
-            return Response(booking, status=status.HTTP_200_OK)
+            return Response(BookingsDetailedSerializer(booking).data, status=status.HTTP_200_OK)
         except:
             return Response(
                 {"res": "Booking with the id doesn't exist"},

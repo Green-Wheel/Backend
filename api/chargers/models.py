@@ -1,7 +1,5 @@
 from django.db import models
 from django.forms import forms
-
-from api.bookings.models import Bookings
 from config import settings
 
 
@@ -93,7 +91,6 @@ class OccupationRanges(models.Model):
     end_date = models.DateTimeField(null=True, blank=False)
     occupation_range_type = models.ForeignKey(OccupationRangesType, on_delete=models.CASCADE, null=True, blank=False)
     related_publication = models.ForeignKey(Publication, on_delete=models.CASCADE, null=False, blank=False)
-    related_booking = models.ForeignKey(Bookings, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

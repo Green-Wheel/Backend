@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import CheckConstraint, Q
 
 from config import settings
-from api.bookings.models import Bookings, FinishedBookings
+from api.bookings.models import Bookings
 from api.users.models import Users
 from api.chargers.models import Publication
 

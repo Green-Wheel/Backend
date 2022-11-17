@@ -8,8 +8,7 @@ import logging
 
 from api.chargers.models import PublicChargers, Localizations, Town, Province
 from api.chargers.serializers import ChargerSerializer, PublicChargerSerializer, PrivateChargerSerializer, \
-    SpeedTypeSerializer, CurrentTypeSerializer, ConnectionTypeSerializer, DetailedChargerSerializer, \
-    FullPrivateChargerSerializer
+    SpeedTypeSerializer, CurrentTypeSerializer, ConnectionTypeSerializer, DetailedChargerSerializer
 from api.chargers.utils import get_all_speeds, get_all_connections, get_all_currents, get_speed, get_connection, \
     get_current, get_localization, get_town
 
@@ -177,7 +176,7 @@ def __save_chargers_to_db():
 
 
 def get_all_chargers():
-    return ChargerSerializer(Chargers.objects.all(), many=True).data
+    return Chargers.objects.all()
 
 
 def get_filtered_chargers(filter_params):
@@ -193,7 +192,7 @@ def get_filtered_chargers(filter_params):
 
 
 def get_charger_by_id(charge_id):
-    return DetailedChargerSerializer(Chargers.objects.get(id=charge_id), many=False).data
+    return Chargers.objects.get(id=charge_id)
 
 
 def create_private_charger(data):
@@ -214,17 +213,17 @@ def create_private_charger(data):
     private.speed.set([speed_type])
     private.connection_type.set([connection_type])
     private.current_type.set([current_type])
-    return FullPrivateChargerSerializer(private).data
+    return private
 
 
-def update_private_charger(id, data):
+def update_private_charger(charger_id, data):
     localization = get_localization(data["Latitude"], data["Longitude"])
     speed_type = get_all_speeds(data["speed"])
     connection_type = get_all_connections(data["connection_type"])
     current_type = get_all_currents(data["current_type"])
     town = get_town(data["town"], "Barcelona")
 
-    private = PrivateChargers.objects.get(id=id)
+    private = PrivateChargers.objects.get(id=charger_id)
 
     private.title = data["title"]
     private.description = data["description"]
@@ -237,7 +236,7 @@ def update_private_charger(id, data):
     private.connection_type.set(connection_type)
     private.current_type.set(current_type)
 
-    return PrivateChargerSerializer(private).data
+    return private
 
 
 def delete_private_charger(id):
@@ -246,12 +245,12 @@ def delete_private_charger(id):
 
 
 def get_speeds():
-    return SpeedTypeSerializer(SpeedsType.objects.all(), many=True).data
+    return SpeedsType.objects.all()
 
 
 def get_connections():
-    return ConnectionTypeSerializer(ConnectionsType.objects.all(), many=True).data
+    return ConnectionsType.objects.all()
 
 
 def get_currents():
-    return CurrentTypeSerializer(CurrentsType.objects.all(), many=True).data
+    return CurrentsType.objects.all()
