@@ -1,14 +1,35 @@
 from rest_framework import status
 
 from .models import Users
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .services import get_user, langIdToString, update_language
+from .serializers import UserSerializer
+from .services import get_user, langIdToString, update_language, update_user
 
 
 # Create your views here.
+class UserApiView(APIView):
+    def get(self, request):
+        user = get_user(request.user.id)
+        if user is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+
+    def put(self, request):
+        user = update_user(request.data, request.user.id)
+        return Response(user.data, status=status.HTTP_200_OK)
+
+
+class ConcreteUserApiView(APIView):
+    def get(self, request, user_id):
+        try:
+            user = get_user(user_id)
+            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        except Users.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
 class LanguageApiView(APIView):
     def get(self, request):
         user_instance = get_user(request.user.id)

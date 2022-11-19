@@ -21,7 +21,6 @@ def __sincronize_data_with_API(signal, **kwargs):
         last_date = datetime.strptime(date_obj.value, "%Y-%m-%d %H:%M:%S.%f")
     except Exception:
         date_obj = Configs(key="last_date_checked", value=now_date)
-        date_obj.save()
         last_date = datetime(1970, 1, 1)
 
     if an_hour_ago > last_date:
@@ -187,6 +186,8 @@ def get_filtered_chargers(filter_params):
         chargers = PrivateChargers.objects.filter(**filters)
     else:
         chargers = Chargers.objects.filter(**filters)
+
+    chargers = chargers.order_by('id')
     request_finished.connect(__sincronize_data_with_API, dispatch_uid="sincronize_data_with_API")
     return chargers
 
@@ -195,20 +196,21 @@ def get_charger_by_id(charge_id):
     return Chargers.objects.get(id=charge_id)
 
 
-def create_private_charger(data):
-    localization = get_localization(data["Latitude"], data["Longitude"])
-    speed_type = get_speed(data["speed"])
-    connection_type = get_connection(data["connection_type"])
-    current_type = get_current(data["current_type"])
-    town = get_town(data["town"], "Barcelona")
+def create_private_charger(data, owner_id):
+    localization = get_localization(data["latitude"], data["longitude"])
+    speed_type = SpeedsType.objects.filter(pk=data["speed"])[0]
+    connection_type = ConnectionsType.objects.filter(pk=data["connection_type"])[0]
+    current_type = CurrentsType.objects.filter(pk=data["current_type"])[0]
+    town = get_town("Barcelona", "Barcelona")
 
     private = PrivateChargers(title=data['title'],
                               description=data['description'],
-                              direction=data['direction'],
+                              direction="Direccio del carrer hardcodejada",
                               town=town,
                               localization=localization,
                               power=data["power"],
-                              price=data["price"])
+                              price=data["price"],
+                              owner_id=owner_id)
     private.save()
     private.speed.set([speed_type])
     private.connection_type.set([connection_type])
@@ -217,17 +219,17 @@ def create_private_charger(data):
 
 
 def update_private_charger(charger_id, data):
-    localization = get_localization(data["Latitude"], data["Longitude"])
-    speed_type = get_all_speeds(data["speed"])
-    connection_type = get_all_connections(data["connection_type"])
-    current_type = get_all_currents(data["current_type"])
-    town = get_town(data["town"], "Barcelona")
+    localization = get_localization(data["latitude"], data["longitude"])
+    speed_type = SpeedsType.objects.filter(pk=data["speed"])[0]
+    connection_type = ConnectionsType.objects.filter(pk=data["connection_type"])[0]
+    current_type = CurrentsType.objects.filter(pk=data["current_type"])[0]
+    town = get_town("Barcelona", "Barcelona")
 
     private = PrivateChargers.objects.get(id=charger_id)
 
     private.title = data["title"]
     private.description = data["description"]
-    private.direction = data["direction"]
+    private.direction = "Direccio del carrer hardcodejada"
     private.power = data["power"]
     private.price = data["price"]
     private.town = town
@@ -236,11 +238,13 @@ def update_private_charger(charger_id, data):
     private.connection_type.set(connection_type)
     private.current_type.set(current_type)
 
+    private.save()
+
     return private
 
 
-def delete_private_charger(id):
-    private = PrivateChargers.objects.get(id=id)
+def delete_private_charger(charger_id):
+    private = PrivateChargers.objects.get(id=charger_id)
     private.delete()
 
 

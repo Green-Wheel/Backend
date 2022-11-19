@@ -19,5 +19,6 @@ from . import views
 
 urlpatterns = [
     path('', views.UserBookingsApiView.as_view()),
-    path('<int:id>/', views.ConcreteBookingApiView.as_view())
+    path('<int:booking_id>/', views.ConcreteBookingApiView.as_view()),
+    path('owner/', views.OwnerBookingsApiView.as_view())
 ]

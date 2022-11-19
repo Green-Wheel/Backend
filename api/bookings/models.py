@@ -12,7 +12,7 @@ class Bookings(models.Model):
     publication = models.ForeignKey(to='chargers.Publication', on_delete=models.CASCADE, null=False, blank=False)
     start_date = models.DateTimeField(null=False, blank=False)
     end_date = models.DateTimeField(null=False, blank=False)
-    confirmed = models.BooleanField(default=True)
+    confirmed = models.BooleanField(default=False)
     cancelled = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

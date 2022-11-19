@@ -1,4 +1,5 @@
 from api.users.models import Users
+from api.users.serializers import UserSerializer
 
 
 def get_user(user_id):
@@ -29,6 +30,7 @@ def langIdToString(lang):
     else:
         return None
 
+
 def update_language(language, user_id):
     user_instance = get_user(user_id)
     if not user_instance:
@@ -38,5 +40,11 @@ def update_language(language, user_id):
     return True
 
 
-
-
+def update_user(data, user_id):
+    user_instance = get_user(user_id)
+    user = UserSerializer(user_instance,data=data)
+    if user.is_valid():
+        user.save()
+        return user
+    else:
+        raise Exception(user.errors)

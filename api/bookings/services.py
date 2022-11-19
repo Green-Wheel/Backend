@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from api.bookings.models import Bookings
-from api.bookings.serializers import BookingsDetailedSerializer
+from api.bookings.serializers import BookingsEditSerializer
 
 
 def get_user_bookings(user_id, order):
@@ -10,6 +10,8 @@ def get_user_bookings(user_id, order):
         bookings= bookings.order_by('start_date')
     elif order == 'town':
         bookings= bookings.order_by('publication__town')
+    else:
+        bookings = bookings.order_by('id')
 
     return bookings
 
@@ -31,9 +33,27 @@ def get_owner_bookings(owner_id, booking_type):
 def get_booking(booking_id):
     return Bookings.objects.get(id=booking_id)
 
+def create_booking(booking):
+    booking_instance = BookingsEditSerializer(data=booking)
+    if booking_instance.is_valid():
+        booking_instance.save()
+        return Bookings.objects.latest('id')
+    raise Exception(booking_instance.errors)
 
 def cancel_booking(booking_id):
     booking_instance = Bookings.objects.get(id=booking_id)
+    if booking_instance.cancelled:
+        raise Exception('Booking already cancelled')
     booking_instance.cancelled = True
+    booking_instance.save()
+    return booking_instance
+
+def confirm_booking(booking_id):
+    booking_instance = Bookings.objects.get(id=booking_id)
+    if booking_instance.confirmed:
+        raise Exception('Booking already confirmed')
+    if booking_instance.cancelled:
+        raise Exception('Booking is cancelled, cannot confirm')
+    booking_instance.confirmed = True
     booking_instance.save()
     return booking_instance

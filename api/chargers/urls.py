@@ -19,6 +19,7 @@ from . import views
 urlpatterns = [
     path("", views.ChargersView.as_view()),
     path("<int:charger_id>/", views.DetailedChargerView.as_view()),
+    path("list/", views.ChargersListView.as_view()),
     path("speed/",  views.SpeedTypeView.as_view()),
     path("current/",  views.CurrentTypeView.as_view()),
     path("connection/",  views.ConnectionTypeView.as_view()),

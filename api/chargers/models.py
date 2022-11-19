@@ -126,7 +126,7 @@ class SpeedsType(models.Model):
 
 
 class Chargers(Publication):
-    power = models.FloatField(null=False, blank=False)
+    power = models.FloatField(null=True, blank=False)
     speed = models.ManyToManyField(SpeedsType)
     connection_type = models.ManyToManyField(ConnectionsType)
     current_type = models.ManyToManyField(CurrentsType)
