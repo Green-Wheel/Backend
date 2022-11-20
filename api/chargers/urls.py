@@ -23,4 +23,5 @@ urlpatterns = [
     path("speed/",  views.SpeedTypeView.as_view()),
     path("current/",  views.CurrentTypeView.as_view()),
     path("connection/",  views.ConnectionTypeView.as_view()),
+    path("<int:charger_id>/upload/", views.UploadChargerImageApiView.as_view()),
 ]

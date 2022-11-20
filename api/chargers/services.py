@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from django.core.signals import request_finished
 
-from api.chargers.models import Chargers, PrivateChargers, Configs, SpeedsType, ConnectionsType, CurrentsType
+from api.chargers.models import Chargers, PrivateChargers, Configs, SpeedsType, ConnectionsType, CurrentsType, Images
 import requests
 import logging
 
@@ -11,6 +11,7 @@ from api.chargers.serializers import ChargerSerializer, PublicChargerSerializer,
     SpeedTypeSerializer, CurrentTypeSerializer, ConnectionTypeSerializer, DetailedChargerSerializer
 from api.chargers.utils import get_all_speeds, get_all_connections, get_all_currents, get_speed, get_connection, \
     get_current, get_localization, get_town
+from utils.imagesS3 import upload_image_to_s3
 
 
 def __sincronize_data_with_API(signal, **kwargs):
@@ -263,3 +264,12 @@ def get_connections():
 
 def get_currents():
     return CurrentsType.objects.all()
+
+
+def upload_images(charger_id, images):
+    for file in images.getlist("images"):
+        path = "publication/" + str(charger_id) + "/" + file.name
+        upload_image_to_s3(file, path)
+        image = Images(image_path=path, publication_id=charger_id)
+        image.save()
+    return get_charger_by_id(charger_id)

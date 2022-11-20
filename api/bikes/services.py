@@ -1,5 +1,6 @@
 from api.bikes.models import BikeTypes, Bikes
 from api.chargers.models import Images
+from api.chargers.services import get_charger_by_id
 from api.chargers.utils import get_localization, get_town
 from utils.imagesS3 import upload_image_to_s3, get_image_from_s3
 
@@ -86,8 +87,7 @@ def inactive_bike(bike_id):
 def upload_images(bike_id, images):
     for file in images.getlist("images"):
         path = "publication/" + str(bike_id) + "/" + file.name
-        result = upload_image_to_s3(file, path)
+        upload_image_to_s3(file, path)
         image = Images(image_path=path, publication_id=bike_id)
         image.save()
-        print(result)
     return get_bike_by_id(bike_id)

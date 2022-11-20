@@ -132,6 +132,7 @@ class DetailedChargerSerializer(serializers.ModelSerializer):
     charger_type = serializers.SerializerMethodField("get_type")
     child = serializers.SerializerMethodField("get_child")
 
+
     def get_localization(self, obj):
         return LocalizationSerializer(obj.localization).data
 
@@ -182,13 +183,21 @@ class DetailedChargerSerializer(serializers.ModelSerializer):
 
 class PrivateChargerSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField("get_owner")
+    images = serializers.SerializerMethodField("get_image")
 
     def get_owner(self, obj):
         return BasicUserSerializer(obj.owner).data
 
+    def get_image(self, obj):
+        saved_images = Images.objects.filter(publication=obj.id)
+        images = []
+        for image in saved_images:
+            images.append(ImageSerializer(image).data)
+        return images
+
     class Meta:
         model = PrivateChargers
-        fields = ["price", "owner"]
+        fields = ["price", "owner", "images"]
 
 
 class PublicChargerSerializer(serializers.ModelSerializer):

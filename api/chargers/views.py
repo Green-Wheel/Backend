@@ -10,10 +10,8 @@ from .serializers import ChargerSerializer, DetailedChargerSerializer, SpeedType
 
 from .services import get_filtered_chargers, create_private_charger, get_charger_by_id, update_private_charger, \
     delete_private_charger, get_speeds, get_connections, get_currents
+from ..bikes.services import upload_images
 from ..users.permissions import Check_API_KEY_Auth
-
-
-
 
 
 class ChargersView(APIView, PaginationHandlerMixin):
@@ -27,7 +25,7 @@ class ChargersView(APIView, PaginationHandlerMixin):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
-            return Response({"res": "Error: " + str(e)},status=status.HTTP_404_NOT_FOUND)
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
         try:
@@ -112,3 +110,17 @@ class ConnectionTypeView(APIView):
         except Exception as e:
             print(e)
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_404_NOT_FOUND)
+
+
+class UploadChargerImageApiView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = ()
+
+    def post(self, request, charger_id):
+        try:
+            charger = upload_images("publication", charger_id, request.FILES)
+            return Response(DetailedChargerSerializer(charger).data, status=status.HTTP_200_OK)
+        except Chargers.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)

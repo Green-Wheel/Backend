@@ -4,8 +4,10 @@ from .models import Users
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from .permissions import Check_API_KEY_Auth
 from .serializers import UserSerializer
 from .services import get_user, langIdToString, update_language, update_user
+from ..bikes.services import upload_images
 
 
 # Create your views here.
@@ -54,3 +56,17 @@ class LanguageApiView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         return Response({"res": "Language changed"}, status=status.HTTP_200_OK)
+
+
+class UploadProfileImageApiView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = ()
+
+    def post(self, request):
+        try:
+            charger = upload_images("profile", request.user.id, request.FILES)
+            return Response(UserSerializer(charger).data, status=status.HTTP_200_OK)
+        except Users.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)

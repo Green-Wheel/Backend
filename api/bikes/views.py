@@ -96,7 +96,7 @@ class UploadBikeImageApiView(APIView):
 
     def post(self, request, bike_id):
         try:
-            bike = upload_images(bike_id, request.FILES)
+            bike = upload_images("publication", bike_id, request.FILES)
             return Response(DetailedBikeSerializer(bike).data, status=status.HTTP_200_OK)
         except Bikes.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
