@@ -3,6 +3,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.chargers.models import Chargers
+from utils import BasicPagination
 from .pagination import PaginationHandlerMixin
 from .serializers import ChargerSerializer, DetailedChargerSerializer, SpeedTypeSerializer, CurrentTypeSerializer, \
     ConnectionTypeSerializer, ChargerListSerializer
@@ -12,8 +13,7 @@ from .services import get_filtered_chargers, create_private_charger, get_charger
 from ..users.permissions import Check_API_KEY_Auth
 
 
-class BasicPagination(PageNumberPagination):
-    page_size_query_param = 'limit'
+
 
 
 class ChargersView(APIView, PaginationHandlerMixin):
@@ -26,7 +26,8 @@ class ChargersView(APIView, PaginationHandlerMixin):
             serializer = ChargerSerializer(chargers, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            print(e)
+            return Response({"res": "Error: " + str(e)},status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
         try:
