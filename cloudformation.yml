@@ -71,7 +71,7 @@ Resources:
   ################################################
   #           Resources for RDS                  #
   ################################################
-  MyDB:
+  GreenWheelDB:
     Type: AWS::RDS::DBInstance
     DeletionPolicy: Snapshot
     Properties:

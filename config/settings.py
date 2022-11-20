@@ -24,12 +24,12 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG_MODE")
 
 ALLOWED_HOSTS = ["*"]
 
 # Posar en true quan estigui en producció
-SECURE_SSL_REDIRECT = False
+SECURE_SSL_REDIRECT = env("SECURE_SSL_REDIRECT")
 
 # Application definition
 
@@ -142,9 +142,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.Users'
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = env("CORS_ALLOW_ALL_ORIGINS")
 
-CORS_ALLOWED_ORIGINS = []
+CORS_ALLOWED_ORIGINS = ['*']
 
 CORS_ALLOW_HEADERS = ('content-disposition', 'accept-encoding',
                       'content-type', 'accept', 'origin', 'authorization', 'API-KEY')
