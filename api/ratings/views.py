@@ -3,6 +3,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from utils import BasicPagination
 from .serializers import RatingSerializer
 from .services import get_all_ratings, get_ratings_for_publication, get_ratings_for_user, create_post_rating, \
     create_client_rating
@@ -10,8 +11,6 @@ from ..chargers.pagination import PaginationHandlerMixin
 
 
 # Create your views here.
-class BasicPagination(PageNumberPagination):
-    page_size_query_param = 'limit'
 
 
 class PublicationRatingsApiView(APIView, PaginationHandlerMixin):

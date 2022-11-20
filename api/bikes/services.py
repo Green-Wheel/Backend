@@ -36,3 +36,9 @@ def get_bikes_type():
 
 def create_bike(data, user):
     pass
+
+def update_bike(bike_id, data, user):
+    pass
+
+def inactive_bike(bike_id):
+    pass
