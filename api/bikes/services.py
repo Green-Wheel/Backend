@@ -24,6 +24,7 @@ def get_bike_by_id(id):
 
 def get_filtered_bikes(filter_params):
     filters = __get_filter(filter_params)
+    filters['active'] = True
     bikes = Bikes.objects.filter(**filters)
     order = filter_params.get('order', None)
     if order:
@@ -41,4 +42,13 @@ def update_bike(bike_id, data, user):
     pass
 
 def inactive_bike(bike_id):
-    pass
+    bike = get_bike_by_id(bike_id)
+    if not bike.active:
+        raise Exception("Bike already inactive")
+    bike.is_active = False
+    bike.save()
+    return bike
+
+def upload_images(bike_id, images):
+    for filename, file in images.iteritems():
+        pass

@@ -69,6 +69,7 @@ class Publication(models.Model):
     town = models.ForeignKey(Town, on_delete=models.CASCADE, null=True, blank=False)
     localization = models.ForeignKey(Localizations, on_delete=models.CASCADE, null=True, blank=False, related_name='+')
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=False)
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Publication"
@@ -76,6 +77,7 @@ class Publication(models.Model):
 
     def __str__(self):
         return str(self.id)
+
 
 class OccupationRangesType(models.Model):
     name = models.CharField(max_length=50, null=False, blank=False, unique=True)
@@ -86,6 +88,8 @@ class OccupationRangesType(models.Model):
 
     def __str__(self):
         return self.name
+
+
 class OccupationRanges(models.Model):
     start_date = models.DateTimeField(null=True, blank=False)
     end_date = models.DateTimeField(null=True, blank=False)
@@ -143,7 +147,6 @@ class PublicChargers(Chargers):
     agent = models.TextField(null=True, blank=False)
     identifier = models.CharField(max_length=50, null=True, blank=False)
     access = models.CharField(max_length=50, null=True, blank=False)
-    available = models.BooleanField(null=True, blank=False, default=True)
 
     class Meta:
         verbose_name = "PublicCharger"
@@ -171,6 +174,17 @@ class Configs(models.Model):
     class Meta:
         verbose_name = "Config"
         verbose_name_plural = "Configs"
+
+    def __str__(self):
+        return str(self.id)
+
+class Images(models.Model):
+    image_url = models.URLField(null=False, blank=False)
+    publication = models.ForeignKey(Publication, on_delete=models.CASCADE, null=True, blank=False)
+
+    class Meta:
+        verbose_name = "Image"
+        verbose_name_plural = "Images"
 
     def __str__(self):
         return str(self.id)

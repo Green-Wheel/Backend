@@ -191,7 +191,7 @@ class PrivateChargerSerializer(serializers.ModelSerializer):
 class PublicChargerSerializer(serializers.ModelSerializer):
     class Meta:
         model = PublicChargers
-        fields = ["agent", "identifier", "access", "available"]
+        fields = ["agent", "identifier", "access"]
 
 
 class SpeedTypeSerializer(serializers.ModelSerializer):
@@ -292,4 +292,4 @@ class PublicChargerSerializer(serializers.ModelSerializer):
     class Meta:
         model = PublicChargers
         fields = ["id", "description", "direction", "town", "localization", "power", "speed", "connection_type",
-                  "current_type", "agent", "identifier", "access", "available"]"""
+                  "current_type", "agent", "identifier", "access"]"""
