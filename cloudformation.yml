@@ -76,7 +76,7 @@ Resources:
     DeletionPolicy: Snapshot
     Properties:
       BackupRetentionPeriod: 5
-      DBInstanceIdentifier: myrds
+      DBInstanceIdentifier: !Ref AWS::StackName
       DBName: "GreenWheelDB"
       DBInstanceClass: db.t2.micro
       AllocatedStorage: '5'
