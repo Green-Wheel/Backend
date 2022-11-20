@@ -2,7 +2,6 @@ from django.db.models import Avg
 from rest_framework import serializers
 
 from api.bikes.models import Bikes
-from api.bikes.services import get_images
 from api.chargers.models import Images
 from api.chargers.serializers import LocalizationSerializer, TownSerializer, ImageSerializer
 from api.ratings.models import PostRating
@@ -40,7 +39,6 @@ class DetailedBikeSerializer(serializers.ModelSerializer):
         saved_images = Images.objects.filter(publication=obj.id)
         images = []
         for image in saved_images:
-            # img = get_images(image.image_path)
             images.append(ImageSerializer(image).data)
         return images
 

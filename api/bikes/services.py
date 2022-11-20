@@ -91,7 +91,3 @@ def upload_images(bike_id, images):
         image.save()
         print(result)
     return get_bike_by_id(bike_id)
-
-def get_images(bike_id):
-    img = get_image_from_s3('publication/1/foto.png')
-    print(img)
