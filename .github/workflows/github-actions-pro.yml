@@ -55,7 +55,7 @@ jobs:
           push: true
           tags: user/app:latest
 
-  dev-aws-deploy:
+  aws-deploy:
     runs-on: ubuntu-latest
     environment: production
     steps:

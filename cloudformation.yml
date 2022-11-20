@@ -71,3 +71,18 @@ Resources:
   ################################################
   #           Resources for RDS                  #
   ################################################
+#  GreenWheelDB:
+#    Type: AWS::RDS::DBInstance
+#    DeletionPolicy: Snapshot
+#    Properties:
+#      BackupRetentionPeriod: 5
+#      DBInstanceIdentifier: !Ref AWS::StackName
+#      DBName: "GreenWheelDB"
+#      DBInstanceClass: db.t2.micro
+#      AllocatedStorage: '5'
+#      Engine: postgres
+#      EngineVersion: "12.12"
+#      MasterUsername: !Ref DBUsername
+#      MasterUserPassword: !Ref DBPassword
+#      Port: '5432'
+#      VPCSecurityGroups: [sg-09b6ca72aa4c8436a]
