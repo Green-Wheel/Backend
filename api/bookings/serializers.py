@@ -44,7 +44,7 @@ class BookingsEditSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Start date must be before end date")
         if start_date < datetime.now():
             raise serializers.ValidationError("Start date must be in the future")
-        if start_date < datetime.now():
+        if end_date< datetime.now():
             raise serializers.ValidationError("End date must be in the future")
         if start_date == end_date:
             raise serializers.ValidationError("Start date must be different from end date")
