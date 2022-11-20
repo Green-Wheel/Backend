@@ -144,7 +144,7 @@ AUTH_USER_MODEL = 'users.Users'
 
 CORS_ALLOW_ALL_ORIGINS = True  # env("CORS_ALLOW_ALL_ORIGINS")
 
-CORS_ALLOWED_ORIGINS = ['*']
+CORS_ALLOWED_ORIGINS = ["*"]
 
 CORS_ALLOW_HEADERS = ('content-disposition', 'accept-encoding',
                       'content-type', 'accept', 'origin', 'authorization', 'API-KEY')
