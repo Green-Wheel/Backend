@@ -1,9 +1,10 @@
 from django.db.models import Avg
 from rest_framework import serializers
 from api.chargers.models import PublicChargers, Chargers, PrivateChargers, ConnectionsType, Localizations, Town, \
-    Province, SpeedsType, CurrentsType, Publication
+    Province, SpeedsType, CurrentsType, Publication, Images
 from api.ratings.models import PostRating
 from api.users.serializers import BasicUserSerializer
+from utils.imagesS3 import get_image_from_s3
 
 
 class PublicationSerializer(serializers.ModelSerializer):
@@ -28,6 +29,7 @@ class PublicationSerializer(serializers.ModelSerializer):
             return DetailedChargerSerializer(Chargers.objects.get(id=obj.id)).data
         except Chargers.DoesNotExist:
             return None
+
     class Meta:
         model = Publication
         fields = ["id", "type", "child"]
@@ -183,6 +185,7 @@ class PrivateChargerSerializer(serializers.ModelSerializer):
 
     def get_owner(self, obj):
         return BasicUserSerializer(obj.owner).data
+
     class Meta:
         model = PrivateChargers
         fields = ["price", "owner"]
@@ -216,6 +219,19 @@ class CurrentTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CurrentsType
         fields = ["id", "name"]
+
+
+class ImageSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    image = serializers.SerializerMethodField("get_image")
+
+    def get_image(self, obj):
+        img = get_image_from_s3(obj.image_path)
+        return img
+
+    class Meta:
+        model = Images
+        fields = ["id", "image_path", "image"]
 
 
 """class FullPrivateChargerSerializer(serializers.ModelSerializer):

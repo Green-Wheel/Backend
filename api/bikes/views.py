@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -90,14 +89,16 @@ class BikeTypesApiView(APIView):
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
 class UploadBikeImageApiView(APIView):
     permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = ()
 
     def post(self, request, bike_id):
         try:
-            bike = upload_images(bike_id, request.files)
+            bike = upload_images(bike_id, request.FILES)
             return Response(DetailedBikeSerializer(bike).data, status=status.HTTP_200_OK)
         except Bikes.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response({"res": "Error: " + str(e)},status=status.HTTP_400_BAD_REQUEST)
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)

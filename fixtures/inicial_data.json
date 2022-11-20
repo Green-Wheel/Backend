@@ -57,5 +57,19 @@
     "fields" : {
       "name" : "raco"
     }
+  },
+  {
+    "model" : "bikes.BikeTypes",
+    "pk" : 1,
+    "fields" : {
+      "name" : "tecansas"
+    }
+  },
+  {
+    "model" : "bikes.BikeTypes",
+    "pk" : 2,
+    "fields" : {
+      "name" : "electric"
+    }
   }
 ]

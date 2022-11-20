@@ -178,8 +178,9 @@ class Configs(models.Model):
     def __str__(self):
         return str(self.id)
 
+
 class Images(models.Model):
-    image_url = models.URLField(null=False, blank=False)
+    image_path = models.URLField(null=False, blank=False)
     publication = models.ForeignKey(Publication, on_delete=models.CASCADE, null=True, blank=False)
 
     class Meta:
