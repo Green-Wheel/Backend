@@ -3,8 +3,6 @@ from rest_framework import serializers
 
 from utils.imagesS3 import get_image_from_s3
 from .models import Users
-from ..chargers.models import Images
-from ..chargers.serializers import ImageSerializer
 from ..ratings.models import ClientsRating
 
 
