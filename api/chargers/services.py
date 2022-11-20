@@ -130,14 +130,14 @@ def __create_public_charger(agent, identifier, access, power, all_speeds, availa
 
     if public_charger is None:
         public_charger = PublicChargers(agent=agent, identifier=identifier, access=access, power=power,
-                                        available=available, title=title, description=description,
+                                        active=available, title=title, description=description,
                                         localization=localization, town=town, direction=direction, owner=None)
     else:
         public_charger.agent = agent
         public_charger.identifier = identifier
         public_charger.access = access
         public_charger.power = power
-        public_charger.available = available
+        public_charger.active = available
         public_charger.title = title
         public_charger.description = description
         public_charger.localization = localization
@@ -180,6 +180,7 @@ def get_all_chargers():
 
 def get_filtered_chargers(filter_params):
     filters, charger_type = __get_filter(filter_params)
+    filters['active'] = True
     if charger_type == "public":
         chargers = PublicChargers.objects.filter(**filters)
     elif charger_type == "private":
@@ -245,7 +246,11 @@ def update_private_charger(charger_id, data):
 
 def delete_private_charger(charger_id):
     private = PrivateChargers.objects.get(id=charger_id)
-    private.delete()
+    if not private.active:
+        raise Exception("This charger is already inactive")
+    private.active = False
+    private.save()
+
 
 
 def get_speeds():

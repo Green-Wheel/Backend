@@ -69,6 +69,7 @@ class Publication(models.Model):
     town = models.ForeignKey(Town, on_delete=models.CASCADE, null=True, blank=False)
     localization = models.ForeignKey(Localizations, on_delete=models.CASCADE, null=True, blank=False, related_name='+')
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=False)
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Publication"
@@ -146,7 +147,6 @@ class PublicChargers(Chargers):
     agent = models.TextField(null=True, blank=False)
     identifier = models.CharField(max_length=50, null=True, blank=False)
     access = models.CharField(max_length=50, null=True, blank=False)
-    available = models.BooleanField(null=True, blank=False, default=True)
 
     class Meta:
         verbose_name = "PublicCharger"

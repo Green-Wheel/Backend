@@ -26,7 +26,8 @@ class ChargersView(APIView, PaginationHandlerMixin):
             serializer = ChargerSerializer(chargers, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            print(e)
+            return Response({"res": "Error: " + str(e)},status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
         try:
