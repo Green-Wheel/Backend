@@ -29,7 +29,7 @@ class BookingsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bookings
-        fields = ["id", "user","publication", "start_date", "end_date", "confirmed", "cancelled",
+        fields = ["id", "user","publication", "start_date", "end_date",
                   "created"]
 
 
@@ -63,5 +63,5 @@ class BookingsEditSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bookings
-        fields = ["id", "user", "publication", "start_date", "end_date", "confirmed", "cancelled",
+        fields = ["id", "user", "publication", "start_date", "end_date", "status",
                   "created"]

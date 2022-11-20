@@ -70,7 +70,7 @@ class ConcreteBookingApiView(APIView):
             )
     def put(self, request, booking_id):
         try:
-            booking = confirm_booking(booking_id)
+            booking = confirm_booking(booking_id, request.data.get("confirmed"))
             return Response(BookingsSerializer(booking).data, status=status.HTTP_200_OK)
         except Bookings.DoesNotExist:
             return Response(
