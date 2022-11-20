@@ -77,6 +77,7 @@ class Publication(models.Model):
     def __str__(self):
         return str(self.id)
 
+
 class OccupationRangesType(models.Model):
     name = models.CharField(max_length=50, null=False, blank=False, unique=True)
 
@@ -86,6 +87,8 @@ class OccupationRangesType(models.Model):
 
     def __str__(self):
         return self.name
+
+
 class OccupationRanges(models.Model):
     start_date = models.DateTimeField(null=True, blank=False)
     end_date = models.DateTimeField(null=True, blank=False)
@@ -171,6 +174,17 @@ class Configs(models.Model):
     class Meta:
         verbose_name = "Config"
         verbose_name_plural = "Configs"
+
+    def __str__(self):
+        return str(self.id)
+
+class Images(models.Model):
+    image_url = models.URLField(null=False, blank=False)
+    publication = models.ForeignKey(Publication, on_delete=models.CASCADE, null=True, blank=False)
+
+    class Meta:
+        verbose_name = "Image"
+        verbose_name_plural = "Images"
 
     def __str__(self):
         return str(self.id)

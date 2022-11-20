@@ -42,3 +42,7 @@ def update_bike(bike_id, data, user):
 
 def inactive_bike(bike_id):
     pass
+
+def upload_images(bike_id, images):
+    for filename, file in images.iteritems():
+        pass
