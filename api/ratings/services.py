@@ -24,7 +24,6 @@ def create_post_rating(rating):
     if booking.end_date > datetime.now():
         raise Exception("Booking is not finished")
     serializer = PostRatingSerializer(data=rating)
-    print(serializer)
     if serializer.is_valid():
         serializer.save()
         return Ratings.objects.latest('id')
