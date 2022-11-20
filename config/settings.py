@@ -47,8 +47,6 @@ INSTALLED_APPS = [
     'api.chats',
     'api.ratings',
     'api.reports',
-    'api.routes',
-    'api.searches',
     'api.vehicles',
     'rest_framework',
     'corsheaders',
@@ -127,7 +125,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -151,6 +149,6 @@ CORS_ALLOW_HEADERS = ('content-disposition', 'accept-encoding',
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 30,
+    'PAGE_SIZE': 10,
     'DEFAULT_PERMISSION_CLASSES': [],
 }
