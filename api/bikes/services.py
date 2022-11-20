@@ -1,4 +1,5 @@
 from api.bikes.models import BikeTypes, Bikes
+from api.chargers.utils import get_localization, get_town
 
 
 def __get_filter(filter_params):
@@ -39,7 +40,21 @@ def create_bike(data, user):
     pass
 
 def update_bike(bike_id, data, user):
-    pass
+    bike = get_bike_by_id(bike_id)
+    if bike.user.id != user.id:
+        raise Exception("User not owner of bike")
+    localization = get_localization(data["latitude"], data["longitude"])
+    town = get_town("Barcelona", "Barcelona")
+    bike.name = data.get('name', bike.name)
+    bike.description = data.get('description', bike.description)
+    bike.price = data.get('price', bike.price)
+    bike.power = data.get('power', bike.power)
+    bike.bike_type = data.get('bike_type', bike.bike_type)
+    bike.localization = localization
+    bike.direction = "Direccio del carrer hardcodejada"
+    bike.town = town
+    # Falta imatges
+    bike.save()
 
 def inactive_bike(bike_id):
     bike = get_bike_by_id(bike_id)
