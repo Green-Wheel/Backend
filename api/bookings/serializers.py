@@ -2,10 +2,11 @@ from datetime import datetime
 
 from rest_framework import serializers
 from .models import Bookings
-from api.chargers.models import Publication, PrivateChargers, OccupationRanges
+from api.chargers.models import PrivateChargers
 from api.users.models import Users
 from ..bikes.models import Bikes
-from ..chargers.serializers import PublicationSerializer
+from ..publications.models import Publication
+from ..publications.serializers import PublicationSerializer
 from ..users.serializers import BasicUserSerializer
 
 
@@ -29,7 +30,7 @@ class BookingsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bookings
-        fields = ["id", "user","publication", "start_date", "end_date", "confirmed", "cancelled",
+        fields = ["id", "user","publication", "start_date", "end_date",
                   "created"]
 
 
@@ -44,7 +45,7 @@ class BookingsEditSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Start date must be before end date")
         if start_date < datetime.now():
             raise serializers.ValidationError("Start date must be in the future")
-        if start_date < datetime.now():
+        if end_date< datetime.now():
             raise serializers.ValidationError("End date must be in the future")
         if start_date == end_date:
             raise serializers.ValidationError("Start date must be different from end date")
@@ -63,5 +64,5 @@ class BookingsEditSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bookings
-        fields = ["id", "user", "publication", "start_date", "end_date", "confirmed", "cancelled",
+        fields = ["id", "user", "publication", "start_date", "end_date", "status",
                   "created"]

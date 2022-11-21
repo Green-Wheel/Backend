@@ -1,3 +1,4 @@
+from api.chargers.models import Publication
 from api.users.models import Users
 from api.users.serializers import UserSerializer
 from utils.imagesS3 import upload_image_to_s3
@@ -59,3 +60,7 @@ def upload_images(user_id, images):
         user.profile_picture = path
         user.save()
     return get_user(user_id)
+
+def get_user_posts(user_id):
+    return Publication.objects.filter(owner_id=user_id).order_by('-created_at')
+

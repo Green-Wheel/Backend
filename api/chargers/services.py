@@ -6,11 +6,12 @@ from api.chargers.models import Chargers, PrivateChargers, Configs, SpeedsType, 
 import requests
 import logging
 
-from api.chargers.models import PublicChargers, Localizations, Town, Province
+from api.chargers.models import PublicChargers
 from api.chargers.serializers import ChargerSerializer, PublicChargerSerializer, PrivateChargerSerializer, \
     SpeedTypeSerializer, CurrentTypeSerializer, ConnectionTypeSerializer, DetailedChargerSerializer
 from api.chargers.utils import get_all_speeds, get_all_connections, get_all_currents, get_speed, get_connection, \
     get_current, get_localization, get_town
+from api.publications.models import Province, Town, Localizations
 from utils.imagesS3 import upload_image_to_s3
 
 
@@ -166,7 +167,7 @@ def __save_chargers_to_db():
         all_speeds, available, all_connections, all_currents = __get_charger_info(charger.get("tipus_velocitat"),
                                                                                   charger.get("tipus_connexi"),
                                                                                   charger.get("ac_dc"))
-        title, description, direction = None, charger.get("designaci_descriptiva"), charger.get("adre_a")
+        title, description, direction = charger.get("designaci_descriptiva"),None, charger.get("adre_a")
         town, localization = __get_publication_info(charger.get("provincia"), charger.get("municipi"),
                                                     charger.get("latitud"), charger.get("longitud"))
         __create_public_charger(agent, identifier, access, power, all_speeds, available, all_connections, all_currents,

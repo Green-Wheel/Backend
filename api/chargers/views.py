@@ -2,13 +2,16 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.chargers.models import Chargers
-from utils import BasicPagination
 from .pagination import PaginationHandlerMixin
 from .serializers import ChargerSerializer, DetailedChargerSerializer, SpeedTypeSerializer, CurrentTypeSerializer, \
     ConnectionTypeSerializer, ChargerListSerializer
 from .services import get_filtered_chargers, create_private_charger, get_charger_by_id, update_private_charger, \
     delete_private_charger, get_speeds, get_connections, get_currents, upload_images
 from ..users.permissions import Check_API_KEY_Auth
+
+
+class BasicPagination(PageNumberPagination):
+    page_size_query_param = 'limit'
 
 
 class ChargersView(APIView, PaginationHandlerMixin):

@@ -1,5 +1,10 @@
 from django.db.models import Avg
 from rest_framework import serializers
+
+from api.bikes.models import Bikes
+
+from api.chargers.models import PublicChargers, Chargers, PrivateChargers, ConnectionsType, SpeedsType, CurrentsType
+from api.publications.models import Localizations, Province, Town
 from api.chargers.models import PublicChargers, Chargers, PrivateChargers, ConnectionsType, Localizations, Town, \
     Province, SpeedsType, CurrentsType, Publication, Images
 from api.ratings.models import PostRating
@@ -240,6 +245,9 @@ class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Images
         fields = ["id", "image_path", "image"]
+
+
+
 
 
 """class FullPrivateChargerSerializer(serializers.ModelSerializer):

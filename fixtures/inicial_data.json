@@ -59,17 +59,31 @@
     }
   },
   {
-    "model" : "bikes.BikeTypes",
+    "model" : "bookings.BookingStatus",
     "pk" : 1,
     "fields" : {
-      "name" : "tecansas"
+      "name" : "Pending"
     }
   },
   {
-    "model" : "bikes.BikeTypes",
+    "model" : "bookings.BookingStatus",
     "pk" : 2,
     "fields" : {
-      "name" : "electric"
+      "name" : "Confirmed"
+    }
+  },
+  {
+    "model" : "bookings.BookingStatus",
+    "pk" : 3,
+    "fields" : {
+      "name" : "Cancelled"
+    }
+  },
+  {
+    "model" : "bookings.BookingStatus",
+    "pk" : 4,
+    "fields" : {
+      "name" : "Denied"
     }
   }
 ]

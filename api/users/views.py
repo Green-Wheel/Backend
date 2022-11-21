@@ -1,4 +1,5 @@
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 
 from .models import Users
 from rest_framework.views import APIView
@@ -6,8 +7,13 @@ from rest_framework.response import Response
 
 from .permissions import Check_API_KEY_Auth
 from .serializers import UserSerializer
+from .services import get_user, langIdToString, update_language, update_user, get_user_posts
+from ..chargers.pagination import PaginationHandlerMixin
+from ..publications.serializers import PublicationListSerializer
 from .services import get_user, langIdToString, update_language, update_user, upload_images
 
+class BasicPagination(PageNumberPagination):
+    page_size_query_param = 'limit'
 
 # Create your views here.
 class UserApiView(APIView):
@@ -69,3 +75,24 @@ class UploadProfileImageApiView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserPostsApiView(APIView, PaginationHandlerMixin):
+    pagination_class = BasicPagination
+
+    def get(self, request, user_id):
+        try:
+            posts = get_user_posts(user_id)
+            page = self.paginate_queryset(posts)
+            if page is not None:
+                serializer = PublicationListSerializer(page, many=True)
+                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+            else:
+                serializer = PublicationListSerializer(posts, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            # return Response(PublicationListSerializer(posts, many=True).data, status=status.HTTP_200_OK)
+
+        except Users.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)},status=status.HTTP_400_BAD_REQUEST)
