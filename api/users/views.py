@@ -1,6 +1,6 @@
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 
-from utils import BasicPagination
 from .models import Users
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,6 +9,8 @@ from .services import get_user, langIdToString, update_language, update_user, ge
 from ..chargers.pagination import PaginationHandlerMixin
 from ..publications.serializers import PublicationListSerializer
 
+class BasicPagination(PageNumberPagination):
+    page_size_query_param = 'limit'
 
 # Create your views here.
 class UserApiView(APIView):

@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -9,7 +10,9 @@ from api.bikes.services import get_filtered_bikes, create_bike, get_bike_by_id, 
     get_bikes_type, upload_images
 from api.chargers.pagination import PaginationHandlerMixin
 from api.users.permissions import Check_API_KEY_Auth
-from utils import BasicPagination
+
+class BasicPagination(PageNumberPagination):
+    page_size_query_param = 'limit'
 
 
 # Create your views here.
