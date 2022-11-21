@@ -132,7 +132,6 @@ class DetailedChargerSerializer(serializers.ModelSerializer):
     charger_type = serializers.SerializerMethodField("get_type")
     child = serializers.SerializerMethodField("get_child")
 
-
     def get_localization(self, obj):
         return LocalizationSerializer(obj.localization).data
 

@@ -21,5 +21,5 @@ urlpatterns = [
     path('', views.UserApiView.as_view()),
     path('<int:user_id>/', views.ConcreteUserApiView.as_view()),
     path('language/', views.LanguageApiView.as_view()),
-    path('<int:user_id>/upload', views.UploadProfileImageApiView.as_view())
+    path('profile/upload', views.UploadProfileImageApiView.as_view())
 ]

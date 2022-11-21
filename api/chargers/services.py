@@ -266,10 +266,14 @@ def get_currents():
     return CurrentsType.objects.all()
 
 
-def upload_images(charger_id, images):
+def upload_images(charger_id, images, user_id):
+    charger = get_charger_by_id(charger_id)
+    owner = charger.owner
+    if owner.id != user_id:
+        raise Exception("User is not the owner of this charger")
     for file in images.getlist("images"):
         path = "publication/" + str(charger_id) + "/" + file.name
         upload_image_to_s3(file, path)
         image = Images(image_path=path, publication_id=charger_id)
         image.save()
-    return get_charger_by_id(charger_id)
+    return charger

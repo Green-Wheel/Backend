@@ -6,8 +6,7 @@ from rest_framework.response import Response
 
 from .permissions import Check_API_KEY_Auth
 from .serializers import UserSerializer
-from .services import get_user, langIdToString, update_language, update_user
-from ..bikes.services import upload_images
+from .services import get_user, langIdToString, update_language, update_user, upload_images
 
 
 # Create your views here.
@@ -64,7 +63,7 @@ class UploadProfileImageApiView(APIView):
 
     def post(self, request):
         try:
-            charger = upload_images("profile", request.user.id, request.FILES)
+            charger = upload_images(request.user.id, request.FILES)
             return Response(UserSerializer(charger).data, status=status.HTTP_200_OK)
         except Users.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
