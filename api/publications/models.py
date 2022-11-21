@@ -85,7 +85,7 @@ class OccupationRanges(models.Model):
     occupation_range_type = models.ForeignKey(OccupationRangesType, on_delete=models.CASCADE, null=False, blank=False, default=2)
     related_publication = models.ForeignKey(Publication, on_delete=models.CASCADE, null=False, blank=False)
     repeat_mode = models.ForeignKey(OccupationRepeatMode, on_delete=models.CASCADE, null=False, blank=False, default=1)
-    booking = models.ForeignKey(Bookings, on_delete=models.CASCADE, null=True, blank=True)
+    booking = models.ForeignKey(Bookings, on_delete=models.CASCADE, null=True, blank=True, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 

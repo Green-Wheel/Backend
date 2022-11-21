@@ -14,9 +14,9 @@ from api.publications.services import create_occupation, get_occupation_by_month
 class PublicationOccupationApiView(APIView):
     def post(self, request,publication_id):
         try:
-            new_occupation = create_occupation(request.data, request.user.id, publication_id)
+            new_occupations = create_occupation(request.data, request.user.id, publication_id)
             # add charger to user
-            return Response(OccupationRangeSerializer(new_occupation).data, status=status.HTTP_200_OK)
+            return Response(new_occupations, status=status.HTTP_200_OK)
         except Publication.DoesNotExist:
             return Response({"res": "Publication does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
