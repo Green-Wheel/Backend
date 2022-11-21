@@ -1,4 +1,5 @@
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.chargers.models import Chargers
@@ -6,7 +7,7 @@ from .pagination import PaginationHandlerMixin
 from .serializers import ChargerSerializer, DetailedChargerSerializer, SpeedTypeSerializer, CurrentTypeSerializer, \
     ConnectionTypeSerializer, ChargerListSerializer
 from .services import get_filtered_chargers, create_private_charger, get_charger_by_id, update_private_charger, \
-    delete_private_charger, get_speeds, get_connections, get_currents, upload_images
+    delete_private_charger, get_speeds, get_connections, get_currents
 from ..users.permissions import Check_API_KEY_Auth
 
 
@@ -110,16 +111,3 @@ class ConnectionTypeView(APIView):
             print(e)
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_404_NOT_FOUND)
 
-
-class UploadChargerImageApiView(APIView):
-    permission_classes = [Check_API_KEY_Auth]
-    authentication_classes = ()
-
-    def post(self, request, charger_id):
-        try:
-            charger = upload_images(charger_id, request.FILES, request.user.id)
-            return Response(DetailedChargerSerializer(charger).data, status=status.HTTP_200_OK)
-        except Chargers.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)

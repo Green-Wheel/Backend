@@ -19,12 +19,13 @@ def get_session():
 def upload_image_to_s3(file, path):
     session = get_session()
     s3 = session.resource('s3')
+    bucket_name = os.getenv('BUCKET_NAME')
 
     # Upload the file
     try:
-        result = s3.Bucket('greenwheel-bucket').put_object(Key=path, Body=file, ContentType=file.content_type, ACL='public-read')
-        print(result)
-        return result
+        s3.Bucket(bucket_name).put_object(Key=path, Body=file, ContentType=file.content_type, ACL='public-read')
+        s3_path = "https://" + bucket_name + ".s3.eu-west-1.amazonaws.com/" + path
+        return s3_path
     except ClientError as e:
         logging.error(e)
         return False

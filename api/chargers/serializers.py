@@ -1,43 +1,9 @@
 from django.db.models import Avg
 from rest_framework import serializers
-
-from api.bikes.models import Bikes
-
-from api.chargers.models import PublicChargers, Chargers, PrivateChargers, ConnectionsType, SpeedsType, CurrentsType
 from api.publications.models import Localizations, Province, Town
-from api.chargers.models import PublicChargers, Chargers, PrivateChargers, ConnectionsType, Localizations, Town, \
-    Province, SpeedsType, CurrentsType, Publication, Images
+from api.chargers.models import PublicChargers, Chargers, PrivateChargers, ConnectionsType, SpeedsType, CurrentsType
 from api.ratings.models import PostRating
 from api.users.serializers import BasicUserSerializer
-from utils.imagesS3 import get_image_from_s3
-
-
-class PublicationSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
-    type = serializers.SerializerMethodField('get_type')
-    child = serializers.SerializerMethodField('get_child')
-
-    def get_localization(self, obj):
-        return LocalizationSerializer(obj.localization).data
-
-    def get_town(self, obj):
-        return TownSerializer(obj.town).data
-
-    def get_type(self, obj):
-        try:
-            return "Charger"
-        except Chargers.DoesNotExist:
-            return "Bike"
-
-    def get_child(self, obj):
-        try:
-            return DetailedChargerSerializer(Chargers.objects.get(id=obj.id)).data
-        except Chargers.DoesNotExist:
-            return None
-
-    class Meta:
-        model = Publication
-        fields = ["id", "type", "child"]
 
 
 class LocalizationSerializer(serializers.ModelSerializer):
@@ -187,21 +153,13 @@ class DetailedChargerSerializer(serializers.ModelSerializer):
 
 class PrivateChargerSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField("get_owner")
-    images = serializers.SerializerMethodField("get_image")
 
     def get_owner(self, obj):
         return BasicUserSerializer(obj.owner).data
 
-    def get_image(self, obj):
-        saved_images = Images.objects.filter(publication=obj.id)
-        images = []
-        for image in saved_images:
-            images.append(ImageSerializer(image).data)
-        return images
-
     class Meta:
         model = PrivateChargers
-        fields = ["price", "owner", "images"]
+        fields = ["price", "owner"]
 
 
 class PublicChargerSerializer(serializers.ModelSerializer):
@@ -232,22 +190,6 @@ class CurrentTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CurrentsType
         fields = ["id", "name"]
-
-
-class ImageSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
-    image = serializers.SerializerMethodField("get_image")
-
-    def get_image(self, obj):
-        img = get_image_from_s3(obj.image_path)
-        return img
-
-    class Meta:
-        model = Images
-        fields = ["id", "image_path", "image"]
-
-
-
 
 
 """class FullPrivateChargerSerializer(serializers.ModelSerializer):
