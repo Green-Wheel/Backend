@@ -6,11 +6,12 @@ from api.chargers.models import Chargers, PrivateChargers, Configs, SpeedsType, 
 import requests
 import logging
 
-from api.chargers.models import PublicChargers, Localizations, Town, Province
+from api.chargers.models import PublicChargers
 from api.chargers.serializers import ChargerSerializer, PublicChargerSerializer, PrivateChargerSerializer, \
     SpeedTypeSerializer, CurrentTypeSerializer, ConnectionTypeSerializer, DetailedChargerSerializer
 from api.chargers.utils import get_all_speeds, get_all_connections, get_all_currents, get_speed, get_connection, \
     get_current, get_localization, get_town
+from api.publications.models import Province, Town, Localizations
 
 
 def __sincronize_data_with_API(signal, **kwargs):

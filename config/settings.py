@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'api.ratings',
     'api.reports',
     'api.vehicles',
+    'api.publications',
     'rest_framework',
     'corsheaders',
 ]

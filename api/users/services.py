@@ -1,3 +1,4 @@
+from api.chargers.models import Publication
 from api.users.models import Users
 from api.users.serializers import UserSerializer
 
@@ -48,3 +49,7 @@ def update_user(data, user_id):
         return user
     else:
         raise Exception(user.errors)
+
+def get_user_posts(user_id):
+    return Publication.objects.filter(owner_id=user_id).order_by('-date')
+
