@@ -1,37 +1,12 @@
 from django.db.models import Avg
 from rest_framework import serializers
-from api.chargers.models import PublicChargers, Chargers, PrivateChargers, ConnectionsType, Localizations, Town, \
-    Province, SpeedsType, CurrentsType, Publication
+
+from api.bikes.models import Bikes
+
+from api.chargers.models import PublicChargers, Chargers, PrivateChargers, ConnectionsType, SpeedsType, CurrentsType
+from api.publications.models import Localizations, Province, Town
 from api.ratings.models import PostRating
 from api.users.serializers import BasicUserSerializer
-
-
-class PublicationSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
-    type = serializers.SerializerMethodField('get_type')
-    child = serializers.SerializerMethodField('get_child')
-
-    def get_localization(self, obj):
-        return LocalizationSerializer(obj.localization).data
-
-    def get_town(self, obj):
-        return TownSerializer(obj.town).data
-
-    def get_type(self, obj):
-        try:
-            return "Charger"
-        except Chargers.DoesNotExist:
-            return "Bike"
-
-    def get_child(self, obj):
-        try:
-            return DetailedChargerSerializer(Chargers.objects.get(id=obj.id)).data
-        except Chargers.DoesNotExist:
-            return None
-    class Meta:
-        model = Publication
-        fields = ["id", "type", "child"]
-
 
 class LocalizationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -57,8 +32,6 @@ class ProvinceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Province
         fields = ["id", "name"]
-
-
 class ChargerSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     localization = serializers.SerializerMethodField("get_localization")
@@ -191,7 +164,7 @@ class PrivateChargerSerializer(serializers.ModelSerializer):
 class PublicChargerSerializer(serializers.ModelSerializer):
     class Meta:
         model = PublicChargers
-        fields = ["agent", "identifier", "access", "available"]
+        fields = ["agent", "identifier", "access"]
 
 
 class SpeedTypeSerializer(serializers.ModelSerializer):
@@ -216,6 +189,9 @@ class CurrentTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CurrentsType
         fields = ["id", "name"]
+
+
+
 
 
 """class FullPrivateChargerSerializer(serializers.ModelSerializer):
@@ -292,4 +268,4 @@ class PublicChargerSerializer(serializers.ModelSerializer):
     class Meta:
         model = PublicChargers
         fields = ["id", "description", "direction", "town", "localization", "power", "speed", "connection_type",
-                  "current_type", "agent", "identifier", "access", "available"]"""
+                  "current_type", "agent", "identifier", "access"]"""

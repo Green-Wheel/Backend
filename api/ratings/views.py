@@ -13,7 +13,6 @@ from ..chargers.pagination import PaginationHandlerMixin
 class BasicPagination(PageNumberPagination):
     page_size_query_param = 'limit'
 
-
 class PublicationRatingsApiView(APIView, PaginationHandlerMixin):
     pagination_class = BasicPagination
 

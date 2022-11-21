@@ -1,6 +1,5 @@
 from django.forms import forms
 
-from api.chargers.models import Publication
 from config import settings
 from django.db import models
 from api.users.models import Users
@@ -16,7 +15,7 @@ class BookingStatus(models.Model):
 
 class Bookings(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
-    publication = models.ForeignKey(to='chargers.Publication', on_delete=models.CASCADE, null=False, blank=False)
+    publication = models.ForeignKey(to='publications.Publication', on_delete=models.CASCADE, null=False, blank=False)
     start_date = models.DateTimeField(null=False, blank=False)
     end_date = models.DateTimeField(null=False, blank=False)
     status = models.ForeignKey(to='bookings.BookingStatus', on_delete=models.CASCADE, null=False, blank=False, default=1)

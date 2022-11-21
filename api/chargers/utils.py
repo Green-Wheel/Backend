@@ -1,6 +1,7 @@
 import re
 
-from api.chargers.models import ConnectionsType, Localizations, Town, Province, SpeedsType, CurrentsType
+from api.chargers.models import ConnectionsType, SpeedsType, CurrentsType
+from api.publications.models import Localizations, Province, Town
 
 
 def get_speed(speed_name):

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 
+
 from .models import Bookings
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -11,10 +12,8 @@ from .services import cancel_booking, get_booking, get_user_bookings, get_owner_
     confirm_booking
 from ..chargers.pagination import PaginationHandlerMixin
 
-
 class BasicPagination(PageNumberPagination):
     page_size_query_param = 'limit'
-
 # Create your views here.
 class UserBookingsApiView(APIView, PaginationHandlerMixin):
     pagination_class = BasicPagination
