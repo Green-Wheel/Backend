@@ -2,6 +2,8 @@ from datetime import datetime
 
 from api.bookings.models import Bookings
 from api.bookings.serializers import BookingsEditSerializer
+from api.publications.models import OccupationRanges
+from api.publications.services import create_occupation
 
 
 def get_user_bookings(user_id, order):
@@ -43,6 +45,12 @@ def create_booking(booking):
     booking_instance = BookingsEditSerializer(data=booking)
     if booking_instance.is_valid():
         booking_instance.save()
+        data = {
+            "start_date": booking_instance.data["start_date"],
+            "end_date": booking_instance.data["end_date"],
+
+        }
+        create_occupation(data, booking_instance.data["user"], booking_instance.data["publication"])
         return Bookings.objects.latest('id')
     raise Exception(booking_instance.errors)
 
@@ -53,7 +61,7 @@ def cancel_booking(booking_id):
         raise Exception('Booking already cancelled')
     booking_instance.status_id = 3
     booking_instance.save()
-    # faltara canviar ocupacio
+    OccupationRanges.objects.filter(booking_id=booking_id).delete()
     return booking_instance
 
 
@@ -65,5 +73,6 @@ def confirm_booking(booking_id, confirmed):
         booking_instance.status_id = 2
     else:
         booking_instance.status_id = 4
+        OccupationRanges.objects.filter(booking_id=booking_id).delete()
     booking_instance.save()
     return booking_instance
