@@ -1,6 +1,9 @@
+import random
+import string
+
 from api.chargers.models import Publication
 from api.users.models import Users
-from api.users.serializers import UserSerializer
+from api.users.serializers import UserSerializer, CreateUserSerializer
 
 
 def get_user(user_id):
@@ -43,13 +46,85 @@ def update_language(language, user_id):
 
 def update_user(data, user_id):
     user_instance = get_user(user_id)
-    user = UserSerializer(user_instance,data=data)
+    user = UserSerializer(user_instance, data=data)
     if user.is_valid():
         user.save()
         return user
     else:
         raise Exception(user.errors)
 
+
 def get_user_posts(user_id):
     return Publication.objects.filter(owner_id=user_id).order_by('-created_at')
 
+
+def generate_api_key():
+    chars = ''.join([string.ascii_letters, string.digits, string.punctuation]).replace('\'', '').replace('"',
+                                                                                                         '').replace(
+        '\\', '')
+
+    SECRET_KEY = ''.join([random.SystemRandom().choice(chars) for i in range(32)])
+    return SECRET_KEY
+
+
+def password_check(password):
+    SpecialSym = ['$', '@', '#', '%']
+    val = True
+
+    if len(password) < 6:
+        raise ValueError('length should be at least 6')
+
+    if len(password) > 20:
+        raise ValueError('length should be not be greater than 8')
+
+    if not any(char.isdigit() for char in password):
+        raise ValueError('Password should have at least one numeral')
+
+    if not any(char.isupper() for char in password):
+        raise ValueError('Password should have at least one uppercase letter')
+
+    if not any(char.islower() for char in password):
+        raise ValueError('Password should have at least one lowercase letter')
+
+    if not any(char in SpecialSym for char in password):
+        raise ValueError('Password should have at least one of the symbols $@#')
+    if val:
+        return val
+
+
+def create_user(data):
+    user = Users()
+    password_check(data["password"])
+    user.username = data["username"]
+    user.email = data["email"]
+    user.first_name = data["first_name"]
+    user.last_name = data["last_name"]
+    user.set_password(data["password"])
+    user.api_key = generate_api_key()
+    if user.is_valid():
+        user.save()
+        user.api_key = generate_api_key()
+        user.save()
+        return user
+
+
+def remove_api_key(user_id):
+    user = get_user(user_id)
+    user.api_key = None
+    user.save()
+    return True
+
+
+def login_user(username, password):
+    user = Users.objects.get(username=username)
+    if user.check_password(password):
+        return user
+    else:
+        raise Exception("Wrong password")
+
+
+def change_password(data, user):
+    password_check(data["password"])
+    user.set_password(data["password"])
+    user.save()
+    return True

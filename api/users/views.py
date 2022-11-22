@@ -1,3 +1,4 @@
+from django.contrib.auth import login
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 
@@ -5,7 +6,8 @@ from .models import Users
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import UserSerializer
-from .services import get_user, langIdToString, update_language, update_user, get_user_posts
+from .services import get_user, langIdToString, update_language, update_user, get_user_posts, create_user, \
+    remove_api_key, login_user, change_password
 from ..chargers.pagination import PaginationHandlerMixin
 from ..publications.serializers import PublicationListSerializer
 
@@ -85,23 +87,15 @@ class UserPostsApiView(APIView, PaginationHandlerMixin):
 
 class RegisterApiView(APIView):
     def post(self, request):
-        user = Users.objects.create_user(
-            email=request.data["email"],
-            name=request.data["name"],
-            surname=request.data["surname"],
-            username=request.data["username"],
-            language_id=request.data["language_id"],
-            phone_number=request.data["phone_number"],
-            is_active=True,
-            is_staff=False,
-            is_superuser=False,
-        )
-        user.set_password(request.data["password"])
-        return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
+        try:
+            user = create_user(request.data)
+            login(request, user)
+            return Response({"apikey": user.api_key}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RecoverPasswordApiView(APIView):
-
     def get(self, request):
         user = Users.objects.get(email=request.data["email"])
         return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
@@ -115,17 +109,31 @@ class RecoverPasswordApiView(APIView):
 
 class ChangePasswordApiView(APIView):
     def put(self, request):
-        user = Users.objects.get(email=request.data["email"])
-        user.set_password(request.data["password"])
-        user.save()
-        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        try:
+            change_password(request.data, request.user)
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutApiView(APIView):
     def post(self, request):
-        return Response(status=status.HTTP_200_OK)
+        try:
+            remove_api_key(request.user.id)
+            return Response(status=status.HTTP_200_OK)
+        except Users.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginApiView(APIView):
     def post(self, request):
-        return Response(status=status.HTTP_200_OK)
+        try:
+            user = login_user(request.data["username"], request.data["password"])
+            login(request, user)
+            return Response({"apikey": user.api_key}, status=status.HTTP_201_CREATED)
+        except Users.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
