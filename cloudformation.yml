@@ -35,6 +35,18 @@ Resources:
 ################################################
 #                Resources for EC2             #
 ################################################
+  IAMRoleEC2:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
 
   GreenWheelEC2:
     Type: AWS::EC2::Instance
