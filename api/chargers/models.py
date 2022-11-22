@@ -26,11 +26,6 @@ class ConnectionsType(models.Model):
         return self.name
 
 
-
-
-
-
-
 class SpeedsType(models.Model):
     name = models.CharField(max_length=50, null=False, blank=False, unique=True)
 
@@ -90,6 +85,7 @@ class Configs(models.Model):
 
     def __str__(self):
         return str(self.id)
+
 
 class Images(models.Model):
     image_url = models.URLField(null=False, blank=False)
