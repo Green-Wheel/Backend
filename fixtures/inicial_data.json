@@ -1,0 +1,138 @@
+[
+  {
+    "model": "chargers.CurrentsType",
+    "pk": 1,
+    "fields": {
+      "name": "AC"
+    }
+  },
+  {
+    "model": "chargers.CurrentsType",
+    "pk": 2,
+    "fields": {
+      "name": "DC"
+    }
+  },
+  {
+    "model" : "users.Languages",
+    "pk" : 1,
+    "fields" : {
+      "name" : "Catala",
+      "shortname" : "ca"
+    }
+  },
+  {
+    "model" : "users.Languages",
+    "pk" : 2,
+    "fields" : {
+      "name" : "Castellano",
+      "shortname" : "es"
+    }
+  },
+  {
+    "model" : "users.Languages",
+    "pk" : 3,
+    "fields" : {
+      "name" : "English",
+      "shortname" : "en"
+    }
+  },
+  {
+    "model" : "users.LoginMethods",
+    "pk" : 1,
+    "fields" : {
+      "name" : "native"
+    }
+  },
+  {
+    "model" : "users.LoginMethods",
+    "pk" : 2,
+    "fields" : {
+      "name" : "google"
+    }
+  },
+  {
+    "model" : "users.LoginMethods",
+    "pk" : 3,
+    "fields" : {
+      "name" : "raco"
+    }
+  },
+  {
+    "model" : "bookings.BookingStatus",
+    "pk" : 1,
+    "fields" : {
+      "name" : "Pending"
+    }
+  },
+  {
+    "model" : "bookings.BookingStatus",
+    "pk" : 2,
+    "fields" : {
+      "name" : "Confirmed"
+    }
+  },
+  {
+    "model" : "bookings.BookingStatus",
+    "pk" : 3,
+    "fields" : {
+      "name" : "Cancelled"
+    }
+  },
+  {
+    "model" : "bookings.BookingStatus",
+    "pk" : 4,
+    "fields" : {
+      "name" : "Denied"
+    }
+  },
+  {
+    "model" : "publications.OccupationRangesType",
+    "pk" : 1,
+    "fields" : {
+      "name" : "Publication"
+    }
+  },
+  {
+    "model" : "publications.OccupationRangesType",
+    "pk" : 2,
+    "fields" : {
+      "name" : "blocked"
+    }
+  },
+  {
+    "model" : "publications.OccupationRepeatMode",
+    "pk" : 1,
+    "fields" : {
+      "name" : "Never"
+    }
+  },
+  {
+    "model" : "publications.OccupationRepeatMode",
+    "pk" : 2,
+    "fields" : {
+      "name" : "Every day"
+    }
+  },
+  {
+    "model" : "publications.OccupationRepeatMode",
+    "pk" : 3,
+    "fields" : {
+      "name" : "Weekly"
+    }
+  },
+  {
+    "model" : "publications.OccupationRepeatMode",
+    "pk" : 4,
+    "fields" : {
+      "name" : "Each month"
+    }
+  },
+  {
+    "model" : "publications.OccupationRepeatMode",
+    "pk" : 5,
+    "fields" : {
+      "name" : "Each year"
+    }
+  }
+]

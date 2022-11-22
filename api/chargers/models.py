@@ -1,9 +1,11 @@
 from django.db import models
 
+from api.publications.models import Publication
+
 
 # Create your models here.
 class CurrentsType(models.Model):
-    name = models.CharField(max_length=50, null=True, blank=False, unique=True)
+    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
 
     class Meta:
         verbose_name = "CurrentsType"
@@ -14,7 +16,7 @@ class CurrentsType(models.Model):
 
 
 class ConnectionsType(models.Model):
-    name = models.CharField(max_length=50, null=True, blank=False, unique=True)
+    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
 
     class Meta:
         verbose_name = "ConnectionsType"
@@ -24,60 +26,13 @@ class ConnectionsType(models.Model):
         return self.name
 
 
-class Province(models.Model):
-    name = models.CharField(max_length=50, null=True, blank=False, unique=True)
-
-    class Meta:
-        verbose_name = "Province"
-        verbose_name_plural = "Provinces"
-
-    def __str__(self):
-        return self.name
 
 
-class Town(models.Model):
-    name = models.CharField(max_length=50, null=True, blank=False)
-    province = models.ForeignKey(Province, on_delete=models.CASCADE, null=False, blank=False)
-
-    class Meta:
-        verbose_name = "Town"
-        verbose_name_plural = "Towns"
-
-    def __str__(self):
-        return self.name
-
-
-class Localizations(models.Model):
-    latitude = models.FloatField(null=True, blank=False)
-    longitude = models.FloatField(null=True, blank=False)
-
-    class Meta:
-        verbose_name = "Localization"
-        verbose_name_plural = "Localizations"
-        unique_together = ["latitude", "longitude"]
-
-    def __str__(self):
-        return self.latitude, self.longitude
-
-
-class Publication(models.Model):
-    title = models.CharField(max_length=50, null=True, blank=False)
-    description = models.TextField(null=True, blank=True)
-    direction = models.CharField(max_length=100, null=True, blank=False)
-    town = models.ForeignKey(Town, on_delete=models.CASCADE, null=True, blank=False)
-    localization = models.ForeignKey(Localizations, on_delete=models.CASCADE, null=True, blank=False, related_name='+')
-
-    class Meta:
-        verbose_name = "Publication"
-        verbose_name_plural = "Publications"
-
-    def __str__(self):
-        return str(self.id)
 
 
 
 class SpeedsType(models.Model):
-    name = models.CharField(max_length=50, null=True, blank=False, unique=True)
+    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
 
     class Meta:
         verbose_name = "SpeedsType"
@@ -105,14 +60,13 @@ class PublicChargers(Chargers):
     agent = models.TextField(null=True, blank=False)
     identifier = models.CharField(max_length=50, null=True, blank=False)
     access = models.CharField(max_length=50, null=True, blank=False)
-    available = models.BooleanField(null=True, blank=False, default=True)
 
     class Meta:
         verbose_name = "PublicCharger"
         verbose_name_plural = "PublicChargers"
 
     def __str__(self):
-        return str(self.id)
+        return self.title
 
 
 class PrivateChargers(Chargers):
@@ -127,12 +81,23 @@ class PrivateChargers(Chargers):
 
 
 class Configs(models.Model):
-    key = models.CharField(max_length=50, null=True, blank=False, unique=True)
-    value = models.CharField(max_length=150, null=True, blank=False)
+    key = models.CharField(max_length=50, null=False, blank=False, unique=True)
+    value = models.CharField(max_length=150, null=False, blank=False)
 
     class Meta:
         verbose_name = "Config"
         verbose_name_plural = "Configs"
+
+    def __str__(self):
+        return str(self.id)
+
+class Images(models.Model):
+    image_url = models.URLField(null=False, blank=False)
+    publication = models.ForeignKey(Publication, on_delete=models.CASCADE, null=True, blank=False)
+
+    class Meta:
+        verbose_name = "Image"
+        verbose_name_plural = "Images"
 
     def __str__(self):
         return str(self.id)

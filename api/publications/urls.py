@@ -17,4 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 from . import views
 
-urlpatterns = []
+urlpatterns = [
+    path("<int:publication_id>/occupation/", views.PublicationOccupationApiView.as_view()),
+    path("<int:publication_id>/occupation/<int:occupation_id>/", views.ConcretePublicationOccupationApiView.as_view()),
+    path("<int:publication_id>/occupation/<int:year>/<int:month>/", views.MonthPublicationOccupation.as_view()),
+]

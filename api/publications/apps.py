@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class SearchesConfig(AppConfig):
+class PublicationsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'api.searches'
+    name = 'api.publications'

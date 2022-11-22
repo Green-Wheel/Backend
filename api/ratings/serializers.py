@@ -1,17 +1,29 @@
 from rest_framework import serializers
-from .models import Ratings
-from api.bookings.models import Bookings
+from .models import Ratings, PostRating, ClientsRating
+from ..users.models import Users
+from ..users.serializers import BasicUserSerializer
 
 
-class RatingsSerializer(serializers.ModelSerializer):
-    booking = serializers.ReadOnlyField(source='booking.id')
+class RatingSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    user = serializers.SerializerMethodField("get_user")
 
-    def getBooking(self, booking_id):
+    def get_user(self, obj):
         try:
-            return Bookings.objects.get(id=booking_id)
-        except Bookings.DoesNotExist:
+            return BasicUserSerializer(Users.objects.get(id=obj.user.id)).data
+        except Users.DoesNotExist:
             return None
-
     class Meta:
         model = Ratings
-        fields = ["id", "rate", "comment", "booking"]
+        fields = ["id","user", "rate", "comment", "created_at"]
+
+class PostRatingSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    class Meta:
+        model = PostRating
+        fields = ["id","user", "booking","rate", "comment",  "publication"]
+class ClientsRatingSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    class Meta:
+        model = ClientsRating
+        fields = ["id","user", "booking","rate", "comment", "client"]

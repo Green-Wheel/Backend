@@ -1,48 +1,89 @@
+from datetime import datetime
+
 from rest_framework import serializers
 from .models import Bookings
-from api.chargers.models import Publication
+from api.chargers.models import PrivateChargers
 from api.users.models import Users
+from ..bikes.models import Bikes
+from ..publications.models import Publication, OccupationRanges
+from ..publications.serializers import PublicationSerializer, PublicationListSerializer
+from ..users.serializers import BasicUserSerializer
 
 
 class BookingsSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.id')
-    publication = serializers.ReadOnlyField(source='publication.id')
+    id = serializers.IntegerField(read_only=True)
+    publication = serializers.SerializerMethodField('getPublication')
+    user = serializers.SerializerMethodField('getUser')
 
-    def getUser(self, user_id):
+    def getUser(self, obj):
         try:
-            return Users.objects.get(id=user_id)
+            return BasicUserSerializer(Users.objects.get(id=obj.user.id)).data
         except Users.DoesNotExist:
             return None
 
-    def getPublication(self, publication_id):
+    def getPublication(self, obj):
         try:
-            return Publication.objects.get(id=publication_id)
+            return PublicationSerializer(Publication.objects.get(id=obj.publication.id), many=False).data
         except Publication.DoesNotExist:
+            print("Publication does not exist")
             return None
 
     class Meta:
         model = Bookings
-        fields = ["id", "user", "publication", "start_date", "end_date", "confirmed", "finished", "cancelled",
-                  "created"]
+        fields = ["id", "user", "publication", "start_date", "end_date",
 
 
-class BookingsDetailedSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField("getUser")
-    publication = serializers.SerializerMethodField("getPublication")
 
-    def getUser(self, user_id):
+class SimpleBookingsSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    publication = serializers.SerializerMethodField('getPublication')
+    user = serializers.SerializerMethodField('getUser')
+
+    def getUser(self, obj):
         try:
-            return Users.objects.filter(id=user_id).values()
+            return BasicUserSerializer(Users.objects.get(id=obj.user.id)).data
         except Users.DoesNotExist:
             return None
 
-    def getPublication(self, publication_id):
+    def getPublication(self, obj):
         try:
-            return Publication.objects.filter(id=publication_id).values()
+            return PublicationListSerializer(Publication.objects.get(id=obj.publication.id), many=False).data
         except Publication.DoesNotExist:
+            print("Publication does not exist")
             return None
 
     class Meta:
         model = Bookings
-        fields = ["id", "user", "publication", "start_date", "end_date", "confirmed", "finished", "cancelled",
+        fields = ["id", "user", "publication"]
+
+
+class BookingsEditSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
+    def validate(self, attrs):
+        start_date = attrs['start_date']
+        end_date = attrs['end_date']
+        publication = Publication.objects.get(id=attrs['publication'].id)
+        if start_date > end_date:
+            raise serializers.ValidationError("Start date must be before end date")
+        if start_date < datetime.now():
+            raise serializers.ValidationError("Start date must be in the future")
+        if end_date < datetime.now():
+            raise serializers.ValidationError("End date must be in the future")
+        if start_date == end_date:
+            raise serializers.ValidationError("Start date must be different from end date")
+        if publication.owner.id == attrs['user'].id:
+            raise serializers.ValidationError("You can't book your own publication")
+        if PrivateChargers.objects.filter(id=attrs['publication'].id).count() + Bikes.objects.filter(
+                id=attrs['publication'].id).count() == 0:
+            raise serializers.ValidationError("You cannot book your own publication")
+        start_occupations = OccupationRanges.objects.filter(start_date__gte=attrs["start_date"], start_date__lte=attrs["end_date"])
+        end_occupations = OccupationRanges.objects.filter(end_date__gte=attrs["start_date"], end_date__lte=attrs["end_date"])
+        if start_occupations or end_occupations:
+            raise serializers.ValidationError("Publication is already booked for the selected dates")
+        return attrs
+
+    class Meta:
+        model = Bookings
+        fields = ["id", "user", "publication", "start_date", "end_date", "status",
                   "created"]

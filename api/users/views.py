@@ -1,42 +1,42 @@
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 
 from .models import Users
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from .serializers import UserSerializer
+from .services import get_user, langIdToString, update_language, update_user, get_user_posts
+from ..chargers.pagination import PaginationHandlerMixin
+from ..publications.serializers import PublicationListSerializer
 
+class BasicPagination(PageNumberPagination):
+    page_size_query_param = 'limit'
 
 # Create your views here.
-class LanguageApiView(APIView):
-    def get_object(self, user_id):
-        try:
-            return Users.objects.get(id=user_id)
-        except Users.DoesNotExist:
-            return None
-
-    def langStringToId(self, lang):
-        if lang == "ca":
-            return 1
-        elif lang == "es":
-            return 2
-        elif lang == "en":
-            return 3
-        else:
-            return None
-
-    def langIdToString(self, lang):
-        if lang == 1:
-            return "ca"
-        elif lang == 2:
-            return "es"
-        elif lang == 3:
-            return "en"
-        else:
-            return None
-
+class UserApiView(APIView):
     def get(self, request):
-        user_id = 1
-        user_instance = self.get_object(user_id)
+        user = get_user(request.user.id)
+        if user is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+
+    def put(self, request):
+        user = update_user(request.data, request.user.id)
+        return Response(user.data, status=status.HTTP_200_OK)
+
+
+class ConcreteUserApiView(APIView):
+    def get(self, request, user_id):
+        try:
+            user = get_user(user_id)
+            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        except Users.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class LanguageApiView(APIView):
+    def get(self, request):
+        user_instance = get_user(request.user.id)
         if not user_instance:
             return Response(
                 {"res": "User with the id doesn't exist"},
@@ -47,18 +47,35 @@ class LanguageApiView(APIView):
                 {"res": "Language not set"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        return Response({"language": self.langIdToString(user_instance.language_id)}, status=status.HTTP_200_OK)
+        return Response({"language": langIdToString(user_instance.language_id)}, status=status.HTTP_200_OK)
 
     def put(self, request):
-        user_id = 1
-        user_instance = self.get_object(user_id)
-        if not user_instance:
+        lang = request.data["language"]
+        updated = update_language(lang, request.user.id)
+        if not updated:
             return Response(
                 {"res": "User with the id doesn't exist"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        lang = request.data["language"]
-
-        user_instance.language_id = self.langStringToId(lang)
-        user_instance.save()
         return Response({"res": "Language changed"}, status=status.HTTP_200_OK)
+
+
+class UserPostsApiView(APIView, PaginationHandlerMixin):
+    pagination_class = BasicPagination
+
+    def get(self, request, user_id):
+        try:
+            posts = get_user_posts(user_id)
+            page = self.paginate_queryset(posts)
+            if page is not None:
+                serializer = PublicationListSerializer(page, many=True)
+                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+            else:
+                serializer = PublicationListSerializer(posts, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            # return Response(PublicationListSerializer(posts, many=True).data, status=status.HTTP_200_OK)
+
+        except Users.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)},status=status.HTTP_400_BAD_REQUEST)

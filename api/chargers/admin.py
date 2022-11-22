@@ -1,5 +1,5 @@
 from django.contrib import admin
-from api.chargers.models import Chargers, Publication, SpeedsType, Localizations, Town, Province, ConnectionsType, CurrentsType
+from api.chargers.models import Chargers, Publication, SpeedsType, ConnectionsType, CurrentsType
 
 
 # Register your models here.
@@ -60,8 +60,5 @@ class CurrentsTypeAdmin(admin.ModelAdmin):
 admin.site.register(Chargers, ChargersAdmin)
 admin.site.register(SpeedsType, SpeedsTypeAdmin)
 admin.site.register(Publication, PublicationAdmin)
-admin.site.register(Localizations, LocalizationsAdmin)
-admin.site.register(Town, TownAdmin)
-admin.site.register(Province, ProvinceAdmin)
 admin.site.register(ConnectionsType, ConnectionsTypeAdmin)
 admin.site.register(CurrentsType, CurrentsTypeAdmin)
