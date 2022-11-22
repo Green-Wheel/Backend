@@ -5,8 +5,8 @@ from .models import Bookings
 from api.chargers.models import PrivateChargers
 from api.users.models import Users
 from ..bikes.models import Bikes
-from ..publications.models import Publication
-from ..publications.serializers import PublicationSerializer
+from ..publications.models import Publication, OccupationRanges
+from ..publications.serializers import PublicationSerializer, PublicationListSerializer
 from ..users.serializers import BasicUserSerializer
 
 
@@ -30,8 +30,31 @@ class BookingsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bookings
-        fields = ["id", "user","publication", "start_date", "end_date",
-                  "created"]
+        fields = ["id", "user", "publication", "start_date", "end_date",
+
+
+
+class SimpleBookingsSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    publication = serializers.SerializerMethodField('getPublication')
+    user = serializers.SerializerMethodField('getUser')
+
+    def getUser(self, obj):
+        try:
+            return BasicUserSerializer(Users.objects.get(id=obj.user.id)).data
+        except Users.DoesNotExist:
+            return None
+
+    def getPublication(self, obj):
+        try:
+            return PublicationListSerializer(Publication.objects.get(id=obj.publication.id), many=False).data
+        except Publication.DoesNotExist:
+            print("Publication does not exist")
+            return None
+
+    class Meta:
+        model = Bookings
+        fields = ["id", "user", "publication"]
 
 
 class BookingsEditSerializer(serializers.ModelSerializer):
@@ -45,7 +68,7 @@ class BookingsEditSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Start date must be before end date")
         if start_date < datetime.now():
             raise serializers.ValidationError("Start date must be in the future")
-        if end_date< datetime.now():
+        if end_date < datetime.now():
             raise serializers.ValidationError("End date must be in the future")
         if start_date == end_date:
             raise serializers.ValidationError("Start date must be different from end date")
@@ -54,10 +77,8 @@ class BookingsEditSerializer(serializers.ModelSerializer):
         if PrivateChargers.objects.filter(id=attrs['publication'].id).count() + Bikes.objects.filter(
                 id=attrs['publication'].id).count() == 0:
             raise serializers.ValidationError("You cannot book your own publication")
-        # start_occupations = OccupationRanges.objects.filter(start_date__gte=attrs["start_date"], start_date__lte=attrs["end_date"])
-        # end_occupations = OccupationRanges.objects.filter(end_date__gte=attrs["start_date"], end_date__lte=attrs["end_date"])
-        start_occupations = Bookings.objects.filter(start_date__gte=start_date, start_date__lte=end_date)
-        end_occupations = Bookings.objects.filter(end_date__gte=start_date, end_date__lte=end_date)
+        start_occupations = OccupationRanges.objects.filter(start_date__gte=attrs["start_date"], start_date__lte=attrs["end_date"])
+        end_occupations = OccupationRanges.objects.filter(end_date__gte=attrs["start_date"], end_date__lte=attrs["end_date"])
         if start_occupations or end_occupations:
             raise serializers.ValidationError("Publication is already booked for the selected dates")
         return attrs
