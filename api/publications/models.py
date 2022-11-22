@@ -4,6 +4,7 @@ from django.db import models
 from api.bookings.models import Bookings
 from config import settings
 
+
 # Create your models here.
 class Province(models.Model):
     name = models.CharField(max_length=50, null=False, blank=False, unique=True)
@@ -42,7 +43,7 @@ class Localizations(models.Model):
 
 
 class Publication(models.Model):
-    title = models.CharField(max_length=50, null=True, blank=False)
+    title = models.CharField(max_length=100, null=True, blank=False)
     description = models.TextField(null=True, blank=True)
     direction = models.CharField(max_length=100, null=True, blank=False)
     town = models.ForeignKey(Town, on_delete=models.CASCADE, null=True, blank=False)
@@ -59,6 +60,7 @@ class Publication(models.Model):
     def __str__(self):
         return str(self.id)
 
+
 class OccupationRangesType(models.Model):
     name = models.CharField(max_length=50, null=False, blank=False, unique=True)
 
@@ -68,6 +70,7 @@ class OccupationRangesType(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class OccupationRepeatMode(models.Model):
     name = models.CharField(max_length=50, null=False, blank=False, unique=True)
@@ -79,15 +82,16 @@ class OccupationRepeatMode(models.Model):
     def __str__(self):
         return self.name
 
+
 class OccupationRanges(models.Model):
     start_date = models.DateTimeField(null=True, blank=False)
     end_date = models.DateTimeField(null=True, blank=False)
-    occupation_range_type = models.ForeignKey(OccupationRangesType, on_delete=models.CASCADE, null=False, blank=False, default=2)
+    occupation_range_type = models.ForeignKey(OccupationRangesType, on_delete=models.CASCADE, null=False, blank=False,
+                                              default=2)
     related_publication = models.ForeignKey(Publication, on_delete=models.CASCADE, null=False, blank=False)
     repeat_mode = models.ForeignKey(OccupationRepeatMode, on_delete=models.CASCADE, null=False, blank=False, default=1)
     booking = models.OneToOneField(Bookings, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
 
     class Meta:
         verbose_name = "OccupationRange"
