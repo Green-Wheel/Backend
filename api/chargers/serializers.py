@@ -58,7 +58,8 @@ class ChargerListSerializer(serializers.ModelSerializer):
     connection_type = serializers.SerializerMethodField("get_connection")
     avg_rating = serializers.SerializerMethodField("get_avg_rating")
     charger_type = serializers.SerializerMethodField("get_type")
-    child = serializers.SerializerMethodField("get_child")
+    public = serializers.SerializerMethodField("get_public")
+    private = serializers.SerializerMethodField("get_private")
 
     def get_localization(self, obj):
         return LocalizationSerializer(obj.localization).data
@@ -79,17 +80,22 @@ class ChargerListSerializer(serializers.ModelSerializer):
         except:
             return "private"
 
-    def get_child(self, obj):
+    def get_public(self, obj):
         try:
             public_charger = PublicChargers.objects.get(pk=obj.id)
             return PublicChargerSerializer(public_charger).data
         except:
+            return None
+    def get_private(self, obj):
+        try:
             private_charger = PrivateChargers.objects.get(pk=obj.id)
             return PrivateChargerSerializer(private_charger).data
+        except:
+            return None
 
     class Meta:
         model = Chargers
-        fields = ["id", "title", "localization", "connection_type", "avg_rating", "charger_type", "child"]
+        fields = ["id", "title", "localization", "connection_type", "avg_rating", "charger_type", "public", "private"]
 
 
 class DetailedChargerSerializer(serializers.ModelSerializer):
@@ -101,7 +107,8 @@ class DetailedChargerSerializer(serializers.ModelSerializer):
     speed = serializers.SerializerMethodField("get_speed")
     avg_rating = serializers.SerializerMethodField("get_avg_rating")
     charger_type = serializers.SerializerMethodField("get_type")
-    child = serializers.SerializerMethodField("get_child")
+    public = serializers.SerializerMethodField("get_public")
+    private = serializers.SerializerMethodField("get_private")
 
     def get_localization(self, obj):
         return LocalizationSerializer(obj.localization).data
@@ -137,18 +144,24 @@ class DetailedChargerSerializer(serializers.ModelSerializer):
         except:
             return "private"
 
-    def get_child(self, obj):
+    def get_public(self, obj):
         try:
             public_charger = PublicChargers.objects.get(pk=obj.id)
             return PublicChargerSerializer(public_charger).data
         except:
+            return None
+
+    def get_private(self, obj):
+        try:
             private_charger = PrivateChargers.objects.get(pk=obj.id)
             return PrivateChargerSerializer(private_charger).data
+        except:
+            return None
 
     class Meta:
         model = Chargers
         fields = ["id", "title", "description", "direction", "town", "localization", "speed", "connection_type",
-                  "current_type", "power", "avg_rating", "charger_type", "child"]
+                  "current_type", "power", "avg_rating", "charger_type", "public", "private"]
 
 
 class PrivateChargerSerializer(serializers.ModelSerializer):
