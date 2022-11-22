@@ -38,7 +38,8 @@ class ProvinceSerializer(serializers.ModelSerializer):
 class PublicationSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     type = serializers.SerializerMethodField('get_type')
-    child = serializers.SerializerMethodField('get_child')
+    charger = serializers.SerializerMethodField('get_charger')
+    bike = serializers.SerializerMethodField('get_bike')
 
     def get_type(self, obj):
         try:
@@ -47,21 +48,28 @@ class PublicationSerializer(serializers.ModelSerializer):
         except Chargers.DoesNotExist:
             return "Bike"
 
-    def get_child(self, obj):
+    def get_charger(self, obj):
         try:
             return DetailedChargerSerializer(Chargers.objects.get(id=obj.id)).data
         except Chargers.DoesNotExist:
+            return None
+
+    def get_bike(self, obj):
+        try:
             return DetailedBikeSerializer(Bikes.objects.get(id=obj.id)).data
+        except Chargers.DoesNotExist:
+            return None
 
     class Meta:
         model = Publication
-        fields = ["id", "type", "child"]
+        fields = ["id", "type", "charger", "bike"]
 
 
 class PublicationListSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     type = serializers.SerializerMethodField('get_type')
-    child = serializers.SerializerMethodField('get_child')
+    charger = serializers.SerializerMethodField('get_charger')
+    bike = serializers.SerializerMethodField('get_bike')
 
     def get_type(self, obj):
         try:
@@ -70,15 +78,21 @@ class PublicationListSerializer(serializers.ModelSerializer):
         except Chargers.DoesNotExist:
             return "Bike"
 
-    def get_child(self, obj):
+    def get_charger(self, obj):
         try:
-            return ChargerListSerializer(Chargers.objects.get(id=obj.id)).data
+            return DetailedChargerSerializer(Chargers.objects.get(id=obj.id)).data
         except Chargers.DoesNotExist:
-            return BikeListSerializer(Bikes.objects.get(id=obj.id)).data
+            return None
+
+    def get_bike(self, obj):
+        try:
+            return DetailedBikeSerializer(Bikes.objects.get(id=obj.id)).data
+        except Chargers.DoesNotExist:
+            return None
 
     class Meta:
         model = Publication
-        fields = ["id", "type", "child"]
+        fields = ["id", "type", "charger", "bike"]
 
 
 class OccupationRangeSerializer(serializers.ModelSerializer):
@@ -111,3 +125,4 @@ class OccupationRangeSerializer(serializers.ModelSerializer):
         model = OccupationRanges
         fields = ["id", "start_date", "end_date", "occupation_range_type", "related_publication", "repeat_mode",
                   "booking", "created_at"]
+
