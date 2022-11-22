@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.core.signals import request_finished
-
+from requests.auth import HTTPBasicAuth
 from api.chargers.models import Chargers, PrivateChargers, Configs, SpeedsType, ConnectionsType, CurrentsType
 import requests
 import logging
@@ -72,7 +72,7 @@ def __get_filter(query_params):
 
 def __get_data_from_chargers_api():
     # petició api i actualitzar base de dades
-    response = requests.get("https://analisi.transparenciacatalunya.cat/resource/tb2m-m33b.json?")
+    response = requests.get("https://analisi.transparenciacatalunya.cat/resource/tb2m-m33b.json?", headers={'X-App-Token': '6oG2O7KYidOwxhULmHtNXWVkJ'})
     if response.status_code == 200:
         return response.json()
     else:
