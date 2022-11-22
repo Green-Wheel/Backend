@@ -44,7 +44,35 @@ Resources:
       Tags:
         - Key: Name
           Value: EC2
-
+      UserData: !Base64 |
+        #!/bin/bash
+        # Install Docker
+        sudo yum update -y
+        sudo yum install docker -y
+        sudo service docker start
+        sudo usermod -a -G docker ec2-user
+        # Install docker-compose
+        sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+        # Create docker-compose file
+        echo "
+        version: '3.9'
+        services:
+          backend-app:
+            container_name: backend_app
+            image: crismigo/greenwheel_backend:latest
+            restart: always
+            ports:
+              - "80:8000"
+            environment:
+              DJANGO_SECRET_KEY=cnc+sy7tn*=0^hc#^hm7=cf&@oicx+g4-fmpsm1$i3dpcp3^hu
+              DJANGO_DATABASE_HOST=localhost
+              DJANGO_DATABASE_PORT=5432
+              DJANGO_DATABASE_NAME=GreenWheelDB
+              DJANGO_DATABASE_USER=greenwheel
+        " > docker-compose.yml
+        # Run docker-compose
+        sudo /usr/local/bin/docker-compose up -d
 
   ################################################
   #           Resources for S3 Bucket            #
