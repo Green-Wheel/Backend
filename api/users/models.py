@@ -32,7 +32,7 @@ class Users(AbstractUser):
     phone = models.CharField(max_length=20, null=True, blank=True)
     birthdate = models.DateField(null=True, blank=True)
     language = models.ForeignKey(Languages, on_delete=models.CASCADE, null=True, blank=True)
-    profile_picture = models.TextField(null=True, blank=True)
+    profile_picture = models.URLField(null=True, blank=False)
     api_key = models.TextField(null=True, blank=True)
     login_method = models.ForeignKey(LoginMethods, on_delete=models.CASCADE, null=True, blank=True, default=1)
     level = models.IntegerField(null=False, blank=False, default=1)
