@@ -44,13 +44,13 @@ Resources:
       Tags:
         - Key: Name
           Value: EC2
-      UserData: !Base64 |
-        #!/bin/bash
-        # Install Docker
-        sudo yum update -y
-        sudo yum install docker -y
-        sudo service docker start
-        sudo usermod -a -G docker ec2-user
+#      UserData: !Base64 |
+#        #!/bin/bash
+#        # Install Docker
+#        sudo yum update -y
+#        sudo yum install docker -y
+#        sudo service docker start
+#        sudo usermod -a -G docker ec2-user
         
 
   ################################################
