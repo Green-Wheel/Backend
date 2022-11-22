@@ -1,7 +1,5 @@
 from django.db.models import Avg
 from rest_framework import serializers
-
-from utils.imagesS3 import get_image_from_s3
 from .models import Users
 from ..ratings.models import ClientsRating
 
@@ -33,7 +31,8 @@ class UserSerializer(serializers.ModelSerializer):
         return ClientsRating.objects.filter(client=obj.id).aggregate(Avg('rate'))['rate__avg']
 
     def get_image(self, obj):
-        image = get_image_from_s3(obj.profile_picture)
+        user = Users.objects.get(id=obj.id)
+        image = user.profile_picture
         return image
 
     class Meta:

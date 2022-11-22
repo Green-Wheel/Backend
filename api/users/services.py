@@ -61,6 +61,7 @@ def upload_images(user_id, images):
         user.save()
     return get_user(user_id)
 
+
 def get_user_posts(user_id):
     return Publication.objects.filter(owner_id=user_id).order_by('-created_at')
 
