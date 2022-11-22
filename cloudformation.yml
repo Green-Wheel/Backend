@@ -44,11 +44,14 @@ Resources:
       Tags:
         - Key: Name
           Value: EC2
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash -xe
-          yum update -y aws-cfn-bootstrap
-          
+      UserData: !Base64 |
+        #!/bin/bash
+        # Install Docker
+        sudo yum update -y
+        sudo yum install docker -y
+        sudo service docker start
+        sudo usermod -a -G docker ec2-user
+        
 
   ################################################
   #           Resources for S3 Bucket            #
