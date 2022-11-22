@@ -28,6 +28,7 @@ class Languages(models.Model):
 
 
 class Users(AbstractUser):
+    email = models.EmailField(max_length=254, null=True, blank=False)
     about = models.TextField(null=True, blank=True)
     phone = models.CharField(max_length=20, null=True, blank=True)
     birthdate = models.DateField(null=True, blank=True)

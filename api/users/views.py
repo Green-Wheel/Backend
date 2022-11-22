@@ -9,8 +9,10 @@ from .services import get_user, langIdToString, update_language, update_user, ge
 from ..chargers.pagination import PaginationHandlerMixin
 from ..publications.serializers import PublicationListSerializer
 
+
 class BasicPagination(PageNumberPagination):
     page_size_query_param = 'limit'
+
 
 # Create your views here.
 class UserApiView(APIView):
@@ -78,4 +80,52 @@ class UserPostsApiView(APIView, PaginationHandlerMixin):
         except Users.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response({"res": "Error: " + str(e)},status=status.HTTP_400_BAD_REQUEST)
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RegisterApiView(APIView):
+    def post(self, request):
+        user = Users.objects.create_user(
+            email=request.data["email"],
+            name=request.data["name"],
+            surname=request.data["surname"],
+            username=request.data["username"],
+            language_id=request.data["language_id"],
+            phone_number=request.data["phone_number"],
+            is_active=True,
+            is_staff=False,
+            is_superuser=False,
+        )
+        user.set_password(request.data["password"])
+        return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
+
+
+class RecoverPasswordApiView(APIView):
+
+    def get(self, request):
+        user = Users.objects.get(email=request.data["email"])
+        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+
+    def put(self, request):
+        user = Users.objects.get(email=request.data["email"])
+        user.set_password(request.data["password"])
+        user.save()
+        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+
+
+class ChangePasswordApiView(APIView):
+    def put(self, request):
+        user = Users.objects.get(email=request.data["email"])
+        user.set_password(request.data["password"])
+        user.save()
+        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+
+
+class LogoutApiView(APIView):
+    def post(self, request):
+        return Response(status=status.HTTP_200_OK)
+
+
+class LoginApiView(APIView):
+    def post(self, request):
+        return Response(status=status.HTTP_200_OK)

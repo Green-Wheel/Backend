@@ -22,4 +22,10 @@ urlpatterns = [
     path('<int:user_id>/', views.ConcreteUserApiView.as_view()),
     path('language/', views.LanguageApiView.as_view()),
     path('<int:user_id>/posts/', views.UserPostsApiView.as_view()),
+    path('register/', views.RegisterApiView.as_view()),
+    path('login/', views.LoginApiView.as_view()),
+    path('logout/', views.LogoutApiView.as_view()),
+    path('password/recovery/', views.RecoverPasswordApiView.as_view()),
+    path('password/change/', views.ChangePasswordApiView.as_view()),
+
 ]
