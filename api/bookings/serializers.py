@@ -31,7 +31,7 @@ class BookingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bookings
         fields = ["id", "user", "publication", "start_date", "end_date",
-                  "created"]
+
 
 
 class SimpleBookingsSerializer(serializers.ModelSerializer):

@@ -166,7 +166,7 @@ def __save_chargers_to_db():
         all_speeds, available, all_connections, all_currents = __get_charger_info(charger.get("tipus_velocitat"),
                                                                                   charger.get("tipus_connexi"),
                                                                                   charger.get("ac_dc"))
-        title, description, direction = None, charger.get("designaci_descriptiva"), charger.get("adre_a")
+        title, description, direction = charger.get("designaci_descriptiva"),None, charger.get("adre_a")
         town, localization = __get_publication_info(charger.get("provincia"), charger.get("municipi"),
                                                     charger.get("latitud"), charger.get("longitud"))
         __create_public_charger(agent, identifier, access, power, all_speeds, available, all_connections, all_currents,
