@@ -41,9 +41,6 @@ Resources:
       InstanceType: t2.micro
       ImageId: ami-0f29c8402f8cce65c
       SecurityGroups: [default]
-      Tags:
-        - Key: Name
-          Value: EC2
       UserData: !Base64 |
         #!/bin/bash
         # Install Docker
