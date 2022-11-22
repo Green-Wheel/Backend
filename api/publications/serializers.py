@@ -41,7 +41,6 @@ class PublicationSerializer(serializers.ModelSerializer):
     bike = serializers.SerializerMethodField('get_bike')
     images = serializers.SerializerMethodField("get_image")
 
-
     def get_type(self, obj):
         try:
             Chargers.objects.get(id=obj.id)
@@ -60,14 +59,14 @@ class PublicationSerializer(serializers.ModelSerializer):
             return DetailedBikeSerializer(Bikes.objects.get(id=obj.id)).data
         except Bikes.DoesNotExist:
             return None
-    
+
     def get_image(self, obj):
         saved_images = Images.objects.filter(publication=obj.id)
         images = []
         for image in saved_images:
             images.append(ImageSerializer(image).data)
         return images
-        
+
     class Meta:
         model = Publication
         fields = ["id", "type", "charger", "bike", "images"]
@@ -105,6 +104,7 @@ class PublicationListSerializer(serializers.ModelSerializer):
 
 class ImageSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
+
     # image = serializers.SerializerMethodField("get_image")
     #
     # def get_image(self, obj):
@@ -118,7 +118,6 @@ class ImageSerializer(serializers.ModelSerializer):
 
 class OccupationRangeSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
-
 
     def validate(self, attrs):
         occupation_id = None
@@ -146,5 +145,3 @@ class OccupationRangeSerializer(serializers.ModelSerializer):
         model = OccupationRanges
         fields = ["id", "start_date", "end_date", "occupation_range_type", "related_publication", "repeat_mode",
                   "booking", "created_at"]
-
-
