@@ -70,7 +70,6 @@ Resources:
               DJANGO_DATABASE_PORT=5432
               DJANGO_DATABASE_NAME=GreenWheelDB
               DJANGO_DATABASE_USER=greenwheel
-              DJANGO_DATABASE_PASSWORD=!Ref DBPassword
         " > docker-compose.yml
         # Run docker-compose
         sudo /usr/local/bin/docker-compose up -d
