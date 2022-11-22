@@ -72,7 +72,7 @@ jobs:
         aws-region: eu-west-1
 
     - name: Deploy to AWS CloudFormation
-      uses: aws-actions/aws-cloudformation-github-deploy@v1
+      uses: aws-actions/aws-cloudformation-github-deploy@not-fail-on-updates-14
       with:
         name: cloudformation-stack
         template: cloudformation.yml
