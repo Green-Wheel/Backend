@@ -35,6 +35,27 @@ Resources:
 ################################################
 #                Resources for EC2             #
 ################################################
+#  IAMRoleEC2:
+#    Type: AWS::IAM::Role
+#    Properties:
+#      AssumeRolePolicyDocument:
+#        Version: "2012-10-17"
+#        Statement:
+#          - Effect: Allow
+#            Principal:
+#              Service:
+#                - ec2.amazonaws.com
+#            Action:
+#              - 'sts:AssumeRole'
+#      Policies:
+#        - PolicyName: root
+#          PolicyDocument:
+#            Version: "2012-10-17"
+#            Statement:
+#              - Effect: Allow
+#                Action: '*'
+#                Resource: '*'
+
   GreenWheelEC2:
     Type: AWS::EC2::Instance
     Properties:
@@ -47,26 +68,27 @@ Resources:
         sudo yum update -y
         sudo yum install docker -y
         sudo service docker start
-        sudo usermod -a -G docker ec2-user
+        sudo groupadd docker
+        sudo usermod -aG docker ec2-user
         # Install docker-compose
         sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
         sudo chmod +x /usr/local/bin/docker-compose
         # Create docker-compose file
         echo "
         version: '3.9'
-          services:
-            backend-app:
-              container_name: backend_app
-              image: crismigo/greenwheel_backend:latest
-              restart: always
-              ports:
-                - 80:8000
-              environment:
-                DJANGO_SECRET_KEY: "cnc+sy7tn*=0^hc#^hm7=cf&@oicx+g4-fmpsm1^hu"
-                DJANGO_DATABASE_HOST: "localhost"
-                DJANGO_DATABASE_PORT: "5432"
-                DJANGO_DATABASE_NAME: "GreenWheelDB"
-                DJANGO_DATABASE_USER: "greenwheel"
+        services:
+          backend-app:
+            container_name: backend_app
+            image: crismigo/greenwheel_backend:latest
+            restart: always
+            ports:
+              - "80:8000"
+            environment:
+              DJANGO_SECRET_KEY=cnc+sy7tn*=0^hc#^hm7=cf&@oicx+g4-fmpsm1$i3dpcp3^hu
+              DJANGO_DATABASE_HOST=localhost
+              DJANGO_DATABASE_PORT=5432
+              DJANGO_DATABASE_NAME=GreenWheelDB
+              DJANGO_DATABASE_USER=greenwheel
         " > docker-compose.yml
         # Run docker-compose
         sudo /usr/local/bin/docker-compose up -d
@@ -74,25 +96,25 @@ Resources:
   ################################################
   #           Resources for S3 Bucket            #
   ################################################
-  GreenWheelS3Bucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: greenwheel-bucket
-
-  S3BucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref GreenWheelS3Bucket
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal: '*'
-            Action:
-              - 's3:*'
-            Resource:
-              - !Sub 'arn:aws:s3:::${GreenWheelS3Bucket}'
-              - !Sub 'arn:aws:s3:::${GreenWheelS3Bucket}/*'
+#  GreenWheelS3Bucket:
+#    Type: AWS::S3::Bucket
+#    Properties:
+#      BucketName: greenwheel-bucket
+#
+#  S3BucketPolicy:
+#    Type: AWS::S3::BucketPolicy
+#    Properties:
+#      Bucket: !Ref GreenWheelS3Bucket
+#      PolicyDocument:
+#        Version: "2012-10-17"
+#        Statement:
+#          - Effect: Allow
+#            Principal: '*'
+#            Action:
+#              - 's3:*'
+#            Resource:
+#              - !Sub 'arn:aws:s3:::${GreenWheelS3Bucket}'
+#              - !Sub 'arn:aws:s3:::${GreenWheelS3Bucket}/*'
 #
 #  ################################################
 #  #           Resources for RDS                  #
