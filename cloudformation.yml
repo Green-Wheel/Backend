@@ -84,11 +84,12 @@ Resources:
             ports:
               - "80:8000"
             environment:
-              DJANGO_SECRET_KEY=cnc+sy7tn*=0^hc#^hm7=cf&@oicx+g4-fmpsm1$i3dpcp3^hu
-              DJANGO_DATABASE_HOST=localhost
-              DJANGO_DATABASE_PORT=5432
-              DJANGO_DATABASE_NAME=GreenWheelDB
-              DJANGO_DATABASE_USER=greenwheel
+              DJANGO_SECRET_KEY: cnc+sy7tn*=0^hc#^hm7=cf&@oicx+g4-fmpsm1$i3dpcp3^hu
+              DJANGO_DATABASE_HOST: localhost
+              DJANGO_DATABASE_PORT: 5432
+              DJANGO_DATABASE_NAME: GreenWheelDB
+              DJANGO_DATABASE_USER: greenwheel
+              DJANGO_DATABASE_PASSWORD: GreenWheel
         " > docker-compose.yml
         # Run docker-compose
         sudo /usr/local/bin/docker-compose up -d
