@@ -35,27 +35,6 @@ Resources:
 ################################################
 #                Resources for EC2             #
 ################################################
-#  IAMRoleEC2:
-#    Type: AWS::IAM::Role
-#    Properties:
-#      AssumeRolePolicyDocument:
-#        Version: "2012-10-17"
-#        Statement:
-#          - Effect: Allow
-#            Principal:
-#              Service:
-#                - ec2.amazonaws.com
-#            Action:
-#              - 'sts:AssumeRole'
-#      Policies:
-#        - PolicyName: root
-#          PolicyDocument:
-#            Version: "2012-10-17"
-#            Statement:
-#              - Effect: Allow
-#                Action: '*'
-#                Resource: '*'
-
   GreenWheelEC2:
     Type: AWS::EC2::Instance
     Properties:
@@ -98,25 +77,25 @@ Resources:
   ################################################
   #           Resources for S3 Bucket            #
   ################################################
-#  GreenWheelS3Bucket:
-#    Type: AWS::S3::Bucket
-#    Properties:
-#      BucketName: greenwheel-bucket
-#
-#  S3BucketPolicy:
-#    Type: AWS::S3::BucketPolicy
-#    Properties:
-#      Bucket: !Ref GreenWheelS3Bucket
-#      PolicyDocument:
-#        Version: "2012-10-17"
-#        Statement:
-#          - Effect: Allow
-#            Principal: '*'
-#            Action:
-#              - 's3:*'
-#            Resource:
-#              - !Sub 'arn:aws:s3:::${GreenWheelS3Bucket}'
-#              - !Sub 'arn:aws:s3:::${GreenWheelS3Bucket}/*'
+  GreenWheelS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: greenwheel-bucket
+
+  S3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref GreenWheelS3Bucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action:
+              - 's3:*'
+            Resource:
+              - !Sub 'arn:aws:s3:::${GreenWheelS3Bucket}'
+              - !Sub 'arn:aws:s3:::${GreenWheelS3Bucket}/*'
 #
 #  ################################################
 #  #           Resources for RDS                  #
