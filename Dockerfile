@@ -14,6 +14,7 @@ RUN apk add --no-cache g++ snappy-dev && \
 COPY ./requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
+# assignar permisos a ec2-user
 COPY . .
 RUN rm .env
 
