@@ -60,7 +60,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
-      ImageId: ami-096800910c1b781ba
+      ImageId: ami-01cae1550c0adea9c
       SecurityGroups: [default]
       UserData: !Base64 |
         #!/bin/bash
