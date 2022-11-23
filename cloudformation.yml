@@ -72,7 +72,6 @@ Resources:
         # Install docker-compose
         sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
         sudo chmod +x /usr/local/bin/docker-compose
-
         # Create docker-compose file
         echo "
         version: '3.9'
@@ -89,8 +88,6 @@ Resources:
                 DJANGO_DATABASE_PORT: "5432"
                 DJANGO_DATABASE_NAME: "GreenWheelDB"
                 DJANGO_DATABASE_USER: "greenwheel"
-                DJANGO_DATABASE_PASSWORD: "GreenWheel"
-        
         " > docker-compose.yml
         # Run docker-compose
         sudo /usr/local/bin/docker-compose up -d
