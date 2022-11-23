@@ -19,7 +19,7 @@ COPY . .
 RUN rm .env
 
 # For Django
-RUN chmod +x entrypoint.sh
+RUN chmod +x ./docker/entrypoint.sh
 ENTRYPOINT [ "./docker/entrypoint.sh" ]
 EXPOSE 8080
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]
