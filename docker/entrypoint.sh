@@ -14,15 +14,14 @@ echo "Bash options set"
 #
 #from psycopg2 import connect
 #from psycopg2.errors import OperationalError
-#import os
 #
 #try:
 #    connect(
-#        dbname=os.getenv('DJANGO_POSTGRES_DATABASE'),
-#        user=os.getenv('DJANGO_POSTGRES_USER'),
-#        password=os.getenv('DJANGO_POSTGRES_PASSWORD'),
-#        host=os.getenv('DJANGO_POSTGRES_HOST'),
-#        port=os.getenv('DJANGO_POSTGRES_PORT'),
+#        dbname="${DJANGO_POSTGRES_DATABASE}",
+#        user="${DJANGO_POSTGRES_USER}",
+#        password="${DJANGO_POSTGRES_PASSWORD}",
+#        host="${DJANGO_POSTGRES_HOST}",
+#        port="${DJANGO_POSTGRES_PORT}",
 #    )
 #except OperationalError:
 #    sys.exit(-1)
@@ -42,5 +41,3 @@ python manage.py migrate
 python manage.py loaddata fixtures/inicial_data.json
 
 exec "$@"
-
-#amazon es connecta  la ec2 a traves de ssh i aixo es el port 22
