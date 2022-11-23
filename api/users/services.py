@@ -118,6 +118,8 @@ def remove_api_key(user_id):
 def login_user(username, password):
     user = Users.objects.get(username=username)
     if user.check_password(password):
+        user.api_key = generate_api_key()
+        user.save()
         return user
     else:
         raise Exception("Wrong password")

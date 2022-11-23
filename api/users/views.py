@@ -5,6 +5,8 @@ from rest_framework.pagination import PageNumberPagination
 from .models import Users
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
+from .permissions import Check_API_KEY_Auth
 from .serializers import UserSerializer
 from .services import get_user, langIdToString, update_language, update_user, get_user_posts, create_user, \
     remove_api_key, login_user, change_password
@@ -18,6 +20,7 @@ class BasicPagination(PageNumberPagination):
 
 # Create your views here.
 class UserApiView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
     def get(self, request):
         user = get_user(request.user.id)
         if user is None:
@@ -30,6 +33,7 @@ class UserApiView(APIView):
 
 
 class ConcreteUserApiView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
     def get(self, request, user_id):
         try:
             user = get_user(user_id)
@@ -39,6 +43,7 @@ class ConcreteUserApiView(APIView):
 
 
 class LanguageApiView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
     def get(self, request):
         user_instance = get_user(request.user.id)
         if not user_instance:
@@ -65,6 +70,7 @@ class LanguageApiView(APIView):
 
 
 class UserPostsApiView(APIView, PaginationHandlerMixin):
+    permission_classes = [Check_API_KEY_Auth]
     pagination_class = BasicPagination
 
     def get(self, request, user_id):
@@ -108,6 +114,7 @@ class RecoverPasswordApiView(APIView):
 
 
 class ChangePasswordApiView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
     def put(self, request):
         try:
             change_password(request.data, request.user)
@@ -117,6 +124,7 @@ class ChangePasswordApiView(APIView):
 
 
 class LogoutApiView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
     def post(self, request):
         try:
             remove_api_key(request.user.id)
