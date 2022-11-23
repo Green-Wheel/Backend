@@ -67,7 +67,7 @@ class UploadPublicationImageApiView(APIView):
 
     def post(self, request, publication_id):
         try:
-            publication = upload_images(publication_id, request.FILES, request.user.id)
+            publication = upload_images(publication_id, request.FILES.getlist('file'), request.user.id)
             return Response(PublicationSerializer(publication).data, status=status.HTTP_200_OK)
         except Publication.DoesNotExist:
             return Response({"res": "Error: the publication with id " + str(publication_id) + "does not exist"}, status=status.HTTP_404_NOT_FOUND)

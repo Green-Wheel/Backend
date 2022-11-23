@@ -198,10 +198,10 @@ def get_charger_by_id(charge_id):
 
 def create_private_charger(data, owner_id):
     localization = get_localization(data["latitude"], data["longitude"])
-    speed_type = SpeedsType.objects.filter(pk=data["speed"])[0]
-    connection_type = ConnectionsType.objects.filter(pk=data["connection_type"])[0]
-    current_type = CurrentsType.objects.filter(pk=data["current_type"])[0]
-    town = get_town("Barcelona", "Barcelona")
+    speed_type = SpeedsType.objects.filter(pk=data["speed"][0])[0]
+    connection_type = ConnectionsType.objects.filter(pk=data["connection_type"][0])[0]
+    current_type = CurrentsType.objects.filter(pk=data["current_type"][0])[0]
+    town = get_town(data["town"]["name"], data["town"]["province"])
 
     private = PrivateChargers(title=data['title'],
                               description=data['description'],

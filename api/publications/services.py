@@ -88,11 +88,12 @@ def get_publication_by_id(publication_id):
 
 
 def upload_images(publication_id, images, user_id):
+    print("upload_images")
     publication = get_publication_by_id(publication_id)
     owner = publication.owner
     if owner.id != user_id:
         raise Exception("User is not the owner of this publication")
-    for file in images.getlist("images"):
+    for file in images:
         path = "publication/" + str(publication_id) + "/" + file.name
         s3_path = upload_image_to_s3(file, path)
         image = Images(image_path=s3_path, publication_id=publication_id)
