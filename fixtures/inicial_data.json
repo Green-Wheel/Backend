@@ -134,5 +134,19 @@
     "fields" : {
       "name" : "Each year"
     }
+  },
+  {
+    "model" : "bikes.BikeTypes",
+    "pk" : 1,
+    "fields" : {
+      "name" : "Manual"
+    }
+  },
+  {
+    "model" : "bikes.BikeTypes",
+    "pk" : 2,
+    "fields" : {
+      "name" : "Electric"
+    }
   }
 ]
