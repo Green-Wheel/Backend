@@ -58,5 +58,5 @@ class BikeTypeSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
 
     class Meta:
-        model = Bikes
+        model = BikeTypes
         fields = ["id", "name"]
