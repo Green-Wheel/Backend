@@ -5,7 +5,7 @@ from api.bikes.models import Bikes
 from api.bikes.serializers import DetailedBikeSerializer, BikeListSerializer
 from api.chargers.models import Chargers, Publication
 from api.chargers.serializers import DetailedChargerSerializer, ChargerListSerializer
-from api.publications.models import Localizations, Town, Province, Images, OccupationRanges
+from api.publications.models import Localizations, Town, Province, Images, OccupationRanges, OccupationRepeatMode
 
 
 class LocalizationSerializer(serializers.ModelSerializer):
@@ -145,3 +145,10 @@ class OccupationRangeSerializer(serializers.ModelSerializer):
         model = OccupationRanges
         fields = ["id", "start_date", "end_date", "occupation_range_type", "related_publication", "repeat_mode",
                   "booking", "created_at"]
+
+class RepeatModeSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = OccupationRepeatMode
+        fields = ["id", "name"]

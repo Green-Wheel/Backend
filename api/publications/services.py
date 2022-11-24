@@ -120,3 +120,6 @@ def upload_images(publication_id, images, user_id):
         image.save()
     return publication
 
+
+def get_repeat_types():
+    return OccupationRepeatMode.objects.all()

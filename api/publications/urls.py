@@ -23,4 +23,5 @@ urlpatterns = [
     path("<int:publication_id>/occupation/<int:year>/<int:month>/", views.MonthPublicationOccupation.as_view()),
     path("<int:publication_id>/occupation/<int:year>/<int:month>/<int:day>/", views.MonthPublicationOccupation.as_view()),
     path("<int:publication_id>/upload/", views.UploadPublicationImageApiView.as_view()),
+    path("occupation/repeatTypes/", views.RepeatModeTypesApiView.as_view()),
 ]
