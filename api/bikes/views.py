@@ -1,5 +1,6 @@
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -8,7 +9,8 @@ from api.bikes.serializers import BikeSerializer, DetailedBikeSerializer, BikeLi
 from api.bikes.services import get_filtered_bikes, create_bike, get_bike_by_id, update_bike, inactive_bike, \
     get_bikes_type
 from api.chargers.pagination import PaginationHandlerMixin
-from api.users.permissions import Check_API_KEY_Auth
+from api.users.permissions import Check_API_KEY_Auth, SessionAuth
+
 
 class BasicPagination(PageNumberPagination):
     page_size_query_param = 'limit'
@@ -16,7 +18,8 @@ class BasicPagination(PageNumberPagination):
 
 # Create your views here.
 class BikesApiView(APIView):
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
 
     def get(self, request):
         try:
@@ -36,7 +39,8 @@ class BikesApiView(APIView):
 
 
 class BikesListApiView(APIView, PaginationHandlerMixin):
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
     pagination_class = BasicPagination
 
     def get(self, request):
@@ -54,7 +58,8 @@ class BikesListApiView(APIView, PaginationHandlerMixin):
 
 
 class DetailedBikeApiView(APIView):
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
 
     def get(self, request, bike_id):
         try:
@@ -83,7 +88,8 @@ class DetailedBikeApiView(APIView):
 
 
 class BikeTypesApiView(APIView):
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
 
     def get(self, request):
         try:
