@@ -36,7 +36,7 @@ class BikesApiView(APIView):
 
 
 class BikesListApiView(APIView, PaginationHandlerMixin):
-    #permission_classes = [Check_API_KEY_Auth]
+    permission_classes = [Check_API_KEY_Auth]
     pagination_class = BasicPagination
 
     def get(self, request):
