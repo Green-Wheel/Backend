@@ -30,6 +30,8 @@ def get_filtered_bikes(filter_params):
     order = filter_params.get('order', None)
     if order:
         bikes = bikes.order_by(order)
+    else:
+        bikes = bikes.order_by('id')
     return bikes
 
 
