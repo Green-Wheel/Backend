@@ -134,7 +134,7 @@ class RecoverPasswordApiView(APIView):
         try:
             code = recover_password(request.query_params["username"])
 
-            return Response({"code": code}, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
         except Users.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
