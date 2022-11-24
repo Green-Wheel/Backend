@@ -85,11 +85,11 @@ Resources:
               - '80:8000'
             environment:
               DJANGO_SECRET_KEY: 'cnc+sy7tn*=0^hc#^hm7=cf&@oicx+g4-fmpsm1$i3dpcp3^hu'
-              DJANGO_DATABASE_HOST: 'localhost'
+              DJANGO_DATABASE_HOST: 'cloudformation-stack.cvktoxcvbtpd.eu-west-1.rds.amazonaws.com'
               DJANGO_DATABASE_PORT: '5432'
               DJANGO_DATABASE_NAME: 'GreenWheelDB'
               DJANGO_DATABASE_USER: 'greenwheel'
-              DJANGO_DATABASE_PASSWORD: 'GreenWheel'
+              DJANGO_DATABASE_PASSWORD: '7217MC6n5DAn'
               AWS_ACCESS_KEY_ID: 'AKIAQDN2THLQD72I5VCJ'
               AWS_SECRET_ACCESS_KEY: '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'
               DEBUG_MODE: 'True'
