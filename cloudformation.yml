@@ -92,8 +92,8 @@ Resources:
               DJANGO_DATABASE_PASSWORD: '7217MC6n5DAn'
               AWS_ACCESS_KEY_ID: 'AKIAQDN2THLQD72I5VCJ'
               AWS_SECRET_ACCESS_KEY: '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'
-              DEBUG_MODE: 'True'
-              SECURE_SSL_REDIRECT: 'False'
+              DEBUG_MODE: 'False'
+              SECURE_SSL_REDIRECT: 'True'
               CORS_ALLOW_ALL_ORIGINS: 'True'
         " > docker-compose.yml
         # Run docker-compose
