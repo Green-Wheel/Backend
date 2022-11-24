@@ -113,6 +113,23 @@ def __get_publication_info(c_province, c_town, c_latitude, c_longitude):
 
     return obj_town, obj_localization
 
+def __parse_speed_types(speeds):
+    speed_types = []
+    for speed in speeds:
+        speed_types.append(SpeedsType.objects.get(id=speed['id']))
+    return speed_types
+
+def __parse_current_types(currents):
+    current_types = []
+    for current in currents:
+        current_types.append(CurrentsType.objects.get(id=current['id']))
+    return current_types
+
+def __parse_connections_types(connections):
+    connections_types = []
+    for connection in connections:
+        connections_types.append(ConnectionsType.objects.get(id=connection['id']))
+    return connections_types
 
 def __filter_localization(c_latitude, c_longitude, c_direction):
     try:
@@ -198,10 +215,11 @@ def get_charger_by_id(charge_id):
 
 def create_private_charger(data, owner_id):
     localization = get_localization(data["latitude"], data["longitude"])
-    speed_type = SpeedsType.objects.filter(pk=data["speed"][0])[0]
-    connection_type = ConnectionsType.objects.filter(pk=data["connection_type"][0])[0]
-    current_type = CurrentsType.objects.filter(pk=data["current_type"][0])[0]
+    speed_type = __parse_speed_types(data["speed"])
+    connection_type = __parse_connections_types(data["connection_type"])
+    current_type = __parse_current_types(data["current_type"])
     town = get_town(data["town"]["name"], data["town"]["province"])
+
 
     private = PrivateChargers(title=data['title'],
                               description=data['description'],
@@ -211,19 +229,20 @@ def create_private_charger(data, owner_id):
                               power=data["power"],
                               price=data["price"],
                               owner_id=owner_id)
+
+    private.speed.set(speed_type)
+    private.connection_type.set(connection_type)
+    private.current_type.set(current_type)
     private.save()
-    private.speed.set([speed_type])
-    private.connection_type.set([connection_type])
-    private.current_type.set([current_type])
     return private
 
 
 def update_private_charger(charger_id, data):
     localization = get_localization(data["latitude"], data["longitude"])
-    speed_type = SpeedsType.objects.filter(pk=data["speed"])[0]
-    connection_type = ConnectionsType.objects.filter(pk=data["connection_type"])[0]
-    current_type = CurrentsType.objects.filter(pk=data["current_type"])[0]
-    town = get_town("Barcelona", "Barcelona")
+    speed_type = __parse_speed_types(data["speed"])
+    connection_type = __parse_connections_types(data["connection_type"])
+    current_type = __parse_current_types(data["current_type"])
+    town = get_town(data["town"]["name"], data["town"]["province"])
 
     private = PrivateChargers.objects.get(id=charger_id)
 
