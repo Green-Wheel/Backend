@@ -44,14 +44,7 @@ def update_language(language, user_id):
     return True
 
 
-def update_user(data, user_id):
-    user_instance = get_user(user_id)
-    user = UserSerializer(user_instance, data=data)
-    if user.is_valid():
-        user.save()
-        return user
-    else:
-        raise Exception(user.errors)
+
 
 
 def get_user_posts(user_id):
@@ -107,6 +100,21 @@ def create_user(data):
         user.save()
         return user
 
+def update_user(data, user_id):
+    user_instance = get_user(user_id)
+    if data["email"] is not None and data["email"] != "":
+        user_instance.email = data["email"]
+    if data["first_name"] is not None and data["first_name"] != "":
+        user_instance.first_name = data["first_name"]
+    if data["last_name"] is not None and data["last_name"] != "":
+        user_instance.last_name = data["last_name"]
+    if data["about"] is not None:
+        user_instance.about = data["about"]
+    if user_instance.is_valid():
+        user_instance.save()
+        return user_instance
+    else:
+        raise Exception(user_instance.errors)
 
 def remove_api_key(user_id):
     user = get_user(user_id)

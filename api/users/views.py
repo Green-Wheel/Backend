@@ -1,4 +1,4 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 
@@ -92,6 +92,7 @@ class UserPostsApiView(APIView, PaginationHandlerMixin):
 
 
 class RegisterApiView(APIView):
+    authentication_classes = ()
     def post(self, request):
         try:
             user = create_user(request.data)
@@ -102,6 +103,7 @@ class RegisterApiView(APIView):
 
 
 class RecoverPasswordApiView(APIView):
+    authentication_classes = ()
     def get(self, request):
         user = Users.objects.get(email=request.data["email"])
         return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
@@ -125,9 +127,11 @@ class ChangePasswordApiView(APIView):
 
 class LogoutApiView(APIView):
     permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = ()
     def post(self, request):
         try:
             remove_api_key(request.user.id)
+            logout(request)
             return Response(status=status.HTTP_200_OK)
         except Users.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -136,6 +140,7 @@ class LogoutApiView(APIView):
 
 
 class LoginApiView(APIView):
+    authentication_classes = ()
     def post(self, request):
         try:
             user = login_user(request.data["username"], request.data["password"])
