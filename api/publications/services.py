@@ -57,16 +57,19 @@ def delete_occupation(ocupation_id, user_id):
         raise Exception("You are not the owner of the publication")
     occupation.delete()
 
-def get_occupation_by_month(publication_id, year, month):
+def get_occupation_by_month(publication_id, year, month,day):
     occupations = OccupationRanges.objects.filter(related_publication=publication_id, start_date__year=year,
-                                                  start_date__month=month)
+                                                  start_date__month=month,start_date__day=day)
     start_day_time = time(0, 0, 0)
     end_day_time = time(23, 59, 59)
-    days = {}
+    if day is None:
+        days = {}
+    else:
+        days = []
     for occupation in occupations:
         for i in range(occupation.start_date.day, occupation.end_date.day + 1):
             occupation_strip = {}
-            if i not in days:
+            if i not in days and day is None:
                 days[i] = []
             if occupation.start_date.day == i:
                 occupation_strip["start_time"] = occupation.start_date.time()
@@ -80,7 +83,10 @@ def get_occupation_by_month(publication_id, year, month):
             occupation_strip["occupation_range_type"] = occupation.occupation_range_type.id
             if occupation_strip["occupation_range_type"] == 1:
                 occupation_strip["booking"] = SimpleBookingsSerializer(occupation.booking).data
-            days[i].append(occupation_strip)
+            if day is None:
+                days[i].append(occupation_strip)
+            else:
+                days.append(occupation_strip)
     return days
 
 def get_publication_by_id(publication_id):
