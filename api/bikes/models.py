@@ -20,6 +20,7 @@ class Bikes(Publication):
     bike_type = models.ForeignKey(BikeTypes, on_delete=models.CASCADE, null=False, blank=False)
     power = models.FloatField(null=True, blank=False)
     price = models.FloatField(null=True, blank=False)
+
     class Meta:
         verbose_name = "Bike"
         verbose_name_plural = "Bikes"

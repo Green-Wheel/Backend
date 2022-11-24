@@ -1,12 +1,10 @@
 from django.db.models import Avg
 from rest_framework import serializers
-
-from api.bikes.models import Bikes
-
-from api.chargers.models import PublicChargers, Chargers, PrivateChargers, ConnectionsType, SpeedsType, CurrentsType
 from api.publications.models import Localizations, Province, Town
+from api.chargers.models import PublicChargers, Chargers, PrivateChargers, ConnectionsType, SpeedsType, CurrentsType
 from api.ratings.models import PostRating
 from api.users.serializers import BasicUserSerializer
+
 
 class LocalizationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,6 +30,8 @@ class ProvinceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Province
         fields = ["id", "name"]
+
+
 class ChargerSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     localization = serializers.SerializerMethodField("get_localization")
@@ -169,6 +169,7 @@ class PrivateChargerSerializer(serializers.ModelSerializer):
 
     def get_owner(self, obj):
         return BasicUserSerializer(obj.owner).data
+
     class Meta:
         model = PrivateChargers
         fields = ["price", "owner"]
@@ -202,9 +203,6 @@ class CurrentTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CurrentsType
         fields = ["id", "name"]
-
-
-
 
 
 """class FullPrivateChargerSerializer(serializers.ModelSerializer):

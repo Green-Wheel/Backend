@@ -30,31 +30,50 @@ def get_filtered_bikes(filter_params):
     order = filter_params.get('order', None)
     if order:
         bikes = bikes.order_by(order)
+    else:
+        bikes = bikes.order_by('id')
     return bikes
 
 
 def get_bikes_type():
     return BikeTypes.objects.all()
 
-def create_bike(data, user):
-    pass
+
+def create_bike(data, owner_id):
+    localization = get_localization(data["latitude"], data["longitude"])
+    town = get_town("Barcelona", "Barcelona")
+    bike_type = BikeTypes.objects.get(id=data.get("bike_type", 1))
+    bike = Bikes(title=data['title'],
+                 description=data['description'],
+                 direction="Direccio del carrer hardcodejada",
+                 town=town,
+                 localization=localization,
+                 power=data["power"],
+                 price=data["price"],
+                 bike_type=bike_type,
+                 owner_id=owner_id)
+    bike.save()
+    return bike
+
 
 def update_bike(bike_id, data, user):
     bike = get_bike_by_id(bike_id)
-    if bike.user.id != user.id:
+    if bike.owner.id != user:
         raise Exception("User not owner of bike")
     localization = get_localization(data["latitude"], data["longitude"])
-    town = get_town("Barcelona", "Barcelona")
-    bike.name = data.get('name', bike.name)
+    town = get_town(data["town"], data["province"])
+    bike.title = data.get('title', bike.title)
     bike.description = data.get('description', bike.description)
     bike.price = data.get('price', bike.price)
     bike.power = data.get('power', bike.power)
-    bike.bike_type = data.get('bike_type', bike.bike_type)
+    bike.bike_type.id = data.get('bike_type', bike.bike_type.id)
     bike.localization = localization
     bike.direction = "Direccio del carrer hardcodejada"
     bike.town = town
     # Falta imatges
     bike.save()
+    return bike
+
 
 def inactive_bike(bike_id):
     bike = get_bike_by_id(bike_id)
@@ -64,7 +83,5 @@ def inactive_bike(bike_id):
     bike.save()
     return bike
 
-def upload_images(bike_id, images):
-    for filename, file in images.iteritems():
-        pass
+
 

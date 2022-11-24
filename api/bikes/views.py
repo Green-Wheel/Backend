@@ -1,15 +1,16 @@
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.bikes.models import Bikes
 from api.bikes.serializers import BikeSerializer, DetailedBikeSerializer, BikeListSerializer, BikeTypeSerializer
 from api.bikes.services import get_filtered_bikes, create_bike, get_bike_by_id, update_bike, inactive_bike, \
-    get_bikes_type, upload_images
+    get_bikes_type
 from api.chargers.pagination import PaginationHandlerMixin
-from api.users.permissions import Check_API_KEY_Auth
+from api.users.permissions import Check_API_KEY_Auth, SessionAuth
+
 
 class BasicPagination(PageNumberPagination):
     page_size_query_param = 'limit'
@@ -17,7 +18,8 @@ class BasicPagination(PageNumberPagination):
 
 # Create your views here.
 class BikesApiView(APIView):
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
 
     def get(self, request):
         try:
@@ -37,7 +39,8 @@ class BikesApiView(APIView):
 
 
 class BikesListApiView(APIView, PaginationHandlerMixin):
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
     pagination_class = BasicPagination
 
     def get(self, request):
@@ -55,7 +58,8 @@ class BikesListApiView(APIView, PaginationHandlerMixin):
 
 
 class DetailedBikeApiView(APIView):
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
 
     def get(self, request, bike_id):
         try:
@@ -84,7 +88,8 @@ class DetailedBikeApiView(APIView):
 
 
 class BikeTypesApiView(APIView):
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
 
     def get(self, request):
         try:
@@ -92,15 +97,3 @@ class BikeTypesApiView(APIView):
             return Response(BikeTypeSerializer(bike_types, many=True).data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class UploadBikeImageApiView(APIView):
-    permission_classes = [Check_API_KEY_Auth]
-
-    def post(self, request, bike_id):
-        try:
-            bike = upload_images(bike_id, request.files)
-            return Response(DetailedBikeSerializer(bike).data, status=status.HTTP_200_OK)
-        except Bikes.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            return Response({"res": "Error: " + str(e)},status=status.HTTP_400_BAD_REQUEST)

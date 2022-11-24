@@ -1,12 +1,11 @@
 from datetime import datetime
 
 from rest_framework import serializers
-
 from api.bikes.models import Bikes
 from api.bikes.serializers import DetailedBikeSerializer, BikeListSerializer
 from api.chargers.models import Chargers, Publication
 from api.chargers.serializers import DetailedChargerSerializer, ChargerListSerializer
-from api.publications.models import Localizations, Town, Province, OccupationRanges
+from api.publications.models import Localizations, Town, Province, Images, OccupationRanges, OccupationRepeatMode
 
 
 class LocalizationSerializer(serializers.ModelSerializer):
@@ -40,6 +39,7 @@ class PublicationSerializer(serializers.ModelSerializer):
     type = serializers.SerializerMethodField('get_type')
     charger = serializers.SerializerMethodField('get_charger')
     bike = serializers.SerializerMethodField('get_bike')
+    images = serializers.SerializerMethodField("get_image")
 
     def get_type(self, obj):
         try:
@@ -57,12 +57,19 @@ class PublicationSerializer(serializers.ModelSerializer):
     def get_bike(self, obj):
         try:
             return DetailedBikeSerializer(Bikes.objects.get(id=obj.id)).data
-        except Chargers.DoesNotExist:
+        except Bikes.DoesNotExist:
             return None
+
+    def get_image(self, obj):
+        saved_images = Images.objects.filter(publication=obj.id)
+        images = []
+        for image in saved_images:
+            images.append(ImageSerializer(image).data)
+        return images
 
     class Meta:
         model = Publication
-        fields = ["id", "type", "charger", "bike"]
+        fields = ["id", "type", "charger", "bike", "images"]
 
 
 class PublicationListSerializer(serializers.ModelSerializer):
@@ -95,9 +102,22 @@ class PublicationListSerializer(serializers.ModelSerializer):
         fields = ["id", "type", "charger", "bike"]
 
 
-class OccupationRangeSerializer(serializers.ModelSerializer):
+class ImageSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
 
+    # image = serializers.SerializerMethodField("get_image")
+    #
+    # def get_image(self, obj):
+    #     img = get_image_from_s3(obj.image_path)
+    #     return img
+
+    class Meta:
+        model = Images
+        fields = ["id", "image_path"]
+
+
+class OccupationRangeSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
 
     def validate(self, attrs):
         occupation_id = None
@@ -126,3 +146,9 @@ class OccupationRangeSerializer(serializers.ModelSerializer):
         fields = ["id", "start_date", "end_date", "occupation_range_type", "related_publication", "repeat_mode",
                   "booking", "created_at"]
 
+class RepeatModeSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = OccupationRepeatMode
+        fields = ["id", "name"]

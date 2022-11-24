@@ -7,7 +7,7 @@ from config import settings
 
 # Create your models here.
 class Province(models.Model):
-    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
+    name = models.CharField(max_length=100, null=False, blank=False, unique=True)
 
     class Meta:
         verbose_name = "Province"
@@ -18,7 +18,7 @@ class Province(models.Model):
 
 
 class Town(models.Model):
-    name = models.CharField(max_length=50, null=False, blank=False)
+    name = models.CharField(max_length=100, null=False, blank=False)
     province = models.ForeignKey(Province, on_delete=models.CASCADE, null=False, blank=False)
 
     class Meta:
@@ -43,7 +43,7 @@ class Localizations(models.Model):
 
 
 class Publication(models.Model):
-    title = models.CharField(max_length=100, null=True, blank=False)
+    title = models.TextField(null=True, blank=False)
     description = models.TextField(null=True, blank=True)
     direction = models.CharField(max_length=100, null=True, blank=False)
     town = models.ForeignKey(Town, on_delete=models.CASCADE, null=True, blank=False)
@@ -97,6 +97,18 @@ class OccupationRanges(models.Model):
         verbose_name = "OccupationRange"
         verbose_name_plural = "OccupationRanges"
         unique_together = ["start_date", "end_date", "related_publication"]
+
+    def __str__(self):
+        return str(self.id)
+
+
+class Images(models.Model):
+    image_path = models.URLField(null=False, blank=False)
+    publication = models.ForeignKey(Publication, on_delete=models.CASCADE, null=True, blank=False)
+
+    class Meta:
+        verbose_name = "Image"
+        verbose_name_plural = "Images"
 
     def __str__(self):
         return str(self.id)

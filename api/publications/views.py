@@ -1,17 +1,22 @@
 from django.shortcuts import render
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from api.users.permissions import Check_API_KEY_Auth, SessionAuth
 from api.chargers.models import PrivateChargers
 from api.publications.models import Publication
-from api.publications.serializers import OccupationRangeSerializer
+from api.publications.serializers import OccupationRangeSerializer, PublicationSerializer, RepeatModeSerializer
 from api.publications.services import create_occupation, get_occupation_by_month, delete_occupation, update_occupation, \
-    get_ocupation_by_id
+    get_ocupation_by_id, upload_images, get_repeat_types
+from api.users.permissions import Check_API_KEY_Auth
+
 
 
 # Create your views here.
 class PublicationOccupationApiView(APIView):
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
     def post(self, request,publication_id):
         try:
             new_occupations = create_occupation(request.data, request.user.id, publication_id)
@@ -25,6 +30,8 @@ class PublicationOccupationApiView(APIView):
 
 
 class ConcretePublicationOccupationApiView(APIView):
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
     def get(self, request, publication_id, occupation_id):
         try:
             occupation = get_ocupation_by_id(occupation_id)
@@ -52,9 +59,34 @@ class ConcretePublicationOccupationApiView(APIView):
 
 
 class MonthPublicationOccupation(APIView):
-    def get(self, request, publication_id, year, month):
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+    def get(self, request, publication_id, year, month, day=None):
         try:
-            occupations = get_occupation_by_month(publication_id, year,month)
+            occupations = get_occupation_by_month(publication_id, year,month,day)
             return Response(occupations, status=status.HTTP_200_OK)
         except Publication.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+# Create your views here.
+class UploadPublicationImageApiView(APIView):
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+
+    def post(self, request, publication_id):
+        try:
+            publication = upload_images(publication_id, request.FILES.getlist('file'), request.user.id)
+            return Response(PublicationSerializer(publication).data, status=status.HTTP_200_OK)
+        except Publication.DoesNotExist:
+            return Response({"res": "Error: the publication with id " + str(publication_id) + "does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class RepeatModeTypesApiView(APIView):
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+
+    def get(self, request):
+        types = get_repeat_types()
+        return Response(RepeatModeSerializer(types,many=True).data, status=status.HTTP_200_OK)

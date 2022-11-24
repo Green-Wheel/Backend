@@ -22,5 +22,4 @@ urlpatterns = [
     path("list/", views.BikesListApiView.as_view()),
     path("<int:bike_id>/", views.DetailedBikeApiView.as_view()),
     path("types/", views.BikeTypesApiView.as_view()),
-    path("<int:bike_id>/upload/", views.UploadBikeImageApiView.as_view()),
 ]

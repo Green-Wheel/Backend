@@ -97,3 +97,12 @@ modules.xml
 *.ipr
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+iml
+/api/bikes/migrations/*.py
+/api/bookings/migrations/*.py
+/api/chargers/migrations/*py
+/api/chats/migrations/*py
+/api/publications/migrations/*py
+/api/ratings/migrations/*py
+/api/reports/migrations/*py
+/api/users/migrations/*py
+/api/vehicles/migrations/*py

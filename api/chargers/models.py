@@ -5,7 +5,7 @@ from api.publications.models import Publication
 
 # Create your models here.
 class CurrentsType(models.Model):
-    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
+    name = models.CharField(max_length=100, null=False, blank=False, unique=True)
 
     class Meta:
         verbose_name = "CurrentsType"
@@ -16,7 +16,7 @@ class CurrentsType(models.Model):
 
 
 class ConnectionsType(models.Model):
-    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
+    name = models.CharField(max_length=100, null=False, blank=False, unique=True)
 
     class Meta:
         verbose_name = "ConnectionsType"
@@ -27,7 +27,7 @@ class ConnectionsType(models.Model):
 
 
 class SpeedsType(models.Model):
-    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
+    name = models.CharField(max_length=100, null=False, blank=False, unique=True)
 
     class Meta:
         verbose_name = "SpeedsType"
@@ -53,8 +53,8 @@ class Chargers(Publication):
 
 class PublicChargers(Chargers):
     agent = models.TextField(null=True, blank=False)
-    identifier = models.CharField(max_length=50, null=True, blank=False)
-    access = models.CharField(max_length=50, null=True, blank=False)
+    identifier = models.CharField(max_length=100, null=True, blank=False)
+    access = models.CharField(max_length=100, null=True, blank=False)
 
     class Meta:
         verbose_name = "PublicCharger"
@@ -82,18 +82,6 @@ class Configs(models.Model):
     class Meta:
         verbose_name = "Config"
         verbose_name_plural = "Configs"
-
-    def __str__(self):
-        return str(self.id)
-
-
-class Images(models.Model):
-    image_url = models.URLField(null=False, blank=False)
-    publication = models.ForeignKey(Publication, on_delete=models.CASCADE, null=True, blank=False)
-
-    class Meta:
-        verbose_name = "Image"
-        verbose_name_plural = "Images"
 
     def __str__(self):
         return str(self.id)

@@ -1,33 +1,34 @@
 from rest_framework import status
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.chargers.models import Chargers
 from .pagination import PaginationHandlerMixin
 from .serializers import ChargerSerializer, DetailedChargerSerializer, SpeedTypeSerializer, CurrentTypeSerializer, \
     ConnectionTypeSerializer, ChargerListSerializer
-
 from .services import get_filtered_chargers, create_private_charger, get_charger_by_id, update_private_charger, \
     delete_private_charger, get_speeds, get_connections, get_currents
-from ..users.permissions import Check_API_KEY_Auth
+from ..users.permissions import Check_API_KEY_Auth, SessionAuth
 
 
 class BasicPagination(PageNumberPagination):
     page_size_query_param = 'limit'
 
 
-class ChargersView(APIView, PaginationHandlerMixin):
-    permission_classes = [Check_API_KEY_Auth]
+class ChargersView(APIView):
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated|Check_API_KEY_Auth]
 
     def get(self, request):
         try:
             chargers = get_filtered_chargers(request.query_params)
-
             serializer = ChargerSerializer(chargers, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
-            return Response({"res": "Error: " + str(e)},status=status.HTTP_404_NOT_FOUND)
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
         try:
@@ -40,7 +41,8 @@ class ChargersView(APIView, PaginationHandlerMixin):
 
 
 class ChargersListView(APIView, PaginationHandlerMixin):
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
     pagination_class = BasicPagination
 
     def get(self, request):
@@ -58,7 +60,8 @@ class ChargersListView(APIView, PaginationHandlerMixin):
 
 
 class DetailedChargerView(APIView):
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
 
     def get(self, request, charger_id):
         try:
@@ -85,6 +88,9 @@ class DetailedChargerView(APIView):
 
 
 class SpeedTypeView(APIView):
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+
     def get(self, request):
         try:
             speeds = get_speeds()
@@ -95,6 +101,9 @@ class SpeedTypeView(APIView):
 
 
 class CurrentTypeView(APIView):
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+
     def get(self, request):
         try:
             currents = get_currents()
@@ -105,6 +114,9 @@ class CurrentTypeView(APIView):
 
 
 class ConnectionTypeView(APIView):
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+
     def get(self, request):
         try:
             connections = get_connections()
