@@ -40,6 +40,7 @@ class Users(AbstractUser):
     login_method = models.ForeignKey(LoginMethods, on_delete=models.CASCADE, null=True, blank=True, default=1)
     level = models.IntegerField(null=False, blank=False, default=1)
     xp = models.IntegerField(null=False, blank=False, default=0)
+    recover_password_code = models.CharField(max_length=6,null=True, blank=True)
 
     class Meta:
         verbose_name = "User"
