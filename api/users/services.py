@@ -10,7 +10,10 @@ from utils.imagesS3 import upload_image_to_s3
 
 def get_user(user_id):
     try:
-        return Users.objects.get(id=user_id)
+        user = Users.objects.get(id=user_id)
+        if not user.is_active:
+            raise Exception("User not active")
+        return user
     except Users.DoesNotExist:
         return None
 
@@ -45,11 +48,10 @@ def update_language(language, user_id):
     user_instance.save()
     return True
 
-
-
-
-
 def get_user_posts(user_id):
+    user = Users.objects.get(id=user_id)
+    if not user.is_active:
+        raise Exception("User not active")
     return Publication.objects.filter(owner_id=user_id).order_by('-created_at')
 
 
@@ -104,6 +106,8 @@ def create_user(data):
 
 def update_user(data, user_id):
     user_instance = get_user(user_id)
+    if not user_instance.is_active:
+        raise Exception("User not active")
     if data.get("email", None) is not None and data["email"] != "":
         user_instance.email = data["email"]
     if data.get("first_name", None) is not None and data["first_name"] != "":
@@ -127,6 +131,8 @@ def remove_api_key(user_id):
 
 def login_user(username, password):
     user = Users.objects.get(username=username)
+    if not user.is_active:
+        raise Exception("User not active")
     if user.check_password(password):
         user.api_key = generate_api_key()
         user.save()
@@ -136,6 +142,9 @@ def login_user(username, password):
 
 
 def upload_images(user_id, images):
+    user = get_user(user_id)
+    if not user.is_active:
+        raise Exception("User not active")
     for file in images.getlist("images"):
         path = "profile/" + str(user_id) + "/" + file.name
         upload_image_to_s3(file, path)
@@ -145,10 +154,11 @@ def upload_images(user_id, images):
     return get_user(user_id)
 
 
-def get_user_posts(user_id):
-    return Publication.objects.filter(owner_id=user_id).order_by('-created_at')
+
 
 def change_password(data, user):
+    if not user.is_active:
+        raise Exception("User not active")
     password_check(data["password"])
     user.set_password(data["password"])
     user.save()
