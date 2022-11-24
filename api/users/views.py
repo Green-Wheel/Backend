@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from .permissions import Check_API_KEY_Auth, SessionAuth
 from .serializers import UserSerializer
 from .services import get_user, langIdToString, update_language, update_user, get_user_posts, create_user, \
-    remove_api_key, login_user, change_password
+    remove_api_key, login_user, change_password, recover_password, validate_code
 from ..chargers.pagination import PaginationHandlerMixin
 from ..publications.serializers import PublicationListSerializer
 from .services import get_user, langIdToString, update_language, update_user, upload_images
@@ -132,17 +132,19 @@ class RecoverPasswordApiView(APIView):
     authentication_classes = ()
     def get(self, request):
         try:
-            user = Users.objects.get(email=request.data["email"])
-            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+            code = recover_password(request.query_params["username"])
+
+            return Response(status=status.HTTP_200_OK)
+        except Users.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request):
         try:
-            user = Users.objects.get(email=request.data["email"])
-            user.set_password(request.data["password"])
-            user.save()
-            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+            user = validate_code(request.data["username"],request.data["code"])
+            login(request, user)
+            return Response({"apikey": user.api_key}, status=status.HTTP_200_OK)
         except Users.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
