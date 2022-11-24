@@ -102,13 +102,13 @@ def create_user(data):
 
 def update_user(data, user_id):
     user_instance = get_user(user_id)
-    if data["email"] is not None and data["email"] != "":
+    if data.get("email", None) is not None and data["email"] != "":
         user_instance.email = data["email"]
-    if data["first_name"] is not None and data["first_name"] != "":
+    if data.get("first_name", None) is not None and data["first_name"] != "":
         user_instance.first_name = data["first_name"]
-    if data["last_name"] is not None and data["last_name"] != "":
+    if data.get("last_name", None) is not None and data["last_name"] != "":
         user_instance.last_name = data["last_name"]
-    if data["about"] is not None:
+    if data.get("about", None) is not None:
         user_instance.about = data["about"]
     if user_instance.is_valid():
         user_instance.save()

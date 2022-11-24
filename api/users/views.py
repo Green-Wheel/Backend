@@ -29,7 +29,7 @@ class UserApiView(APIView):
 
     def put(self, request):
         user = update_user(request.data, request.user.id)
-        return Response(user.data, status=status.HTTP_200_OK)
+        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
 
 
 class ConcreteUserApiView(APIView):
