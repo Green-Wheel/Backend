@@ -57,9 +57,9 @@ class ConcretePublicationOccupationApiView(APIView):
 
 class MonthPublicationOccupation(APIView):
     permission_classes = [Check_API_KEY_Auth]
-    def get(self, request, publication_id, year, month):
+    def get(self, request, publication_id, year, month, day=None):
         try:
-            occupations = get_occupation_by_month(publication_id, year,month)
+            occupations = get_occupation_by_month(publication_id, year,month,day)
             return Response(occupations, status=status.HTTP_200_OK)
         except Publication.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)

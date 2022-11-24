@@ -21,6 +21,6 @@ urlpatterns = [
     path("<int:publication_id>/occupation/", views.PublicationOccupationApiView.as_view()),
     path("<int:publication_id>/occupation/<int:occupation_id>/", views.ConcretePublicationOccupationApiView.as_view()),
     path("<int:publication_id>/occupation/<int:year>/<int:month>/", views.MonthPublicationOccupation.as_view()),
+    path("<int:publication_id>/occupation/<int:year>/<int:month>/<int:day>/", views.MonthPublicationOccupation.as_view()),
     path("<int:publication_id>/upload/", views.UploadPublicationImageApiView.as_view()),
-
 ]
