@@ -58,20 +58,21 @@ def create_bike(data, owner_id):
 
 def update_bike(bike_id, data, user):
     bike = get_bike_by_id(bike_id)
-    if bike.user.id != user.id:
+    if bike.owner.id != user:
         raise Exception("User not owner of bike")
     localization = get_localization(data["latitude"], data["longitude"])
-    town = get_town("Barcelona", "Barcelona")
-    bike.name = data.get('name', bike.name)
+    town = get_town(data["town"], data["province"])
+    bike.title = data.get('title', bike.title)
     bike.description = data.get('description', bike.description)
     bike.price = data.get('price', bike.price)
     bike.power = data.get('power', bike.power)
-    bike.bike_type = data.get('bike_type', bike.bike_type)
+    bike.bike_type.id = data.get('bike_type', bike.bike_type.id)
     bike.localization = localization
     bike.direction = "Direccio del carrer hardcodejada"
     bike.town = town
     # Falta imatges
     bike.save()
+    return bike
 
 
 def inactive_bike(bike_id):
