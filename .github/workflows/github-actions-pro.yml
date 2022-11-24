@@ -53,7 +53,8 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: user/app:latest
+          tags: crismigo/greenwheel_backend:latest
+
 
   aws-deploy:
     runs-on: ubuntu-latest
@@ -75,10 +76,6 @@ jobs:
       with:
         name: cloudformation-stack
         template: cloudformation.yml
+        no-fail-on-empty-changeset: 1
         parameter-overrides: "DBUsername=greenwheel,DBPassword=${{ secrets.DB_PASSWORD }}"
         capabilities: CAPABILITY_NAMED_IAM, CAPABILITY_AUTO_EXPAND
-
-
-
-
-
