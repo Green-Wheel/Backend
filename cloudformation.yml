@@ -102,41 +102,41 @@ Resources:
   ################################################
   #           Resources for S3 Bucket            #
   ################################################
-  GreenWheelS3Bucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: greenwheel-bucket
-
-  S3BucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref GreenWheelS3Bucket
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal: '*'
-            Action:
-              - 's3:*'
-            Resource:
-              - !Sub 'arn:aws:s3:::${GreenWheelS3Bucket}'
-              - !Sub 'arn:aws:s3:::${GreenWheelS3Bucket}/*'
-
-  ################################################
-  #           Resources for RDS                  #
-  ################################################
-  GreenWheelDB:
-    Type: AWS::RDS::DBInstance
-    DeletionPolicy: Snapshot
-    Properties:
-      BackupRetentionPeriod: 5
-      DBInstanceIdentifier: !Ref AWS::StackName
-      DBName: "GreenWheelDB"
-      DBInstanceClass: db.t2.micro
-      AllocatedStorage: '5'
-      Engine: postgres
-      EngineVersion: "12.12"
-      MasterUsername: !Ref DBUsername
-      MasterUserPassword: !Ref DBPassword
-      Port: '5432'
-      VPCSecurityGroups: [sg-09b6ca72aa4c8436a]
+#  GreenWheelS3Bucket:
+#    Type: AWS::S3::Bucket
+#    Properties:
+#      BucketName: greenwheel-bucket
+#
+#  S3BucketPolicy:
+#    Type: AWS::S3::BucketPolicy
+#    Properties:
+#      Bucket: !Ref GreenWheelS3Bucket
+#      PolicyDocument:
+#        Version: "2012-10-17"
+#        Statement:
+#          - Effect: Allow
+#            Principal: '*'
+#            Action:
+#              - 's3:*'
+#            Resource:
+#              - !Sub 'arn:aws:s3:::${GreenWheelS3Bucket}'
+#              - !Sub 'arn:aws:s3:::${GreenWheelS3Bucket}/*'
+#
+#  ################################################
+#  #           Resources for RDS                  #
+#  ################################################
+#  GreenWheelDB:
+#    Type: AWS::RDS::DBInstance
+#    DeletionPolicy: Snapshot
+#    Properties:
+#      BackupRetentionPeriod: 5
+#      DBInstanceIdentifier: !Ref AWS::StackName
+#      DBName: "GreenWheelDB"
+#      DBInstanceClass: db.t2.micro
+#      AllocatedStorage: '5'
+#      Engine: postgres
+#      EngineVersion: "12.12"
+#      MasterUsername: !Ref DBUsername
+#      MasterUserPassword: !Ref DBPassword
+#      Port: '5432'
+#      VPCSecurityGroups: [sg-09b6ca72aa4c8436a]
