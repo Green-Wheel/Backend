@@ -6,9 +6,9 @@ from rest_framework.views import APIView
 from api.users.permissions import Check_API_KEY_Auth, SessionAuth
 from api.chargers.models import PrivateChargers
 from api.publications.models import Publication
-from api.publications.serializers import OccupationRangeSerializer,PublicationSerializer
+from api.publications.serializers import OccupationRangeSerializer, PublicationSerializer, RepeatModeSerializer
 from api.publications.services import create_occupation, get_occupation_by_month, delete_occupation, update_occupation, \
-    get_ocupation_by_id,upload_images
+    get_ocupation_by_id, upload_images, get_repeat_types
 from api.users.permissions import Check_API_KEY_Auth
 
 
@@ -82,3 +82,11 @@ class UploadPublicationImageApiView(APIView):
             return Response({"res": "Error: the publication with id " + str(publication_id) + "does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class RepeatModeTypesApiView(APIView):
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+
+    def get(self, request):
+        types = get_repeat_types()
+        return Response(RepeatModeSerializer(types,many=True).data, status=status.HTTP_200_OK)
