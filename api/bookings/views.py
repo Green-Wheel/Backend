@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
-
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Bookings
 from rest_framework.views import APIView
@@ -11,7 +11,7 @@ from .serializers import BookingsSerializer
 from .services import cancel_booking, get_booking, get_user_bookings, get_owner_bookings, create_booking, \
     confirm_booking
 from ..chargers.pagination import PaginationHandlerMixin
-from ..users.permissions import Check_API_KEY_Auth
+from ..users.permissions import Check_API_KEY_Auth, SessionAuth
 
 
 class BasicPagination(PageNumberPagination):
@@ -19,7 +19,8 @@ class BasicPagination(PageNumberPagination):
 # Create your views here.
 class UserBookingsApiView(APIView, PaginationHandlerMixin):
     pagination_class = BasicPagination
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
     def get(self, request):
         order = request.query_params.get('orderby', None)
         bookings = get_user_bookings(request.user.id, order)
@@ -47,7 +48,8 @@ class UserBookingsApiView(APIView, PaginationHandlerMixin):
 
 class OwnerBookingsApiView(APIView, PaginationHandlerMixin):
     pagination_class = BasicPagination
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
     def get(self, request):
         booking_type = request.query_params.get('type', None)
         bookings = get_owner_bookings(request.user.id, booking_type)
@@ -61,7 +63,8 @@ class OwnerBookingsApiView(APIView, PaginationHandlerMixin):
 
 
 class ConcreteBookingApiView(APIView):
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
     def get(self, request, booking_id):
         try:
             booking = get_booking(booking_id)
