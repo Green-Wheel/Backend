@@ -22,6 +22,7 @@ class DetailedBikeSerializer(serializers.ModelSerializer):
     localization = serializers.SerializerMethodField("get_localization")
     town = serializers.SerializerMethodField("get_town")
     avg_rating = serializers.SerializerMethodField("get_avg_rating")
+    bike_type = serializers.SerializerMethodField("get_bike_type")
 
     def get_localization(self, obj):
         return LocalizationSerializer(obj.localization).data
@@ -31,6 +32,9 @@ class DetailedBikeSerializer(serializers.ModelSerializer):
 
     def get_avg_rating(self, obj):
         return PostRating.objects.filter(publication=obj.id).aggregate(Avg('rate'))['rate__avg']
+
+    def get_bike_type(self, obj):
+        return BikeTypeSerializer(obj.bike_type).data
 
     class Meta:
         model = Bikes
@@ -42,12 +46,15 @@ class BikeListSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     localization = serializers.SerializerMethodField("get_localization")
     avg_rating = serializers.SerializerMethodField("get_avg_rating")
-
+    bike_type = serializers.SerializerMethodField("get_bike_type")
     def get_localization(self, obj):
         return LocalizationSerializer(obj.localization).data
 
     def get_avg_rating(self, obj):
         return PostRating.objects.filter(publication=obj.id).aggregate(Avg('rate'))['rate__avg']
+
+    def get_bike_type(self, obj):
+        return BikeTypeSerializer(obj.bike_type).data
 
     class Meta:
         model = Bikes
