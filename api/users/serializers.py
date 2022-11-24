@@ -1,6 +1,5 @@
 from django.db.models import Avg
 from rest_framework import serializers
-
 from .models import Users
 from ..ratings.models import ClientsRating
 
@@ -32,8 +31,10 @@ class UserSerializer(serializers.ModelSerializer):
     def get_rating(self, obj):
         return ClientsRating.objects.filter(client=obj.id).aggregate(Avg('rate'))['rate__avg']
 
+
     class Meta:
         model = Users
+
         fields = ["id", "username", "first_name", "last_name", "email","about", "profile_picture", "language_id", "level", "xp",
                   "rating"]
 

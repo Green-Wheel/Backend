@@ -36,8 +36,23 @@ def get_filtered_bikes(filter_params):
 def get_bikes_type():
     return BikeTypes.objects.all()
 
-def create_bike(data, user):
-    pass
+
+def create_bike(data, owner_id):
+    localization = get_localization(data["latitude"], data["longitude"])
+    town = get_town("Barcelona", "Barcelona")
+    bike_type = BikeTypes.objects.get(id=data.get("bike_type", 1))
+    bike = Bikes(title=data['title'],
+                 description=data['description'],
+                 direction="Direccio del carrer hardcodejada",
+                 town=town,
+                 localization=localization,
+                 power=data["power"],
+                 price=data["price"],
+                 bike_type=bike_type,
+                 owner_id=owner_id)
+    bike.save()
+    return bike
+
 
 def update_bike(bike_id, data, user):
     bike = get_bike_by_id(bike_id)
@@ -56,6 +71,7 @@ def update_bike(bike_id, data, user):
     # Falta imatges
     bike.save()
 
+
 def inactive_bike(bike_id):
     bike = get_bike_by_id(bike_id)
     if not bike.active:
@@ -64,7 +80,5 @@ def inactive_bike(bike_id):
     bike.save()
     return bike
 
-def upload_images(bike_id, images):
-    for filename, file in images.iteritems():
-        pass
+
 

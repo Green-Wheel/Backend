@@ -1,6 +1,5 @@
 from django.db.models import Avg
 from rest_framework import serializers
-
 from api.bikes.models import Bikes
 from api.chargers.serializers import LocalizationSerializer, TownSerializer
 from api.ratings.models import PostRating

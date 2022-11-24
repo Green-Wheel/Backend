@@ -4,6 +4,8 @@ import string
 from api.chargers.models import Publication
 from api.users.models import Users
 from api.users.serializers import UserSerializer, CreateUserSerializer
+from utils.imagesS3 import upload_image_to_s3
+
 
 
 def get_user(user_id):
@@ -132,6 +134,19 @@ def login_user(username, password):
     else:
         raise Exception("Wrong password")
 
+
+def upload_images(user_id, images):
+    for file in images.getlist("images"):
+        path = "profile/" + str(user_id) + "/" + file.name
+        upload_image_to_s3(file, path)
+        user = Users.objects.get(id=user_id)
+        user.profile_picture = path
+        user.save()
+    return get_user(user_id)
+
+
+def get_user_posts(user_id):
+    return Publication.objects.filter(owner_id=user_id).order_by('-created_at')
 
 def change_password(data, user):
     password_check(data["password"])

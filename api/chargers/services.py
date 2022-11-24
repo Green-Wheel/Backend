@@ -1,16 +1,14 @@
 from datetime import datetime, timedelta
 
 from django.core.signals import request_finished
-
+from requests.auth import HTTPBasicAuth
 from api.chargers.models import Chargers, PrivateChargers, Configs, SpeedsType, ConnectionsType, CurrentsType
 import requests
 import logging
 
 from api.chargers.models import PublicChargers
-from api.chargers.serializers import ChargerSerializer, PublicChargerSerializer, PrivateChargerSerializer, \
-    SpeedTypeSerializer, CurrentTypeSerializer, ConnectionTypeSerializer, DetailedChargerSerializer
-from api.chargers.utils import get_all_speeds, get_all_connections, get_all_currents, get_speed, get_connection, \
-    get_current, get_localization, get_town
+from api.chargers.utils import get_all_speeds, get_all_connections, get_all_currents,\
+    get_localization, get_town
 from api.publications.models import Province, Town, Localizations
 
 
@@ -74,7 +72,7 @@ def __get_filter(query_params):
 
 def __get_data_from_chargers_api():
     # petició api i actualitzar base de dades
-    response = requests.get("https://analisi.transparenciacatalunya.cat/resource/tb2m-m33b.json?")
+    response = requests.get("https://analisi.transparenciacatalunya.cat/resource/tb2m-m33b.json?", headers={'X-App-Token': '6oG2O7KYidOwxhULmHtNXWVkJ'})
     if response.status_code == 200:
         return response.json()
     else:
@@ -200,10 +198,10 @@ def get_charger_by_id(charge_id):
 
 def create_private_charger(data, owner_id):
     localization = get_localization(data["latitude"], data["longitude"])
-    speed_type = SpeedsType.objects.filter(pk=data["speed"])[0]
-    connection_type = ConnectionsType.objects.filter(pk=data["connection_type"])[0]
-    current_type = CurrentsType.objects.filter(pk=data["current_type"])[0]
-    town = get_town("Barcelona", "Barcelona")
+    speed_type = SpeedsType.objects.filter(pk=data["speed"][0])[0]
+    connection_type = ConnectionsType.objects.filter(pk=data["connection_type"][0])[0]
+    current_type = CurrentsType.objects.filter(pk=data["current_type"][0])[0]
+    town = get_town(data["town"]["name"], data["town"]["province"])
 
     private = PrivateChargers(title=data['title'],
                               description=data['description'],
@@ -264,3 +262,4 @@ def get_connections():
 
 def get_currents():
     return CurrentsType.objects.all()
+

@@ -12,6 +12,7 @@ from .services import get_user, langIdToString, update_language, update_user, ge
     remove_api_key, login_user, change_password
 from ..chargers.pagination import PaginationHandlerMixin
 from ..publications.serializers import PublicationListSerializer
+from .services import get_user, langIdToString, update_language, update_user, upload_images
 
 
 class BasicPagination(PageNumberPagination):
@@ -67,6 +68,20 @@ class LanguageApiView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         return Response({"res": "Language changed"}, status=status.HTTP_200_OK)
+
+
+class UploadProfileImageApiView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = ()
+
+    def post(self, request):
+        try:
+            charger = upload_images(request.user.id, request.FILES)
+            return Response(UserSerializer(charger).data, status=status.HTTP_200_OK)
+        except Users.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserPostsApiView(APIView, PaginationHandlerMixin):

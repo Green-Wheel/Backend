@@ -6,7 +6,6 @@ from api.chargers.models import Chargers
 from .pagination import PaginationHandlerMixin
 from .serializers import ChargerSerializer, DetailedChargerSerializer, SpeedTypeSerializer, CurrentTypeSerializer, \
     ConnectionTypeSerializer, ChargerListSerializer
-
 from .services import get_filtered_chargers, create_private_charger, get_charger_by_id, update_private_charger, \
     delete_private_charger, get_speeds, get_connections, get_currents
 from ..users.permissions import Check_API_KEY_Auth
@@ -22,12 +21,11 @@ class ChargersView(APIView, PaginationHandlerMixin):
     def get(self, request):
         try:
             chargers = get_filtered_chargers(request.query_params)
-
             serializer = ChargerSerializer(chargers, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
-            return Response({"res": "Error: " + str(e)},status=status.HTTP_404_NOT_FOUND)
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
         try:
@@ -115,3 +113,4 @@ class ConnectionTypeView(APIView):
         except Exception as e:
             print(e)
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_404_NOT_FOUND)
+
