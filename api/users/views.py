@@ -31,8 +31,11 @@ class UserApiView(APIView):
         return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
 
     def put(self, request):
-        user = update_user(request.data, request.user.id)
-        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        try:
+            user = update_user(request.data, request.user.id)
+            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ConcreteUserApiView(APIView):
@@ -64,14 +67,17 @@ class LanguageApiView(APIView):
         return Response({"language": langIdToString(user_instance.language_id)}, status=status.HTTP_200_OK)
 
     def put(self, request):
-        lang = request.data["language"]
-        updated = update_language(lang, request.user.id)
-        if not updated:
-            return Response(
-                {"res": "User with the id doesn't exist"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        return Response({"res": "Language changed"}, status=status.HTTP_200_OK)
+        try:
+            lang = request.data["language"]
+            updated = update_language(lang, request.user.id)
+            if not updated:
+                return Response(
+                    {"res": "User with the id doesn't exist"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            return Response({"res": "Language changed"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UploadProfileImageApiView(APIView):
@@ -125,14 +131,22 @@ class RegisterApiView(APIView):
 class RecoverPasswordApiView(APIView):
     authentication_classes = ()
     def get(self, request):
-        user = Users.objects.get(email=request.data["email"])
-        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        try:
+            user = Users.objects.get(email=request.data["email"])
+            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request):
-        user = Users.objects.get(email=request.data["email"])
-        user.set_password(request.data["password"])
-        user.save()
-        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        try:
+            user = Users.objects.get(email=request.data["email"])
+            user.set_password(request.data["password"])
+            user.save()
+            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        except Users.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ChangePasswordApiView(APIView):
