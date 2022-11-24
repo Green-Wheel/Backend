@@ -22,4 +22,4 @@ RUN rm .env
 RUN chmod +x ./docker/entrypoint.sh
 ENTRYPOINT [ "./docker/entrypoint.sh" ]
 EXPOSE 8080
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]
