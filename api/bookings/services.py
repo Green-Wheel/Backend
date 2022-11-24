@@ -3,7 +3,7 @@ from datetime import datetime
 from api.bookings.models import Bookings
 from api.bookings.serializers import BookingsEditSerializer
 from api.publications.models import OccupationRanges
-from api.publications.services import create_occupation
+from api.publications.services import create_occupation, create_booking_occupation
 
 
 def get_user_bookings(user_id, order):
@@ -45,13 +45,14 @@ def create_booking(booking):
     booking_instance = BookingsEditSerializer(data=booking)
     if booking_instance.is_valid():
         booking_instance.save()
+        booking = Bookings.objects.latest('id')
         data = {
             "start_date": booking_instance.data["start_date"],
             "end_date": booking_instance.data["end_date"],
-
+            "booking": booking.id
         }
-        create_occupation(data, booking_instance.data["user"], booking_instance.data["publication"])
-        return Bookings.objects.latest('id')
+        create_booking_occupation(data, booking_instance.data["publication"])
+        return booking
     raise Exception(booking_instance.errors)
 
 

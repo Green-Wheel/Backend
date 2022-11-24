@@ -11,7 +11,17 @@ from api.chargers.serializers import DetailedChargerSerializer, ChargerListSeria
 from api.publications.models import Publication, OccupationRangesType, OccupationRepeatMode, OccupationRanges
 from api.publications.serializers import OccupationRangeSerializer
 
-
+def create_booking_occupation(data,publication_id):
+    if PublicChargers.objects.filter(id=publication_id).count() > 0:
+        raise Exception("You can't create an occupation for a public charger")
+    data["related_publication"] = publication_id
+    data["occupation_range_type"] = 1
+    data["repeat_mode"] = 1
+    serializer = OccupationRangeSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+    else:
+        raise Exception(serializer.errors)
 def create_occupation(data, user_id, publication_id):
     publication = Publication.objects.get(id=publication_id)
     if publication.owner.id != user_id:
@@ -19,11 +29,15 @@ def create_occupation(data, user_id, publication_id):
     if PublicChargers.objects.filter(id=publication_id).count() > 0:
         raise Exception("You can't create an occupation for a public charger")
     ranges = []
-    for range in data:
-        range["related_publication"] = publication_id
-        range["occupation_range_type"] = 2
-        range["repeat_mode"] = range.get("repeatmode", 1)
-        serializer = OccupationRangeSerializer(data=range)
+    r = {}
+    for range in data["ranges"]:
+        r["related_publication"] = publication_id
+        r["occupation_range_type"] = 2
+        r["repeat_mode"] = range.get("repeatmode", 1)
+        r["start_date"] = range.get("start_date", None)
+        r["end_date"] = range.get("end_date", None)
+        r["booking_id"] = None
+        serializer = OccupationRangeSerializer(data=r)
         if serializer.is_valid():
             serializer.save()
             ranges.append(serializer.data)
