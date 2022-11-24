@@ -59,7 +59,7 @@ def delete_occupation(ocupation_id, user_id):
 
 def get_occupation_by_month(publication_id, year, month,day):
     occupations = OccupationRanges.objects.filter(related_publication=publication_id, start_date__year=year,
-                                                  start_date__month=month,day=day)
+                                                  start_date__month=month,start_date__day=day)
     start_day_time = time(0, 0, 0)
     end_day_time = time(23, 59, 59)
     if day is None:
