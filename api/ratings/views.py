@@ -1,5 +1,6 @@
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -7,7 +8,7 @@ from .serializers import RatingSerializer
 from .services import get_all_ratings, get_ratings_for_publication, get_ratings_for_user, create_post_rating, \
     create_client_rating
 from ..chargers.pagination import PaginationHandlerMixin
-from ..users.permissions import Check_API_KEY_Auth
+from ..users.permissions import Check_API_KEY_Auth, SessionAuth
 
 
 # Create your views here.
@@ -16,7 +17,8 @@ class BasicPagination(PageNumberPagination):
 
 class PublicationRatingsApiView(APIView, PaginationHandlerMixin):
     pagination_class = BasicPagination
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
 
     def get(self, request, publication_id):
         ratings = get_ratings_for_publication(publication_id)
@@ -42,7 +44,8 @@ class PublicationRatingsApiView(APIView, PaginationHandlerMixin):
 
 class ClientRatingsApiView(APIView, PaginationHandlerMixin):
     pagination_class = BasicPagination
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
 
     def get(self, request, client_id):
         ratings = get_ratings_for_user(client_id)

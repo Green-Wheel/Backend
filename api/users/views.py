@@ -1,12 +1,13 @@
 from django.contrib.auth import login, logout
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Users
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .permissions import Check_API_KEY_Auth
+from .permissions import Check_API_KEY_Auth, SessionAuth
 from .serializers import UserSerializer
 from .services import get_user, langIdToString, update_language, update_user, get_user_posts, create_user, \
     remove_api_key, login_user, change_password
@@ -21,7 +22,8 @@ class BasicPagination(PageNumberPagination):
 
 # Create your views here.
 class UserApiView(APIView):
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
     def get(self, request):
         user = get_user(request.user.id)
         if user is None:
@@ -29,12 +31,16 @@ class UserApiView(APIView):
         return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
 
     def put(self, request):
-        user = update_user(request.data, request.user.id)
-        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        try:
+            user = update_user(request.data, request.user.id)
+            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ConcreteUserApiView(APIView):
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
     def get(self, request, user_id):
         try:
             user = get_user(user_id)
@@ -44,7 +50,8 @@ class ConcreteUserApiView(APIView):
 
 
 class LanguageApiView(APIView):
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
     def get(self, request):
         user_instance = get_user(request.user.id)
         if not user_instance:
@@ -60,19 +67,22 @@ class LanguageApiView(APIView):
         return Response({"language": langIdToString(user_instance.language_id)}, status=status.HTTP_200_OK)
 
     def put(self, request):
-        lang = request.data["language"]
-        updated = update_language(lang, request.user.id)
-        if not updated:
-            return Response(
-                {"res": "User with the id doesn't exist"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        return Response({"res": "Language changed"}, status=status.HTTP_200_OK)
+        try:
+            lang = request.data["language"]
+            updated = update_language(lang, request.user.id)
+            if not updated:
+                return Response(
+                    {"res": "User with the id doesn't exist"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            return Response({"res": "Language changed"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UploadProfileImageApiView(APIView):
-    permission_classes = [Check_API_KEY_Auth]
-    authentication_classes = ()
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
 
     def post(self, request):
         try:
@@ -85,7 +95,8 @@ class UploadProfileImageApiView(APIView):
 
 
 class UserPostsApiView(APIView, PaginationHandlerMixin):
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
     pagination_class = BasicPagination
 
     def get(self, request, user_id):
@@ -120,18 +131,27 @@ class RegisterApiView(APIView):
 class RecoverPasswordApiView(APIView):
     authentication_classes = ()
     def get(self, request):
-        user = Users.objects.get(email=request.data["email"])
-        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        try:
+            user = Users.objects.get(email=request.data["email"])
+            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request):
-        user = Users.objects.get(email=request.data["email"])
-        user.set_password(request.data["password"])
-        user.save()
-        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        try:
+            user = Users.objects.get(email=request.data["email"])
+            user.set_password(request.data["password"])
+            user.save()
+            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        except Users.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ChangePasswordApiView(APIView):
-    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
     def put(self, request):
         try:
             change_password(request.data, request.user)
@@ -141,8 +161,8 @@ class ChangePasswordApiView(APIView):
 
 
 class LogoutApiView(APIView):
-    permission_classes = [Check_API_KEY_Auth]
-    authentication_classes = ()
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
     def post(self, request):
         try:
             remove_api_key(request.user.id)
