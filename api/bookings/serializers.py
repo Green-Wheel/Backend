@@ -24,6 +24,7 @@ class BookingsSerializer(serializers.ModelSerializer):
     publication = serializers.SerializerMethodField('getPublication')
     user = serializers.SerializerMethodField('getUser')
     status = serializers.SerializerMethodField('getStatus')
+    created = serializers.SerializerMethodField('getCreated')
 
     def getUser(self, obj):
         try:
@@ -43,10 +44,12 @@ class BookingsSerializer(serializers.ModelSerializer):
             return BookingStatusSerializer(BookingStatus.objects.get(id=obj.status.id)).data
         except BookingStatus.DoesNotExist:
             return None
+    def getCreated(self, obj):
+        return obj.created.strftime("%d-%m-%Y %H:%M:%S")
 
     class Meta:
         model = Bookings
-        fields = ["id", "user", "publication", "start_date", "end_date", "status"]
+        fields = ["id", "user", "publication", "start_date", "end_date", "status", "created"]
 
 
 class SimpleBookingsSerializer(serializers.ModelSerializer):

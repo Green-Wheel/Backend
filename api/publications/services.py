@@ -119,3 +119,4 @@ def upload_images(publication_id, images, user_id):
         image = Images(image_path=s3_path, publication_id=publication_id)
         image.save()
     return publication
+
