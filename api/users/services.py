@@ -1,11 +1,15 @@
 import random
+import smtplib
 import string
+from email.headerregistry import Address
+from email.message import EmailMessage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 from api.chargers.models import Publication
 from api.users.models import Users
 from api.users.serializers import UserSerializer, CreateUserSerializer
 from utils.imagesS3 import upload_image_to_s3
-
 
 
 def get_user(user_id):
@@ -47,6 +51,7 @@ def update_language(language, user_id):
     user_instance.language_id = langStringToId(language)
     user_instance.save()
     return True
+
 
 def get_user_posts(user_id):
     user = Users.objects.get(id=user_id)
@@ -104,6 +109,7 @@ def create_user(data):
         user.save()
         return user
 
+
 def update_user(data, user_id):
     user_instance = get_user(user_id)
     if not user_instance.is_active:
@@ -121,6 +127,7 @@ def update_user(data, user_id):
         return user_instance
     else:
         raise Exception(user_instance.errors)
+
 
 def remove_api_key(user_id):
     user = get_user(user_id)
@@ -154,8 +161,6 @@ def upload_images(user_id, images):
     return get_user(user_id)
 
 
-
-
 def change_password(data, user):
     if not user.is_active:
         raise Exception("User not active")
@@ -163,3 +168,58 @@ def change_password(data, user):
     user.set_password(data["password"])
     user.save()
     return True
+
+
+def random_with_N_digits(n):
+    range_start = 10 ** (n - 1)
+    range_end = (10 ** n) - 1
+    return random.randint(range_start, range_end)
+
+def send_recover_mail(user):
+    s = smtplib.SMTP('smtp.gmail.com', 587)
+
+    # start TLS for security
+    s.starttls()
+
+    # Authentication
+    s.login("greenwheelpes@gmail.com", "hnzrfjzksqfequym")
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = "GreenWheel: Password recovery code"
+    msg['From'] = "greenwheelpes@gmail.com"
+    msg['To'] = user.email
+    html = "Hi " + user.first_name + "!<br>Your password recovery code is:<b>" + str(user.recover_password_code) + "</b><br>Enter it in the application to restore the password."
+    msg.attach(MIMEText(html, 'html'))
+    # sending the mail
+    s.sendmail("greenwheelpes@gmail.com", user.email, msg.as_string())
+
+    # terminating the session
+    s.quit()
+def generate_recover_code():
+    return random_with_N_digits(6)
+
+
+def recover_password(username):
+    user = Users.objects.get(username=username)
+    if not user.is_active:
+        raise Exception("User not active")
+    if user.login_method.id != 1:
+        raise Exception("User not allowed to change password")
+    user.recover_password_code = generate_recover_code()
+    user.save()
+    send_recover_mail(user)
+    return user.recover_password_code
+
+def validate_code(username, code):
+    user = Users.objects.get(username=username)
+    print(code)
+    if not user.is_active:
+        raise Exception("User not active")
+    if user.login_method.id != 1:
+        raise Exception("User not allowed to change password")
+    if int(user.recover_password_code) == code:
+        user.api_key = generate_api_key()
+        user.recover_password_code = None
+        user.save()
+        return user
+    else:
+        raise Exception("Wrong code")
