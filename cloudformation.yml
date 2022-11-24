@@ -52,6 +52,9 @@ Resources:
         # Install docker-compose
         sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
         sudo chmod +x /usr/local/bin/docker-compose
+        sudo systemctl enable docker.service
+        sudo systemctl start docker.service
+        sudo chmod 666 /var/run/docker.sock
         # Create docker-compose file
         echo "
         version: '3.9'
