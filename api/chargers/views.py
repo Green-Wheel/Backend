@@ -83,6 +83,7 @@ class DetailedChargerView(APIView):
 
 
 class SpeedTypeView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
     def get(self, request):
         try:
             speeds = get_speeds()
@@ -93,6 +94,7 @@ class SpeedTypeView(APIView):
 
 
 class CurrentTypeView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
     def get(self, request):
         try:
             currents = get_currents()
@@ -103,6 +105,7 @@ class CurrentTypeView(APIView):
 
 
 class ConnectionTypeView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
     def get(self, request):
         try:
             connections = get_connections()

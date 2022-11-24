@@ -8,10 +8,13 @@ from api.publications.models import Publication
 from api.publications.serializers import OccupationRangeSerializer,PublicationSerializer
 from api.publications.services import create_occupation, get_occupation_by_month, delete_occupation, update_occupation, \
     get_ocupation_by_id,upload_images
+from api.users.permissions import Check_API_KEY_Auth
+
 
 
 # Create your views here.
 class PublicationOccupationApiView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
     def post(self, request,publication_id):
         try:
             new_occupations = create_occupation(request.data, request.user.id, publication_id)
@@ -25,6 +28,7 @@ class PublicationOccupationApiView(APIView):
 
 
 class ConcretePublicationOccupationApiView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
     def get(self, request, publication_id, occupation_id):
         try:
             occupation = get_ocupation_by_id(occupation_id)
@@ -52,6 +56,7 @@ class ConcretePublicationOccupationApiView(APIView):
 
 
 class MonthPublicationOccupation(APIView):
+    permission_classes = [Check_API_KEY_Auth]
     def get(self, request, publication_id, year, month):
         try:
             occupations = get_occupation_by_month(publication_id, year,month)

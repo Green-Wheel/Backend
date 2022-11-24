@@ -1,3 +1,4 @@
+from django.contrib.auth import login, logout
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 
@@ -7,16 +8,20 @@ from rest_framework.response import Response
 
 from .permissions import Check_API_KEY_Auth
 from .serializers import UserSerializer
-from .services import get_user, langIdToString, update_language, update_user, get_user_posts
+from .services import get_user, langIdToString, update_language, update_user, get_user_posts, create_user, \
+    remove_api_key, login_user, change_password
 from ..chargers.pagination import PaginationHandlerMixin
 from ..publications.serializers import PublicationListSerializer
 from .services import get_user, langIdToString, update_language, update_user, upload_images
 
+
 class BasicPagination(PageNumberPagination):
     page_size_query_param = 'limit'
 
+
 # Create your views here.
 class UserApiView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
     def get(self, request):
         user = get_user(request.user.id)
         if user is None:
@@ -25,10 +30,11 @@ class UserApiView(APIView):
 
     def put(self, request):
         user = update_user(request.data, request.user.id)
-        return Response(user.data, status=status.HTTP_200_OK)
+        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
 
 
 class ConcreteUserApiView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
     def get(self, request, user_id):
         try:
             user = get_user(user_id)
@@ -38,6 +44,7 @@ class ConcreteUserApiView(APIView):
 
 
 class LanguageApiView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
     def get(self, request):
         user_instance = get_user(request.user.id)
         if not user_instance:
@@ -78,6 +85,7 @@ class UploadProfileImageApiView(APIView):
 
 
 class UserPostsApiView(APIView, PaginationHandlerMixin):
+    permission_classes = [Check_API_KEY_Auth]
     pagination_class = BasicPagination
 
     def get(self, request, user_id):
@@ -95,4 +103,65 @@ class UserPostsApiView(APIView, PaginationHandlerMixin):
         except Users.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response({"res": "Error: " + str(e)},status=status.HTTP_400_BAD_REQUEST)
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RegisterApiView(APIView):
+    authentication_classes = ()
+    def post(self, request):
+        try:
+            user = create_user(request.data)
+            login(request, user)
+            return Response({"apikey": user.api_key}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RecoverPasswordApiView(APIView):
+    authentication_classes = ()
+    def get(self, request):
+        user = Users.objects.get(email=request.data["email"])
+        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+
+    def put(self, request):
+        user = Users.objects.get(email=request.data["email"])
+        user.set_password(request.data["password"])
+        user.save()
+        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+
+
+class ChangePasswordApiView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
+    def put(self, request):
+        try:
+            change_password(request.data, request.user)
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LogoutApiView(APIView):
+    permission_classes = [Check_API_KEY_Auth]
+    authentication_classes = ()
+    def post(self, request):
+        try:
+            remove_api_key(request.user.id)
+            logout(request)
+            return Response(status=status.HTTP_200_OK)
+        except Users.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginApiView(APIView):
+    authentication_classes = ()
+    def post(self, request):
+        try:
+            user = login_user(request.data["username"], request.data["password"])
+            login(request, user)
+            return Response({"apikey": user.api_key}, status=status.HTTP_201_CREATED)
+        except Users.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
