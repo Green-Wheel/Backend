@@ -2,9 +2,9 @@ name: Django CI
 
 on:
   push:
-    branches: [dev, feature-162-AWSCloudformation]
+    branches: [dev]
   pull_request:
-    branches: [dev, feature-162-AWSCloudformation]
+    branches: [dev]
 
 jobs:
   test:
