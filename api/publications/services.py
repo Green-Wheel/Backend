@@ -108,7 +108,6 @@ def get_publication_by_id(publication_id):
 
 
 def upload_images(publication_id, images, user_id):
-    print("upload_images")
     publication = get_publication_by_id(publication_id)
     owner = publication.owner
     if owner.id != user_id:

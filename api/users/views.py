@@ -86,7 +86,7 @@ class UploadProfileImageApiView(APIView):
 
     def post(self, request):
         try:
-            charger = upload_images(request.user.id, request.FILES)
+            charger = upload_images(request.user.id, request.FILES.getlist('file'))
             return Response(UserSerializer(charger).data, status=status.HTTP_200_OK)
         except Users.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
