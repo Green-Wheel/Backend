@@ -229,7 +229,7 @@ def create_private_charger(data, owner_id):
                               power=data["power"],
                               price=data["price"],
                               owner_id=owner_id)
-
+    private.save()
     private.speed.set(speed_type)
     private.connection_type.set(connection_type)
     private.current_type.set(current_type)
