@@ -1,3 +1,19 @@
+#version: '3.9'
+#
+#services:
+#  greenwheel-app:
+#    container_name: backend_app
+#    image: crismigo/greenwheel_backend:latest
+#    restart: always
+#    ports:
+#      - 80:8000
+#    environment:
+#      DJANGO_SECRET_KEY: "cnc+sy7tn*=0^hc#^hm7=cf&@oicx+g4-fmpsm1^hu"
+#      DJANGO_DATABASE_HOST: "localhost"
+#      DJANGO_DATABASE_PORT: "5432"
+#      DJANGO_DATABASE_NAME: "GreenWheelDB"
+#      DJANGO_DATABASE_USER: "greenwheel"
+
 version: '3.9'
 
 services:
@@ -13,5 +29,15 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
+  greenwheel-app:
+    container_name: greenwheel_app
+    image: customer-ec2:latest
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    networks:
+      - customer-ec2-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/customers
 volumes:
   db_data:
