@@ -75,8 +75,8 @@ Resources:
             ports:
               - '80:8080'
             environment:
-              DJANGO_SECRET_KEY: 'cnc+sy7tn*=0^hc#^hm7=cf&@oicx+g4-fmpsm1$i3dpcp3^hu'
-              DJANGO_DATABASE_HOST: 'cloudformation-stack.cvktoxcvbtpd.eu-west-1.rds.amazonaws.com'
+              DJANGO_SECRET_KEY: 'om%_rbj(rdm*t$dt^!q)2o(3uztqzxtmv361d@j0lpza+q#zd)'
+              DJANGO_DATABASE_HOST: 'cloudformation-stack.cpclkpqljg7g.eu-west-1.rds.amazonaws.com'
               DJANGO_DATABASE_PORT: '5432'
               DJANGO_DATABASE_NAME: 'GreenWheelDB'
               DJANGO_DATABASE_USER: 'greenwheel'
