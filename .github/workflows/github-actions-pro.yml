@@ -75,5 +75,5 @@ jobs:
         name: cloudformation-stack
         template: cloudformation.yml
         no-fail-on-empty-changeset: 1
-        parameter-overrides: "DBUsername=greenwheel,DBPassword=${{ secrets.DB_PASSWORD }},Environment=pro"
+        parameter-overrides: "DBUsername=greenwheel,DBPassword=${{ secrets.DB_PASSWORD }},Environment=pro, SGroup=sg-05455ed9a327b321f"
         capabilities: CAPABILITY_NAMED_IAM, CAPABILITY_AUTO_EXPAND
