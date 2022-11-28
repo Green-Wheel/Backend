@@ -80,9 +80,9 @@ Resources:
               DJANGO_DATABASE_PORT: '5432'
               DJANGO_DATABASE_NAME: 'GreenWheelDB'
               DJANGO_DATABASE_USER: 'greenwheel'
-              DJANGO_DATABASE_PASSWORD: '7217MC6n5DAn'
-              AWS_ACCESS_KEY_ID: 'AKIAQDN2THLQD72I5VCJ'
-              AWS_SECRET_ACCESS_KEY: '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'
+              DJANGO_DATABASE_PASSWORD: 'qghvW6W8Xe6g'
+              AWS_ACCESS_KEY_ID: 'AKIASIVBP5FWWKYNAXXK'
+              AWS_SECRET_ACCESS_KEY: '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'
               DEBUG_MODE: 'False'
               CORS_ALLOW_ALL_ORIGINS: 'True'
         " > docker-compose.yml
