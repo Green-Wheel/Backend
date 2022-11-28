@@ -114,9 +114,7 @@ Resources:
   ################################################
   GreenWheelDB:
     Type: AWS::RDS::DBInstance
-    DeletionPolicy: Snapshot
     Properties:
-      BackupRetentionPeriod: 5
       DBInstanceIdentifier: !Ref AWS::StackName
       DBName: "GreenWheelDB"
       DBInstanceClass: db.t2.micro
@@ -126,4 +124,4 @@ Resources:
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       Port: '5432'
-      VPCSecurityGroups: [sg-09b6ca72aa4c8436a]
+      VPCSecurityGroups: [sg-05455ed9a327b321f]
