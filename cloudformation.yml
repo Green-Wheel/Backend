@@ -92,12 +92,12 @@ Resources:
   GreenWheelS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: greenwheel-bucket
+      BucketName: !Join ["-", [!Ref GreenWheelS3Bucket, !Ref Environment]]
 
   S3BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: "greenwheel-bucket-pro" # !Join ["-", [!Ref GreenWheelS3Bucket, !Ref Environment]]
+      Bucket: !Ref GreenWheelS3Bucket
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
