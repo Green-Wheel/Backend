@@ -115,20 +115,21 @@ def __get_publication_info(c_province, c_town, c_latitude, c_longitude):
 
 def __parse_speed_types(speeds):
     speed_types = []
+    print(speeds)
     for speed in speeds:
-        speed_types.append(SpeedsType.objects.get(id=speed['id']))
+        speed_types.append(SpeedsType.objects.get(id=speed))
     return speed_types
 
 def __parse_current_types(currents):
     current_types = []
     for current in currents:
-        current_types.append(CurrentsType.objects.get(id=current['id']))
+        current_types.append(CurrentsType.objects.get(id=current))
     return current_types
 
 def __parse_connections_types(connections):
     connections_types = []
     for connection in connections:
-        connections_types.append(ConnectionsType.objects.get(id=connection['id']))
+        connections_types.append(ConnectionsType.objects.get(id=connection))
     return connections_types
 
 def __filter_localization(c_latitude, c_longitude, c_direction):
