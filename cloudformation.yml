@@ -97,7 +97,7 @@ Resources:
   S3BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: !Join ["-", [!Ref GreenWheelS3Bucket, !Ref Environment]]
+      Bucket: !Join ["-", [!Ref GreenWheelS3Bucket, "pro"]]
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
