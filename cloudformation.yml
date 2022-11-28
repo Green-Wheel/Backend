@@ -30,6 +30,12 @@ Parameters:
     Description: Enter RDS Listening TCP Port number.
     Type: Number
     Default: '5432'
+  Environment:
+    Description: Environment name
+    Type: String
+    AllowedValues:
+      - pre
+      - pro
 
 Resources:
 ################################################
@@ -91,7 +97,7 @@ Resources:
   S3BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: !Ref GreenWheelS3Bucket
+      Bucket: !Join ["-", [!Ref GreenWheelS3Bucket, !Ref Environment]]
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
