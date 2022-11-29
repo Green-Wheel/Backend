@@ -41,50 +41,50 @@ Resources:
 ################################################
 #                Resources for EC2             #
 ################################################
-  GreenWheelEC2:
-    Type: AWS::EC2::Instance
-    Properties:
-      InstanceType: t2.micro
-      ImageId: ami-01cae1550c0adea9c
-      SecurityGroups: [default]
-      UserData: !Base64 |
-        #!/bin/bash
-        # Install Docker
-        sudo yum update -y
-        sudo yum install docker -y
-        sudo service docker start
-        sudo groupadd docker
-        sudo usermod -aG docker ec2-user
-        # Install docker-compose
-        sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-        sudo chmod +x /usr/local/bin/docker-compose
-        sudo systemctl enable docker.service
-        sudo systemctl start docker.service
-        sudo chmod 666 /var/run/docker.sock
-        # Create docker-compose file
-        echo "
-        version: '3.9'
-        services:
-          backend-app:
-            container_name: backend_app
-            image: crismigo/greenwheel_backend:latest
-            restart: always
-            ports:
-              - '80:8080'
-            environment:
-              DJANGO_SECRET_KEY: 'om%_rbj(rdm*t$dt^!q)2o(3uztqzxtmv361d@j0lpza+q#zd)'
-              DJANGO_DATABASE_HOST: 'cloudformation-stack.cpclkpqljg7g.eu-west-1.rds.amazonaws.com'
-              DJANGO_DATABASE_PORT: '5432'
-              DJANGO_DATABASE_NAME: 'GreenWheelDB'
-              DJANGO_DATABASE_USER: 'greenwheel'
-              DJANGO_DATABASE_PASSWORD: 'qghvW6W8Xe6g'
-              AWS_ACCESS_KEY_ID: 'AKIAVS7BBCRWRJUQ4IUC'
-              AWS_SECRET_ACCESS_KEY: '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'
-              DEBUG_MODE: 'False'
-              CORS_ALLOW_ALL_ORIGINS: 'True'
-        " > docker-compose.yml
-        # Run docker-compose
-        sudo /usr/local/bin/docker-compose up -d
+#  GreenWheelEC2:
+#    Type: AWS::EC2::Instance
+#    Properties:
+#      InstanceType: t2.micro
+#      ImageId: ami-01cae1550c0adea9c
+#      SecurityGroups: [default]
+#      UserData: !Base64 |
+#        #!/bin/bash
+#        # Install Docker
+#        sudo yum update -y
+#        sudo yum install docker -y
+#        sudo service docker start
+#        sudo groupadd docker
+#        sudo usermod -aG docker ec2-user
+#        # Install docker-compose
+#        sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+#        sudo chmod +x /usr/local/bin/docker-compose
+#        sudo systemctl enable docker.service
+#        sudo systemctl start docker.service
+#        sudo chmod 666 /var/run/docker.sock
+#        # Create docker-compose file
+#        echo "
+#        version: '3.9'
+#        services:
+#          backend-app:
+#            container_name: backend_app
+#            image: crismigo/greenwheel_backend:latest
+#            restart: always
+#            ports:
+#              - '80:8080'
+#            environment:
+#              DJANGO_SECRET_KEY: 'om%_rbj(rdm*t$dt^!q)2o(3uztqzxtmv361d@j0lpza+q#zd)'
+#              DJANGO_DATABASE_HOST: 'cloudformation-stack.cpclkpqljg7g.eu-west-1.rds.amazonaws.com'
+#              DJANGO_DATABASE_PORT: '5432'
+#              DJANGO_DATABASE_NAME: 'GreenWheelDB'
+#              DJANGO_DATABASE_USER: 'greenwheel'
+#              DJANGO_DATABASE_PASSWORD: 'qghvW6W8Xe6g'
+#              AWS_ACCESS_KEY_ID: 'AKIAVS7BBCRWRJUQ4IUC'
+#              AWS_SECRET_ACCESS_KEY: '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'
+#              DEBUG_MODE: 'False'
+#              CORS_ALLOW_ALL_ORIGINS: 'True'
+#        " > docker-compose.yml
+#        # Run docker-compose
+#        sudo /usr/local/bin/docker-compose up -d
 
   ################################################
   #           Resources for S3 Bucket            #
