@@ -33,9 +33,6 @@ Parameters:
   Environment:
     Description: Environment name
     Type: String
-    AllowedValues:
-      - pre
-      - pro
   SGroup:
     Description: Security Group ID
     Type: String
