@@ -24,27 +24,45 @@ class BasicPagination(PageNumberPagination):
 class UserApiView(APIView):
     authentication_classes = [SessionAuth]
     permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+
     def get(self, request):
         user = get_user(request.user.id)
         if user is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        if request.accepted_renderer.media_type == 'text/html':
+            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        else:
+            return Response(UserSerializer(user).data, status=status.HTTP_200_OK,
+                            content_type='application/json; charset=utf-8')
 
     def put(self, request):
         try:
             user = update_user(request.data, request.user.id)
-            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+            else:
+                return Response(UserSerializer(user).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         except Exception as e:
-            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST,
+                                content_type='application/json; charset=utf-8')
 
 
 class ConcreteUserApiView(APIView):
     authentication_classes = [SessionAuth]
     permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+
     def get(self, request, user_id):
         try:
             user = get_user(user_id)
-            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+            else:
+                return Response(UserSerializer(user).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         except Users.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -52,6 +70,7 @@ class ConcreteUserApiView(APIView):
 class LanguageApiView(APIView):
     authentication_classes = [SessionAuth]
     permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+
     def get(self, request):
         user_instance = get_user(request.user.id)
         if not user_instance:
@@ -64,7 +83,11 @@ class LanguageApiView(APIView):
                 {"res": "Language not set"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        return Response({"language": langIdToString(user_instance.language_id)}, status=status.HTTP_200_OK)
+        if request.accepted_renderer.media_type == 'text/html':
+            return Response({"language": langIdToString(user_instance.language_id)}, status=status.HTTP_200_OK)
+        else:
+            return Response({"language": langIdToString(user_instance.language_id)}, status=status.HTTP_200_OK,
+                            content_type='application/json; charset=utf-8')
 
     def put(self, request):
         try:
@@ -87,7 +110,11 @@ class UploadProfileImageApiView(APIView):
     def post(self, request):
         try:
             charger = upload_images(request.user.id, request.FILES.getlist('file'))
-            return Response(UserSerializer(charger).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(UserSerializer(charger).data, status=status.HTTP_200_OK)
+            else:
+                return Response(UserSerializer(charger).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         except Users.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -105,10 +132,18 @@ class UserPostsApiView(APIView, PaginationHandlerMixin):
             page = self.paginate_queryset(posts)
             if page is not None:
                 serializer = PublicationListSerializer(page, many=True)
-                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+                if request.accepted_renderer.media_type == 'text/html':
+                    return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+                else:
+                    return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK,
+                                    content_type='application/json; charset=utf-8')
             else:
                 serializer = PublicationListSerializer(posts, many=True)
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                if request.accepted_renderer.media_type == 'text/html':
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    return Response(serializer.data, status=status.HTTP_200_OK,
+                                    content_type='application/json; charset=utf-8')
             # return Response(PublicationListSerializer(posts, many=True).data, status=status.HTTP_200_OK)
 
         except Users.DoesNotExist:
@@ -119,21 +154,26 @@ class UserPostsApiView(APIView, PaginationHandlerMixin):
 
 class RegisterApiView(APIView):
     authentication_classes = ()
+
     def post(self, request):
         try:
             user = create_user(request.data)
             login(request, user)
-            return Response({"apikey": user.api_key}, status=status.HTTP_201_CREATED)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response({"apikey": user.api_key}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"apikey": user.api_key}, status=status.HTTP_201_CREATED,
+                                content_type='application/json; charset=utf-8')
         except Exception as e:
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RecoverPasswordApiView(APIView):
     authentication_classes = ()
+
     def get(self, request):
         try:
             code = recover_password(request.query_params["username"])
-
             return Response(status=status.HTTP_200_OK)
         except Users.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -142,7 +182,7 @@ class RecoverPasswordApiView(APIView):
 
     def put(self, request):
         try:
-            user = validate_code(request.data["username"],request.data["code"])
+            user = validate_code(request.data["username"], request.data["code"])
             login(request, user)
             return Response({"apikey": user.api_key}, status=status.HTTP_200_OK)
         except Users.DoesNotExist:
@@ -154,6 +194,7 @@ class RecoverPasswordApiView(APIView):
 class ChangePasswordApiView(APIView):
     authentication_classes = [SessionAuth]
     permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+
     def put(self, request):
         try:
             change_password(request.data, request.user)
@@ -165,6 +206,7 @@ class ChangePasswordApiView(APIView):
 class LogoutApiView(APIView):
     authentication_classes = [SessionAuth]
     permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+
     def post(self, request):
         try:
             remove_api_key(request.user.id)
@@ -178,6 +220,7 @@ class LogoutApiView(APIView):
 
 class LoginApiView(APIView):
     authentication_classes = ()
+
     def post(self, request):
         try:
             user = login_user(request.data["username"], request.data["password"])

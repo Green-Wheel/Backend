@@ -25,7 +25,10 @@ class ChargersView(APIView):
         try:
             chargers = get_filtered_chargers(request.query_params)
             serializer = ChargerSerializer(chargers, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.data, status=status.HTTP_200_OK, content_type='application/json; charset=utf-8')
         except Exception as e:
             print(e)
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_404_NOT_FOUND)
@@ -34,7 +37,11 @@ class ChargersView(APIView):
         try:
             new_private_charger = create_private_charger(request.data, request.user.id)
             # add charger to user
-            return Response(DetailedChargerSerializer(new_private_charger).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(DetailedChargerSerializer(new_private_charger).data, status=status.HTTP_200_OK)
+            else:
+                return Response(DetailedChargerSerializer(new_private_charger).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         except Exception as e:
             print(e)
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -51,10 +58,18 @@ class ChargersListView(APIView, PaginationHandlerMixin):
             page = self.paginate_queryset(chargers)
             if page is not None:
                 serializer = ChargerListSerializer(page, many=True)
-                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+                if request.accepted_renderer.media_type == 'text/html':
+                    return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+                else:
+                    return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK,
+                                    content_type='application/json; charset=utf-8')
             else:
                 serializer = ChargerListSerializer(chargers, many=True)
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                if request.accepted_renderer.media_type == 'text/html':
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    return Response(serializer.data, status=status.HTTP_200_OK,
+                                    content_type='application/json; charset=utf-8')
         except Exception as e:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -66,14 +81,22 @@ class DetailedChargerView(APIView):
     def get(self, request, charger_id):
         try:
             charger = get_charger_by_id(charger_id)
-            return Response(DetailedChargerSerializer(charger).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(DetailedChargerSerializer(charger).data, status=status.HTTP_200_OK)
+            else:
+                return Response(DetailedChargerSerializer(charger).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         except Chargers.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, charger_id):
         try:
             private_charger = update_private_charger(charger_id, request.data)
-            return Response(DetailedChargerSerializer(private_charger).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(DetailedChargerSerializer(private_charger).data, status=status.HTTP_200_OK)
+            else:
+                return Response(DetailedChargerSerializer(private_charger).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         except Exception as e:
             print(e)
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_404_NOT_FOUND)
@@ -94,7 +117,11 @@ class SpeedTypeView(APIView):
     def get(self, request):
         try:
             speeds = get_speeds()
-            return Response(SpeedTypeSerializer(speeds, many=True).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(SpeedTypeSerializer(speeds, many=True).data, status=status.HTTP_200_OK)
+            else:
+                return Response(SpeedTypeSerializer(speeds, many=True).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         except Exception as e:
             print(e)
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_404_NOT_FOUND)
@@ -107,7 +134,11 @@ class CurrentTypeView(APIView):
     def get(self, request):
         try:
             currents = get_currents()
-            return Response(CurrentTypeSerializer(currents, many=True).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(CurrentTypeSerializer(currents, many=True).data, status=status.HTTP_200_OK)
+            else:
+                return Response(CurrentTypeSerializer(currents, many=True).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         except Exception as e:
             print(e)
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_404_NOT_FOUND)
@@ -120,7 +151,11 @@ class ConnectionTypeView(APIView):
     def get(self, request):
         try:
             connections = get_connections()
-            return Response(ConnectionTypeSerializer(connections, many=True).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(ConnectionTypeSerializer(connections, many=True).data, status=status.HTTP_200_OK)
+            else:
+                return Response(ConnectionTypeSerializer(connections, many=True).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         except Exception as e:
             print(e)
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_404_NOT_FOUND)

@@ -21,7 +21,11 @@ class PublicationOccupationApiView(APIView):
         try:
             new_occupations = create_occupation(request.data, request.user.id, publication_id)
             # add charger to user
-            return Response(new_occupations, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(new_occupations, status=status.HTTP_200_OK)
+            else:
+                return Response(new_occupations, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         except Publication.DoesNotExist:
             return Response({"res": "Publication does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -35,14 +39,22 @@ class ConcretePublicationOccupationApiView(APIView):
     def get(self, request, publication_id, occupation_id):
         try:
             occupation = get_ocupation_by_id(occupation_id)
-            return Response(OccupationRangeSerializer(occupation).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(OccupationRangeSerializer(occupation).data, status=status.HTTP_200_OK)
+            else:
+                return Response(OccupationRangeSerializer(occupation).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         except Publication.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, publication_id, occupation_id):
         try:
             occupation = update_occupation(occupation_id, request.data,request.user.id)
-            return Response(OccupationRangeSerializer(occupation).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(OccupationRangeSerializer(occupation).data, status=status.HTTP_200_OK)
+            else:
+                return Response(OccupationRangeSerializer(occupation).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         except Publication.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -64,7 +76,11 @@ class MonthPublicationOccupation(APIView):
     def get(self, request, publication_id, year, month, day=None):
         try:
             occupations = get_occupation_by_month(publication_id, year,month,day)
-            return Response(occupations, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(occupations, status=status.HTTP_200_OK)
+            else:
+                return Response(occupations, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         except Publication.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -77,7 +93,11 @@ class UploadPublicationImageApiView(APIView):
     def post(self, request, publication_id):
         try:
             publication = upload_images(publication_id, request.FILES.getlist('file'), request.user.id)
-            return Response(PublicationSerializer(publication).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(PublicationSerializer(publication).data, status=status.HTTP_200_OK)
+            else:
+                return Response(PublicationSerializer(publication).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         except Publication.DoesNotExist:
             return Response({"res": "Error: the publication with id " + str(publication_id) + "does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -89,4 +109,7 @@ class RepeatModeTypesApiView(APIView):
 
     def get(self, request):
         types = get_repeat_types()
-        return Response(RepeatModeSerializer(types,many=True).data, status=status.HTTP_200_OK)
+        if request.accepted_renderer.media_type == 'text/html':
+            return Response(RepeatModeSerializer(types,many=True).data, status=status.HTTP_200_OK)
+        else:
+            return Response(RepeatModeSerializer(types, many=True).data, status=status.HTTP_200_OK, content_type='application/json; charset=utf-8')

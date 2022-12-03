@@ -25,10 +25,17 @@ class PublicationRatingsApiView(APIView, PaginationHandlerMixin):
         page = self.paginate_queryset(ratings)
         if page is not None:
             serializer = RatingSerializer(page, many=True)
-            return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+            else:
+                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         else:
             serializer = RatingSerializer(ratings, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.data, status=status.HTTP_200_OK, content_type='application/json; charset=utf-8')
 
     def post(self, request, publication_id):
         rating = request.data
@@ -36,7 +43,11 @@ class PublicationRatingsApiView(APIView, PaginationHandlerMixin):
         rating['user'] = request.user.id
         try:
             rating = create_post_rating(rating)
-            return Response(RatingSerializer(rating).data, status=status.HTTP_201_CREATED)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(RatingSerializer(rating).data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(RatingSerializer(rating).data, status=status.HTTP_201_CREATED,
+                                content_type='application/json; charset=utf-8')
         except Exception as e:
             print(e)
             return Response(e.args[0], status=status.HTTP_400_BAD_REQUEST)
@@ -52,10 +63,17 @@ class ClientRatingsApiView(APIView, PaginationHandlerMixin):
         page = self.paginate_queryset(ratings)
         if page is not None:
             serializer = RatingSerializer(page, many=True)
-            return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+            else:
+                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         else:
             serializer = RatingSerializer(ratings, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.data, status=status.HTTP_200_OK, content_type='application/json; charset=utf-8')
 
     def post(self, request, client_id):
         rating = request.data
@@ -63,7 +81,11 @@ class ClientRatingsApiView(APIView, PaginationHandlerMixin):
         rating['user'] = request.user.id
         try:
             rating = create_client_rating(rating)
-            return Response(RatingSerializer(rating).data, status=status.HTTP_201_CREATED)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(RatingSerializer(rating).data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(RatingSerializer(rating).data, status=status.HTTP_201_CREATED,
+                                content_type='application/json; charset=utf-8')
         except Exception as e:
             print(e)
             return Response(e.args[0], status=status.HTTP_400_BAD_REQUEST)
