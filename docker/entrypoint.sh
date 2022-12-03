@@ -39,7 +39,8 @@ python manage.py collectstatic --noinput
 python manage.py makemigrations
 python manage.py migrate
 python manage.py loaddata fixtures/inicial_data.json
-python create_user.py
+
 # create superuser
+python manage.py loaddata fixtures/service_user.json
 
 exec "$@"

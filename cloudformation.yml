@@ -33,9 +33,9 @@ Parameters:
   Environment:
     Description: Environment name
     Type: String
-    AllowedValues:
-      - pre
-      - pro
+  SGroup:
+    Description: Security Group ID
+    Type: String
 
 Resources:
 ################################################
@@ -72,14 +72,14 @@ Resources:
             ports:
               - '80:8080'
             environment:
-              DJANGO_SECRET_KEY: 'cnc+sy7tn*=0^hc#^hm7=cf&@oicx+g4-fmpsm1$i3dpcp3^hu'
-              DJANGO_DATABASE_HOST: 'cloudformation-stack.cvktoxcvbtpd.eu-west-1.rds.amazonaws.com'
+              DJANGO_SECRET_KEY: 'om%_rbj(rdm*t$dt^!q)2o(3uztqzxtmv361d@j0lpza+q#zd)'
+              DJANGO_DATABASE_HOST: 'cloudformation-stack.ccvipjjamp2m.eu-west-1.rds.amazonaws.com'
               DJANGO_DATABASE_PORT: '5432'
               DJANGO_DATABASE_NAME: 'GreenWheelDB'
               DJANGO_DATABASE_USER: 'greenwheel'
-              DJANGO_DATABASE_PASSWORD: '7217MC6n5DAn'
-              AWS_ACCESS_KEY_ID: 'AKIAQDN2THLQD72I5VCJ'
-              AWS_SECRET_ACCESS_KEY: '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'
+              DJANGO_DATABASE_PASSWORD: 'qghvW6W8Xe6g'
+              AWS_ACCESS_KEY_ID: 'AKIAVS7BBCRWRJUQ4IUC'
+              AWS_SECRET_ACCESS_KEY: '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'
               DEBUG_MODE: 'False'
               CORS_ALLOW_ALL_ORIGINS: 'True'
         " > docker-compose.yml
@@ -92,12 +92,12 @@ Resources:
   GreenWheelS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: greenwheel-bucket
+      BucketName: !Join ["-", ["greenwheel-bucket", !Ref Environment]]
 
   S3BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: !Join ["-", [!Ref GreenWheelS3Bucket, !Ref Environment]]
+      Bucket: !Ref GreenWheelS3Bucket
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -114,10 +114,10 @@ Resources:
   ################################################
   GreenWheelDB:
     Type: AWS::RDS::DBInstance
-    DeletionPolicy: Snapshot
+    DeletionPolicy: Delete
     Properties:
-      BackupRetentionPeriod: 5
       DBInstanceIdentifier: !Ref AWS::StackName
+      BackupRetentionPeriod: 7
       DBName: "GreenWheelDB"
       DBInstanceClass: db.t2.micro
       AllocatedStorage: '5'
@@ -126,4 +126,4 @@ Resources:
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       Port: '5432'
-      VPCSecurityGroups: [sg-09b6ca72aa4c8436a]
+      VPCSecurityGroups: [!Ref SGroup]
