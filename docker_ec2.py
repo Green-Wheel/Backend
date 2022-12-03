@@ -33,7 +33,8 @@ access_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
 
 session = boto3.session.Session(
     aws_access_key_id=access_key,
-    aws_secret_access_key=access_secret_key
+    aws_secret_access_key=access_secret_key,
+    region_name='eu-west-1'
 )
 
 ssm_client = session.client('ssm')
