@@ -78,7 +78,7 @@ jobs:
         capabilities: CAPABILITY_NAMED_IAM, CAPABILITY_AUTO_EXPAND
 
   create-docker:
-    needs: aws-deploy, docker-build
+    needs: [aws-deploy, docker-build]
     runs-on: ubuntu-latest
     environment: development
     steps:
