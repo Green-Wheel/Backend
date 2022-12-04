@@ -2,6 +2,7 @@
 import os
 import boto3
 
+command_cd = ['cd /home/ec2-user/']
 commands_crate_dc_file = ["""echo "
         version: '3.9'
         services:
@@ -26,7 +27,7 @@ commands_crate_dc_file = ["""echo "
 
 commands_run_docker_compose = ['sudo /usr/local/bin/docker-compose up -d']
 
-commands = commands_crate_dc_file + commands_run_docker_compose
+commands = command_cd + commands_crate_dc_file + commands_run_docker_compose
 
 access_key = os.getenv('AWS_ACCESS_KEY_ID')
 access_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
