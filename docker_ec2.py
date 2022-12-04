@@ -47,10 +47,3 @@ response = ssm_client.send_command(
         'commands': commands
     },
 )
-
-command_id = response['Command']['CommandId']
-output = ssm_client.get_command_invocation(
-    CommandId=command_id,
-    InstanceId='i-05ff6135c2643fd05',
-)
-print(output)
