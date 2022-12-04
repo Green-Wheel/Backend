@@ -61,6 +61,7 @@ Resources:
         sudo systemctl enable docker.service
         sudo systemctl start docker.service
         sudo chmod 666 /var/run/docker.sock
+        sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 
   ################################################
   #           Resources for S3 Bucket            #
