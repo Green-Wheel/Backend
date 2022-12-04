@@ -14,7 +14,7 @@ commands_crate_dc_file = ["""echo "
               - '80:8080'
             environment:
               DJANGO_SECRET_KEY: 'om%_rbj(rdm*t$dt^!q)2o(3uztqzxtmv361d@j0lpza+q#zd)'
-              DJANGO_DATABASE_HOST: 'cloudformation-stack.ccvipjjamp2m.eu-west-1.rds.amazonaws.com'
+              DJANGO_DATABASE_HOST: 'cloudformation-stack.cvktoxcvbtpd.eu-west-1.rds.amazonaws.com'
               DJANGO_DATABASE_PORT: '5432'
               DJANGO_DATABASE_NAME: 'GreenWheelDB'
               DJANGO_DATABASE_USER: 'greenwheel'
