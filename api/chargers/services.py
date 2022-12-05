@@ -5,11 +5,13 @@ from requests.auth import HTTPBasicAuth
 from api.chargers.models import Chargers, PrivateChargers, Configs, SpeedsType, ConnectionsType, CurrentsType
 import requests
 import logging
-
+from django.db.models.functions import Radians, Power, Sin, Cos, ATan2, Sqrt, Radians
+from django.db.models import F
 from api.chargers.models import PublicChargers
 from api.chargers.utils import get_all_speeds, get_all_connections, get_all_currents,\
     get_localization, get_town
 from api.publications.models import Province, Town, Localizations
+from utils.nearby_publications import get_nearby_publications
 
 
 def __sincronize_data_with_API(signal, **kwargs):
@@ -205,7 +207,13 @@ def get_filtered_chargers(filter_params):
     else:
         chargers = Chargers.objects.filter(**filters)
 
-    chargers = chargers.order_by('id')
+    chargers = get_nearby_publications(chargers, filter_params)
+    order = filter_params.get("order")
+    if order and order != "distance":
+        chargers = chargers.order_by(order)
+    elif order is None:
+        chargers = chargers.order_by('id')
+
     request_finished.connect(__sincronize_data_with_API, dispatch_uid="sincronize_data_with_API")
     return chargers
 
