@@ -40,7 +40,7 @@ session = boto3.session.Session(
 
 ssm_client = session.client('ssm')
 response = ssm_client.send_command(
-    InstanceIds=['i-0fe68bbf7dee57448'],
+    InstanceIds=['i-0378d5026cfb1453b'],
     DocumentName="AWS-RunShellScript",
     Parameters=
     {
