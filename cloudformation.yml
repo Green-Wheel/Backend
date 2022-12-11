@@ -94,7 +94,7 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       DBInstanceIdentifier: !Ref AWS::StackName
-      BackupRetentionPeriod: 7
+      BackupRetentionPeriod: 0
       DBName: "GreenWheelDB"
       DBInstanceClass: db.t2.micro
       AllocatedStorage: '5'
