@@ -1,5 +1,6 @@
 from api.bikes.models import BikeTypes, Bikes
 from api.chargers.utils import get_localization, get_town
+from utils.nearby_publications import get_nearby_publications
 
 
 def __get_filter(filter_params):
@@ -27,10 +28,11 @@ def get_filtered_bikes(filter_params):
     filters = __get_filter(filter_params)
     filters['active'] = True
     bikes = Bikes.objects.filter(**filters)
+    bikes = get_nearby_publications(bikes, filter_params)
     order = filter_params.get('order', None)
-    if order:
+    if order and order !="distance":
         bikes = bikes.order_by(order)
-    else:
+    elif order is None:
         bikes = bikes.order_by('id')
     return bikes
 
