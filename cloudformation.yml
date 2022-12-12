@@ -41,9 +41,31 @@ Resources:
 ################################################
 #                Resources for EC2             #
 ################################################
+  SSMIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMFullAccess
+
+  WebServerInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref SSMIAMRole
+
   GreenWheelEC2:
     Type: AWS::EC2::Instance
     Properties:
+      IamInstanceProfile: !Ref WebServerInstanceProfile
       InstanceType: t2.micro
       ImageId: ami-01cae1550c0adea9c
       SecurityGroups: [default]
