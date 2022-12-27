@@ -1,7 +1,7 @@
 from django.db import models
 
+from api.chargers.models import ConnectionsType
 from api.users.models import Users
-# from api.chargers.models import ConnectionType
 from config import settings
 
 
@@ -22,8 +22,7 @@ class CarsModel(models.Model):
     year = models.DateField(null=True, blank=True)
     autonomy = models.FloatField(null=True, blank=True)
     car_brand = models.ForeignKey(CarsBrand, on_delete=models.CASCADE, null=False, blank=False)
-
-    # charger_type = models.ManyToManyField(ConnectionType)
+    charger_type = models.ManyToManyField(ConnectionsType)
 
     class Meta:
         verbose_name = "CarModel"
@@ -38,7 +37,7 @@ class Cars(models.Model):
     name = models.CharField(max_length=50, null=False, blank=False)
     charge_capacity = models.FloatField(null=False, blank=False, default=-1)
     car_license = models.CharField(max_length=10, null=False, blank=False)
-    model_id = models.ForeignKey(CarsModel, on_delete=models.CASCADE, null=False, blank=False)
+    model = models.ForeignKey(CarsModel, on_delete=models.CASCADE, null=False, blank=False)
     car_owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
 
     class Meta:
