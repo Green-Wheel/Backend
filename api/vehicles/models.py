@@ -22,7 +22,7 @@ class CarsModel(models.Model):
     year = models.DateField(null=True, blank=True)
     autonomy = models.FloatField(null=True, blank=True)
     car_brand = models.ForeignKey(CarsBrand, on_delete=models.CASCADE, null=False, blank=False)
-    charger_type = models.ManyToManyField(CurrentsType)
+    current_type = models.ManyToManyField(CurrentsType)
     consumption = models.FloatField(null=True, blank=True)
 
     class Meta:
@@ -35,7 +35,6 @@ class CarsModel(models.Model):
 
 
 class Cars(models.Model):
-    name = models.CharField(max_length=50, null=False, blank=False)
     charge_capacity = models.FloatField(null=False, blank=False, default=-1)
     car_license = models.CharField(max_length=10, null=False, blank=False)
     model = models.ForeignKey(CarsModel, on_delete=models.CASCADE, null=False, blank=False)
@@ -44,6 +43,7 @@ class Cars(models.Model):
     class Meta:
         verbose_name = "Car"
         verbose_name_plural = "Cars"
+        unique_together = ["car_license", "car_owner"]
 
     def __str__(self):
-        return self.name
+        return self.id

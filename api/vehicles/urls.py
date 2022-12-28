@@ -19,4 +19,5 @@ from . import views
 
 urlpatterns = [
     path("", views.VehiclesView.as_view()),
+    path("models/", views.VehiclesModelsView.as_view()),
 ]

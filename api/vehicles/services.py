@@ -3,7 +3,7 @@ import logging
 import requests
 
 from api.chargers.models import CurrentsType
-from api.vehicles.models import CarsModel, CarsBrand
+from api.vehicles.models import CarsModel, CarsBrand, Cars
 
 
 def __get_data_from_vehicles_api():
@@ -52,15 +52,16 @@ def __parse_model(vehicles):
         except Exception as e:
             if v["release_year"] is not None:
                 year = datetime.datetime(year=int(v["release_year"]), month=1, day=1)
-                obj_model = CarsModel(name=name, year=year, autonomy=autonomy, car_brand=obj_brand, consumption=consumption)
+                obj_model = CarsModel(name=name, year=year, autonomy=autonomy, car_brand=obj_brand,
+                                      consumption=consumption)
             else:
                 obj_model = CarsModel(name=name, autonomy=autonomy, car_brand=obj_brand, consumption=consumption)
             obj_model.save()
-            print(obj_model)
 
         if len(currents) > 0:
-            obj_model.charger_type.set(currents)
+            obj_model.current_type.set(currents)
             obj_model.save()
+
 
 def get_data_vehicles():
     data = __get_data_from_vehicles_api()
@@ -71,3 +72,17 @@ def get_data_vehicles():
                 vehicles.append(vehicle)
         __parse_model(vehicles)
     print("Finished get data from API")
+
+
+def create_car(data, car_owner_id):
+    car_license = data["car_license"]
+    car_model_id = data["model"]
+    charge_capacity = data["charge_capacity"]
+    try:
+        car = Cars(charge_capacity=charge_capacity, car_license=car_license, model_id=car_model_id, car_owner_id=1)
+        car.save()
+        return car
+    except Exception as e:
+        logging.error(e, "Error creating car")
+        return None
+
