@@ -21,7 +21,7 @@ class CarsModelSerializer(serializers.ModelSerializer):
     def get_charger_type(self, obj):
         currents = []
         for current in obj.current_type.all():
-            currents.append(CurrentTypeSerializer(current).data.name)
+            currents.append(CurrentTypeSerializer(current).data)
         return currents
 
     class Meta:

@@ -39,23 +39,18 @@ def __parse_model(vehicles):
     for v in vehicles:
         name = v["model"]
         obj_brand = __parse_brand(v["brand"])
+        year = v["release_year"]
         autonomy = v["usable_battery_size"]
         currents = __parse_currents(v)
         consumption = v["energy_consumption"]["average_consumption"]
 
         try:
             if v["release_year"] is not None:
-                year = datetime.datetime(year=int(v["release_year"]), month=1, day=1)
                 obj_model = CarsModel.objects.filter(name=name, year=year, car_brand=obj_brand)[0]
             else:
-                obj_model = CarsModel.objects.filter(name=name)[0]
+                obj_model = CarsModel.objects.filter(name=name, car_brand=obj_brand)[0]
         except Exception as e:
-            if v["release_year"] is not None:
-                year = datetime.datetime(year=int(v["release_year"]), month=1, day=1)
-                obj_model = CarsModel(name=name, year=year, autonomy=autonomy, car_brand=obj_brand,
-                                      consumption=consumption)
-            else:
-                obj_model = CarsModel(name=name, autonomy=autonomy, car_brand=obj_brand, consumption=consumption)
+            obj_model = CarsModel(name=name, year=year, autonomy=autonomy, car_brand=obj_brand, consumption=consumption)
             obj_model.save()
 
         if len(currents) > 0:
@@ -85,4 +80,3 @@ def create_car(data, car_owner_id):
     except Exception as e:
         logging.error(e, "Error creating car")
         return None
-

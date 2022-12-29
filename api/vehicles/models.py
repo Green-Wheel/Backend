@@ -19,7 +19,7 @@ class CarsBrand(models.Model):
 
 class CarsModel(models.Model):
     name = models.CharField(max_length=50, null=False, blank=False)
-    year = models.DateField(null=True, blank=True)
+    year = models.IntegerField(null=True, blank=True)
     autonomy = models.FloatField(null=True, blank=True)
     car_brand = models.ForeignKey(CarsBrand, on_delete=models.CASCADE, null=False, blank=False)
     current_type = models.ManyToManyField(CurrentsType)

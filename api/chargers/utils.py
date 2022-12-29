@@ -2,6 +2,7 @@ import re
 
 from api.chargers.models import ConnectionsType, SpeedsType, CurrentsType
 from api.publications.models import Localizations, Province, Town
+from hermetrics.levenshtein import Levenshtein
 
 
 def get_speed(speed_name):
@@ -18,13 +19,33 @@ def get_all_speeds(speed):
     if speed is not None:
         speeds = speed.split(" i ")
         for s in speeds:
-            all_speeds.append(get_speed(s))
+            all_speeds.append(get_speed(s.strip()))
     return all_speeds
+
+
+def get_nearest(connection, possible_connections):
+    lev = Levenshtein()
+    min_distance = 100
+    for c in possible_connections:
+        if c in connection:
+            return c
+        distance = lev.distance(connection, c)
+        if distance < min_distance:
+            min_distance = distance
+            nearest = c
+    return nearest
 
 
 def get_connection(connection):
     try:
-        obj_connection = ConnectionsType.objects.filter(name=connection)[0]
+        connections = ConnectionsType.objects.all()
+        possible_connections = []
+        for c in connections:
+            possible_connections.append(c.name)
+        # print(possible_connections)
+        parsed_connection = get_nearest(connection, possible_connections)
+        print("connection: " + connection + " parsed_connection: " + parsed_connection)
+        obj_connection = ConnectionsType.objects.filter(name=parsed_connection)[0]
     except Exception:
         obj_connection = ConnectionsType(name=connection)
         obj_connection.save()

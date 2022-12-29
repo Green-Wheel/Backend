@@ -148,5 +148,45 @@
     "fields" : {
       "name" : "Electric"
     }
+  },
+  {
+    "model" : "chargers.ConnectionsType",
+    "pk" : 1,
+    "fields" : {
+      "name" : "SCHUKO",
+      "current_type" : 1
+    }
+  },
+  {
+    "model" : "chargers.ConnectionsType",
+    "pk" : 2,
+    "fields" : {
+      "name" : "MENNEKES",
+      "current_type" : 1
+    }
+  },
+  {
+    "model" : "chargers.ConnectionsType",
+    "pk" : 3,
+    "fields" : {
+      "name" : "TESLA",
+      "current_type" : 2
+    }
+  },
+  {
+    "model" : "chargers.ConnectionsType",
+    "pk" : 4,
+    "fields" : {
+      "name" : "CCS",
+      "current_type" : 2
+    }
+  },
+  {
+    "model" : "chargers.ConnectionsType",
+    "pk" : 5,
+    "fields" : {
+      "name" : "CHADEMO",
+      "current_type" : 2
+    }
   }
 ]
