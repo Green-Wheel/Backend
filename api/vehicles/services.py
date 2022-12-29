@@ -2,7 +2,7 @@ import datetime
 import logging
 import requests
 
-from api.chargers.models import CurrentsType
+from api.chargers.models import CurrentsType, ConnectionsType
 from api.vehicles.models import CarsModel, CarsBrand, Cars
 
 
@@ -24,15 +24,32 @@ def __parse_brand(brand):
     return obj_brand
 
 
-def __parse_currents(v):
+def __parse_chargers_type(v):
     currents = []
+    connections = []
     if v["ac_charger"] is not None:
         current = CurrentsType.objects.filter(name="AC")[0]
         currents.append(current)
+        ports = v["ac_charger"]["ports"]
+        for port in ports:
+            if port == "type1":
+                connection = ConnectionsType.objects.filter(name="SCHUKO")[0]
+                connections.append(connection)
+            elif port == "type2":
+                connection = ConnectionsType.objects.filter(name="MENNEKES")[0]
+                connections.append(connection)
     if v["dc_charger"] is not None:
         current = CurrentsType.objects.filter(name="DC")[0]
         currents.append(current)
-    return currents
+        ports = v["dc_charger"]["ports"]
+        for port in ports:
+            if port == "tesla_suc" or port == "tesla_ccs":
+                connection = ConnectionsType.objects.filter(name="TESLA")[0]
+                connections.append(connection)
+            else:
+                connection = ConnectionsType.objects.filter(name=port.upper())[0]
+                connections.append(connection)
+    return currents, connections
 
 
 def __parse_model(vehicles):
@@ -41,7 +58,7 @@ def __parse_model(vehicles):
         obj_brand = __parse_brand(v["brand"])
         year = v["release_year"]
         autonomy = v["usable_battery_size"]
-        currents = __parse_currents(v)
+        currents, connections = __parse_chargers_type(v)
         consumption = v["energy_consumption"]["average_consumption"]
 
         try:
@@ -55,6 +72,9 @@ def __parse_model(vehicles):
 
         if len(currents) > 0:
             obj_model.current_type.set(currents)
+            obj_model.save()
+        if len(connections) > 0:
+            obj_model.connection_type.set(connections)
             obj_model.save()
 
 

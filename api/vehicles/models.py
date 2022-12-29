@@ -23,6 +23,7 @@ class CarsModel(models.Model):
     autonomy = models.FloatField(null=True, blank=True)
     car_brand = models.ForeignKey(CarsBrand, on_delete=models.CASCADE, null=False, blank=False)
     current_type = models.ManyToManyField(CurrentsType)
+    connection_type = models.ManyToManyField(ConnectionsType)
     consumption = models.FloatField(null=True, blank=True)
 
     class Meta:

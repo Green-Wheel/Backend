@@ -42,9 +42,7 @@ def get_connection(connection):
         possible_connections = []
         for c in connections:
             possible_connections.append(c.name)
-        # print(possible_connections)
         parsed_connection = get_nearest(connection, possible_connections)
-        print("connection: " + connection + " parsed_connection: " + parsed_connection)
         obj_connection = ConnectionsType.objects.filter(name=parsed_connection)[0]
     except Exception:
         obj_connection = ConnectionsType(name=connection)
