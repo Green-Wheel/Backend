@@ -190,7 +190,7 @@ def __save_chargers_to_db():
         __create_public_charger(agent, identifier, access, power, all_speeds, available, all_connections, all_currents,
                                 title, description, direction, town, localization)
 
-    print("Finished  get data from API")
+    print("Finished get data from API")
 
 
 def get_all_chargers():

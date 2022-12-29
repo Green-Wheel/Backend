@@ -17,6 +17,7 @@ class CurrentsType(models.Model):
 
 class ConnectionsType(models.Model):
     name = models.CharField(max_length=100, null=False, blank=False, unique=True)
+    current_type = models.ForeignKey(CurrentsType, on_delete=models.CASCADE, null=False, blank=False)
 
     class Meta:
         verbose_name = "ConnectionsType"
