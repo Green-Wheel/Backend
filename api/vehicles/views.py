@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from api.users.permissions import Check_API_KEY_Auth, SessionAuth
 from api.vehicles.models import CarsModel, Cars, CarsBrand
 from api.vehicles.serializers import CarsModelSerializer, CarsSerializer, CarsBrandSerializer, \
-    VehicleBrandYearListSerializer
+    CarsBrandYearSerializer, CarsDetailedSerializer
 from api.vehicles.services import create_car, get_models_by_brand_id, get_years_of_model, \
     get_car_by_id, update_car, delete_car, get_brands, get_filtered_vehicles
 
@@ -17,17 +17,17 @@ class VehiclesView(APIView):
     permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
 
     def get(self, request):
-        models = get_filtered_vehicles(request, request.user.id)
-        serializer = CarsSerializer(models, many=True)
+        cars = get_filtered_vehicles(request.query_params, request.user.id)
+        serializer = CarsSerializer(cars, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         try:
             new_car = create_car(request.data, request.user.id)
             if request.accepted_renderer.media_type == 'text/html':
-                return Response(CarsSerializer(new_car).data, status=status.HTTP_200_OK)
+                return Response(CarsDetailedSerializer(new_car).data, status=status.HTTP_200_OK)
             else:
-                return Response(CarsSerializer(new_car).data, status=status.HTTP_200_OK,
+                return Response(CarsDetailedSerializer(new_car).data, status=status.HTTP_200_OK,
                                 content_type='application/json; charset=utf-8')
         except Exception as e:
             print(e)
@@ -41,9 +41,9 @@ class DetailedVehicleView(APIView):
         try:
             car = get_car_by_id(car_id)
             if request.accepted_renderer.media_type == 'text/html':
-                return Response(CarsSerializer(car).data, status=status.HTTP_200_OK)
+                return Response(CarsDetailedSerializer(car).data, status=status.HTTP_200_OK)
             else:
-                return Response(CarsSerializer(car).data, status=status.HTTP_200_OK,
+                return Response(CarsDetailedSerializer(car).data, status=status.HTTP_200_OK,
                                 content_type='application/json; charset=utf-8')
         except Cars.DoesNotExist:
             return Response({"res": "Car not found"}, status=status.HTTP_400_BAD_REQUEST)
@@ -52,9 +52,9 @@ class DetailedVehicleView(APIView):
         try:
             car = update_car(car_id, request.data, request.user.id)
             if request.accepted_renderer.media_type == 'text/html':
-                return Response(CarsSerializer(car).data, status=status.HTTP_200_OK)
+                return Response(CarsDetailedSerializer(car).data, status=status.HTTP_200_OK)
             else:
-                return Response(CarsSerializer(car).data, status=status.HTTP_200_OK,
+                return Response(CarsDetailedSerializer(car).data, status=status.HTTP_200_OK,
                                 content_type='application/json; charset=utf-8')
         except Exception as e:
             print(e)
@@ -64,7 +64,9 @@ class DetailedVehicleView(APIView):
     def delete(self, request, car_id):
         try:
             delete_car(car_id, request.user.id)
-            return Response({"res": "Car deleted"}, status=status.HTTP_200_OK)
+            return Response({"res": "Car deleted"}, status=status.HTTP_204_NO_CONTENT)
+        except Cars.DoesNotExist:
+            return Response({"res": "Car not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             print(e)
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -107,7 +109,7 @@ class ModelsBrandYearView(APIView):
         try:
             years = get_years_of_model(brand_id, model_name)
             print(years)
-            serializer = VehicleBrandYearListSerializer(years, many=True)
+            serializer = CarsBrandYearSerializer(years, many=True)
             if request.accepted_renderer.media_type == 'text/html':
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:

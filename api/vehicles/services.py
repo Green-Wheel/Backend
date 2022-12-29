@@ -6,7 +6,7 @@ from django.core.signals import request_finished
 from api.chargers.models import CurrentsType, ConnectionsType, Configs
 from api.vehicles.models import CarsModel, CarsBrand, Cars
 
-def __sincronize_data_from_api():
+def __sincronize_data_from_api(signal, **kwargs):
     now_date = datetime.now() - timedelta(hours=1)
     a_day_ago = now_date - timedelta(hours=24)
     try:
@@ -104,21 +104,22 @@ def __get_data_vehicles():
 
 
 def create_car(data, car_owner_id):
+    car_alias = data["alias"]
     car_license = data["car_license"]
     car_model_id = data["model"]
     charge_capacity = data["charge_capacity"]
     try:
-        car = Cars(charge_capacity=charge_capacity, car_license=car_license, model_id=car_model_id, car_owner_id=car_owner_id)
+        car = Cars(alias=car_alias, charge_capacity=charge_capacity, car_license=car_license, model_id=car_model_id, car_owner_id=car_owner_id)
         car.save()
         return car
     except Exception as e:
         logging.error(e, "Error creating car")
         return None
 
-def get_filtered_vehicles(data, user_id):
+def get_filtered_vehicles(filter_params, user_id):
     cars = Cars.objects.filter(car_owner=user_id)
-    if data["orderby"] is not None:
-        cars = cars.order_by(data["orderby"])
+    if filter_params.get("orderby") is not None:
+        cars = cars.order_by(filter_params.get("orderby"))
     else:
         cars = cars.order_by("id")
     return cars
@@ -140,6 +141,7 @@ def get_car_by_id(car_id):
 def update_car(car_id, data, user_id):
     car = get_car_by_id(car_id)
     if car.car_owner_id == user_id:
+        car.alias = data["alias"]
         car.charge_capacity = data["charge_capacity"]
         car.car_license = data["car_license"]
         car.model_id = data["model"]

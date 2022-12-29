@@ -36,6 +36,7 @@ class CarsModel(models.Model):
 
 
 class Cars(models.Model):
+    alias = models.CharField(max_length=50, null=False, blank=False)
     charge_capacity = models.FloatField(null=False, blank=False, default=-1)
     car_license = models.CharField(max_length=10, null=False, blank=False)
     model = models.ForeignKey(CarsModel, on_delete=models.CASCADE, null=False, blank=False)

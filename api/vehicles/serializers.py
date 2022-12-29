@@ -8,7 +8,7 @@ from api.vehicles.models import CarsModel, CarsBrand, Cars
 class CarsBrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarsBrand
-        fields = ["name"]
+        fields = ["id", "name"]
 
 
 class CarsModelSerializer(serializers.ModelSerializer):
@@ -37,21 +37,27 @@ class CarsModelSerializer(serializers.ModelSerializer):
 
 
 class CarsSerializer(serializers.ModelSerializer):
+    car_brand = serializers.SerializerMethodField("get_car_brand")
+    def get_car_brand(self, obj):
+        model = CarsModel.objects.get(id=obj.model_id)
+        car_brand = CarsBrand.objects.get(id=model.car_brand_id)
+        return CarsBrandSerializer(car_brand).data
+    class Meta:
+        model = Cars
+        fields = ["alias", "car_brand"]
+
+class CarsDetailedSerializer(serializers.ModelSerializer):
     model = serializers.SerializerMethodField("get_model")
-    car_owner = serializers.SerializerMethodField("get_car_owner")
 
     def get_model(self, obj):
         return CarsModelSerializer(obj.model).data
 
-    def get_car_owner(self, obj):
-        return BasicUserSerializer(obj.car_owner).data
-
     class Meta:
         model = Cars
-        fields = ["charge_capacity", "car_license", "model", "car_owner"]
+        fields = ["alias", "charge_capacity", "car_license", "model"]
 
 
-class VehicleBrandYearListSerializer(serializers.ModelSerializer):
+class CarsBrandYearSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarsModel
         fields = ["id", "name", "year"]
