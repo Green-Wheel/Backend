@@ -4,6 +4,7 @@ import requests
 from django.core.signals import request_finished
 
 from api.chargers.models import CurrentsType, ConnectionsType, Configs
+from api.users.models import Users
 from api.vehicles.models import CarsModel, CarsBrand, Cars
 
 def __sincronize_data_from_api(signal, **kwargs):
@@ -154,5 +155,14 @@ def delete_car(car_id,user_id):
     car = get_car_by_id(car_id)
     if car.car_owner_id == user_id:
         car.delete()
+    else:
+        raise Exception("You are not the owner of this car")
+
+def select_car(car_id, user_id):
+    car = get_car_by_id(car_id)
+    if car.car_owner_id == user_id:
+        user = Users.objects.get(id=user_id)
+        user.selected_car = car
+        user.save()
     else:
         raise Exception("You are not the owner of this car")

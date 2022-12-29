@@ -8,7 +8,7 @@ from api.vehicles.models import CarsModel, Cars, CarsBrand
 from api.vehicles.serializers import CarsModelSerializer, CarsSerializer, CarsBrandSerializer, \
     CarsBrandYearSerializer, CarsDetailedSerializer
 from api.vehicles.services import create_car, get_models_by_brand_id, get_years_of_model, \
-    get_car_by_id, update_car, delete_car, get_brands, get_filtered_vehicles
+    get_car_by_id, update_car, delete_car, get_brands, get_filtered_vehicles, select_car
 
 
 # Create your views here.
@@ -117,3 +117,18 @@ class ModelsBrandYearView(APIView):
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class SelectVehicleView(APIView):
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+    def put(self, request, car_id):
+        try:
+            select_car(car_id, request.user.id)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_200_OK, content_type='application/json; charset=utf-8')
+        except Exception as e:
+            print(e)
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)

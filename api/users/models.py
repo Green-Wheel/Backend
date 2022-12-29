@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-
 # Create your models here.
 
 class LoginMethods(models.Model):
@@ -41,6 +40,7 @@ class Users(AbstractUser):
     level = models.IntegerField(null=False, blank=False, default=1)
     xp = models.IntegerField(null=False, blank=False, default=0)
     recover_password_code = models.CharField(max_length=6,null=True, blank=True)
+    selected_car = models.ForeignKey('vehicles.Cars', on_delete=models.CASCADE, null=True, blank=True, default=None)
 
     class Meta:
         verbose_name = "User"
