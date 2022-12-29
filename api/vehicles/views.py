@@ -1,16 +1,23 @@
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.vehicles.models import CarsModel, Cars
-from api.vehicles.serializers import CarsModelSerializer, CarsSerializer
-from api.vehicles.services import get_data_vehicles, create_car
+from api.users.permissions import Check_API_KEY_Auth, SessionAuth
+from api.vehicles.models import CarsModel, Cars, CarsBrand
+from api.vehicles.serializers import CarsModelSerializer, CarsSerializer, CarsBrandSerializer, \
+    VehicleBrandYearListSerializer
+from api.vehicles.services import create_car, get_models_by_brand_id, get_years_of_model, \
+    get_car_by_id, update_car, delete_car, get_brands, get_filtered_vehicles
 
 
 # Create your views here.
 class VehiclesView(APIView):
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+
     def get(self, request):
-        models = Cars.objects.all()
+        models = get_filtered_vehicles(request, request.user.id)
         serializer = CarsSerializer(models, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -27,9 +34,84 @@ class VehiclesView(APIView):
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class VehiclesModelsView(APIView):
+class DetailedVehicleView(APIView):
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+    def get(self, request, car_id):
+        try:
+            car = get_car_by_id(car_id)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(CarsSerializer(car).data, status=status.HTTP_200_OK)
+            else:
+                return Response(CarsSerializer(car).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
+        except Cars.DoesNotExist:
+            return Response({"res": "Car not found"}, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, car_id):
+        try:
+            car = update_car(car_id, request.data, request.user.id)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(CarsSerializer(car).data, status=status.HTTP_200_OK)
+            else:
+                return Response(CarsSerializer(car).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
+        except Exception as e:
+            print(e)
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request, car_id):
+        try:
+            delete_car(car_id, request.user.id)
+            return Response({"res": "Car deleted"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BrandsView(APIView):
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
     def get(self, request):
-        get_data_vehicles()
-        models = CarsModel.objects.all()
-        serializer = CarsModelSerializer(models, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            brands = get_brands()
+            serializer = CarsBrandSerializer(brands, many=True)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.data, status=status.HTTP_200_OK, content_type='application/json; charset=utf-8')
+        except Exception as e:
+            print(e)
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class ModelsBrandView(APIView):
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+    def get(self, request, brand_id):
+        try:
+            models = get_models_by_brand_id(brand_id)
+            serializer = CarsModelSerializer(models, many=True)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.data, status=status.HTTP_200_OK, content_type='application/json; charset=utf-8')
+        except CarsModel.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class ModelsBrandYearView(APIView):
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+    def get(self, request, brand_id, model_name):
+        try:
+            years = get_years_of_model(brand_id, model_name)
+            print(years)
+            serializer = VehicleBrandYearListSerializer(years, many=True)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.data, status=status.HTTP_200_OK, content_type='application/json; charset=utf-8')
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)

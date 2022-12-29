@@ -49,3 +49,9 @@ class CarsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cars
         fields = ["charge_capacity", "car_license", "model", "car_owner"]
+
+
+class VehicleBrandYearListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CarsModel
+        fields = ["id", "name", "year"]

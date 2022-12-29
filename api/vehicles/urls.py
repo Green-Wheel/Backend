@@ -19,5 +19,8 @@ from . import views
 
 urlpatterns = [
     path("", views.VehiclesView.as_view()),
-    path("models/", views.VehiclesModelsView.as_view()),
+    path("<int:car_id>/", views.DetailedVehicleView.as_view()),
+    path("brands/", views.BrandsView.as_view()),
+    path("brands/<int:brand_id>/models", views.ModelsBrandView.as_view()),
+    path("brands/<int:brand_id>/models/<str:model_name>/years", views.ModelsBrandYearView.as_view()),
 ]
