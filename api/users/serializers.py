@@ -10,7 +10,7 @@ class FullUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
         fields = ["id", "last_login", "username", "first_name", "last_name", "email", "is_active", "date_joined",
-                  "about", "phone", "birthdate", "profile_picture", "language_id", "level", "xp"]
+                  "about", "phone", "birthdate", "profile_picture", "language_id", "level", "xp", "selected_car"]
 
 
 class BasicUserSerializer(serializers.ModelSerializer):
@@ -36,7 +36,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = Users
 
         fields = ["id", "username", "first_name", "last_name", "email","about", "profile_picture", "language_id", "level", "xp",
-                  "rating"]
+                  "rating", "selected_car"]
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
