@@ -44,7 +44,7 @@ class CarsSerializer(serializers.ModelSerializer):
         return CarsBrandSerializer(car_brand).data
     class Meta:
         model = Cars
-        fields = ["alias", "car_brand"]
+        fields = ["id", "alias", "car_brand"]
 
 class CarsDetailedSerializer(serializers.ModelSerializer):
     model = serializers.SerializerMethodField("get_model")
