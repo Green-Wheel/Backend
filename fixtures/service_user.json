@@ -1,9 +1,9 @@
 [
     {
     "model": "users.Users",
-    "pk": 1,
+    "pk": 3,
     "fields": {
-      "username" : "admin",
+      "username" : "superadmin",
       "password" : "ur#SU646vm3E",
       "is_superuser" : true,
         "is_staff" : true,

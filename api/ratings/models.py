@@ -14,6 +14,7 @@ class Ratings(models.Model):
     rate = models.FloatField(null=False, blank=False)
     comment = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Rating"

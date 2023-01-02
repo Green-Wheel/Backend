@@ -6,15 +6,15 @@ from api.ratings.serializers import PostRatingSerializer, ClientsRatingSerialize
 
 
 def get_ratings_for_user(user_id):
-    ratings = ClientsRating.objects.filter(user_id=user_id)
+    ratings = ClientsRating.objects.filter(user_id=user_id, active=True)
     return ratings
 
 def get_ratings_for_publication(publication_id):
-    ratings = PostRating.objects.filter(publication_id=publication_id)
+    ratings = PostRating.objects.filter(publication_id=publication_id, active=True)
     return ratings
 
 def get_all_ratings():
-    ratings = Ratings.objects.all()
+    ratings = Ratings.objects.filter(active=True)
     return ratings
 
 def create_post_rating(rating):
