@@ -40,7 +40,10 @@ python manage.py makemigrations
 python manage.py migrate
 python manage.py loaddata fixtures/inicial_data.json
 
-# create superuser
+# create service user
 python manage.py loaddata fixtures/service_user.json
+
+# create superuser
+python manage.py shell -c "from api.users.models import Users; Users.objects.create_superuser(\'admin\', \'admin@example.com\', \'90np3AE7#IH&\')"
 
 exec "$@"
