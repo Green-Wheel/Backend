@@ -41,10 +41,9 @@ class UserBookingsApiView(APIView, PaginationHandlerMixin):
 
 
     def post(self, request):
-        booking = request.data
-        booking['user'] = request.user.id
-        booking["confirmed"] = False
-        booking["cancelled"] = False
+        data = request.data
+        booking = {"publication": data["publication"], "start_date": data["start_date"], "end_date": data["end_date"],
+                   'user': request.user.id, "confirmed": False, "cancelled": False}
         try:
             booking = create_booking(booking)
             if request.accepted_renderer.media_type == 'text/html':
