@@ -19,7 +19,7 @@ from . import views
 
 urlpatterns = [
     path('reasons/', views.ReportReasonsApiView.as_view()),
-    path('rating/<int:rating_id>', views.ReportRatingApiView.as_view()),
-    path('publication/<int:publication_id>', views.ReportPublicationApiView.as_view()),
-    path('user/<int:reported_user>', views.ReportUserApiView.as_view()),
+    path('rating/<int:rating_id>/', views.ReportRatingApiView.as_view()),
+    path('publication/<int:publication_id>/', views.ReportPublicationApiView.as_view()),
+    path('user/<int:reported_user>/', views.ReportUserApiView.as_view()),
 ]

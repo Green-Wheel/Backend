@@ -17,8 +17,8 @@ def create_rating_report(rating_id,data, user_id):
     report_type = ReportReasons.objects.get(id=data["reason"])
 
     report = Report()
-    report.user = user_id
-    report.rating = rating_id
+    report.user_id = user_id
+    report.rating_id = rating_id
     report.reason = report_type
     report.message = data["message"]
     report.save()
@@ -37,8 +37,8 @@ def create_publication_report(publication_id,data, user_id):
     report_type = ReportReasons.objects.get(id=data["reason"])
 
     report = Report()
-    report.user = user_id
-    report.publication = publication_id
+    report.user_id = user_id
+    report.publication_id = publication_id
     report.reason = report_type
     report.message = data["message"]
     report.save()
@@ -53,8 +53,8 @@ def create_user_report(reported_user,data, user_id):
     report_type = ReportReasons.objects.get(id=data["reason"])
 
     report = Report()
-    report.user = user_id
-    report.reported_user = reported_user
+    report.user_id = user_id
+    report.reported_user_id = reported_user
     report.reason = report_type
     report.message = data["message"]
     report.save()
