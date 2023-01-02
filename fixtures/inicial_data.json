@@ -188,5 +188,26 @@
       "name" : "CHADEMO",
       "current_type" : 2
     }
+  },
+  {
+    "model" : "reports.ReportReasons",
+    "pk" : 1,
+    "fields" : {
+      "name" : "Spam"
+    }
+  },
+  {
+    "model" : "reports.ReportReasons",
+    "pk" : 2,
+    "fields" : {
+      "name" : "Inappropriate"
+    }
+  },
+  {
+    "model" : "reports.ReportReasons",
+    "pk" : 99,
+    "fields" : {
+      "name" : "Other"
+    }
   }
 ]
