@@ -40,8 +40,6 @@ class PublicationRatingsApiView(APIView, PaginationHandlerMixin):
                                 content_type='application/json; charset=utf-8')
 
     def post(self, request, publication_id):
-        print("posting rating")
-        print(request.data)
         rating = request.data
         rating['publication'] = publication_id
         rating['user'] = request.user.id
