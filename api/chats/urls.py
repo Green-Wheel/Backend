@@ -16,5 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from .views import ChatsApiView, ConcreteChatApiView, ChatRoomMessagesApiView
 
-urlpatterns = []
+urlpatterns = [
+    path('', ChatsApiView.as_view()),
+    path('<int:chat_id>/', ConcreteChatApiView.as_view()),
+path('<int:chat_id>/messages/', ChatRoomMessagesApiView.as_view()),
+]

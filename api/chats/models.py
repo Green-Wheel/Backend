@@ -1,20 +1,38 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from api.users.models import Users
 from config import settings
 
+User = get_user_model()
+# Create your models here
 
-# Create your models here.
-class Chats(models.Model):
-    text = models.CharField(max_length=1500)
-    read = models.BooleanField(default=False)
-    date_time_read = models.DateTimeField(blank=True, null=True)
-    date_time_sent = models.DateTimeField(auto_now_add=True)
-    user_sent = models.ForeignKey(settings.AUTH_USER_MODEL,  on_delete=models.CASCADE, related_name='user_sent')
-    user_recived = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user_recived",  blank=True, null=True)
-
-    class Meta:
-        verbose_name = "Chat"
-        verbose_name_plural = "Chats"
+class ChatParticipantsChannel(models.Model):
+    channel = models.CharField(max_length=256)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
 
     def __str__(self):
-        return self.text
+        return str(self.channel)
+
+class ChatRoom(models.Model):
+    last_message = models.CharField(max_length=1024, null=True)
+    last_sent_user = models.ForeignKey(
+        User, on_delete=models.PROTECT, null=True)
+    open = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.last_message
+
+
+class ChatMessage(models.Model):
+    room = models.ForeignKey(ChatRoom, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    content = models.CharField(max_length=1024)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.content
+
+
+class ChatRoomParticipants(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    room = models.ForeignKey(ChatRoom, on_delete=models.PROTECT)
