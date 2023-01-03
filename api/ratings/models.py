@@ -10,7 +10,7 @@ from api.chargers.models import Publication
 # Create your models here.
 class Ratings(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False)
-    booking = models.ForeignKey(Bookings, on_delete=models.CASCADE, null=False, blank=False)  # finished_bookings
+    booking = models.ForeignKey(Bookings, on_delete=models.CASCADE, null=True, blank=True)  # finished_bookings
     rate = models.FloatField(null=False, blank=False)
     comment = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -32,7 +32,6 @@ class PostRating(Ratings):
     class Meta:
         verbose_name = "Publication Rating"
         verbose_name_plural = "Publications Ratings"
-
 
 
 class ClientsRating(Ratings):
