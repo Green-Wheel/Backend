@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from .serializers import RatingSerializer
-from .services import get_all_ratings, get_ratings_for_publication, get_ratings_for_user, create_post_rating, \
+from .services import get_ratings_from_publication, get_ratings_for_user, create_post_rating, \
     create_client_rating
 from ..chargers.pagination import PaginationHandlerMixin
 from ..users.permissions import Check_API_KEY_Auth, SessionAuth
@@ -15,13 +15,14 @@ from ..users.permissions import Check_API_KEY_Auth, SessionAuth
 class BasicPagination(PageNumberPagination):
     page_size_query_param = 'limit'
 
+
 class PublicationRatingsApiView(APIView, PaginationHandlerMixin):
     pagination_class = BasicPagination
     authentication_classes = [SessionAuth]
     permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
 
     def get(self, request, publication_id):
-        ratings = get_ratings_for_publication(publication_id)
+        ratings = get_ratings_from_publication(publication_id)
         page = self.paginate_queryset(ratings)
         if page is not None:
             serializer = RatingSerializer(page, many=True)
@@ -35,7 +36,8 @@ class PublicationRatingsApiView(APIView, PaginationHandlerMixin):
             if request.accepted_renderer.media_type == 'text/html':
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
-                return Response(serializer.data, status=status.HTTP_200_OK, content_type='application/json; charset=utf-8')
+                return Response(serializer.data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
 
     def post(self, request, publication_id):
         rating = request.data
@@ -73,7 +75,8 @@ class ClientRatingsApiView(APIView, PaginationHandlerMixin):
             if request.accepted_renderer.media_type == 'text/html':
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
-                return Response(serializer.data, status=status.HTTP_200_OK, content_type='application/json; charset=utf-8')
+                return Response(serializer.data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
 
     def post(self, request, client_id):
         rating = request.data
