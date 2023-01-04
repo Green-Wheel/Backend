@@ -55,7 +55,27 @@ class UserBookingsApiView(APIView, PaginationHandlerMixin):
             print(e)
             return Response(e.args[0], status=status.HTTP_400_BAD_REQUEST)
 
-
+class UserHistorialApiView(APIView, PaginationHandlerMixin):
+    pagination_class = BasicPagination
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+    def get(self, request):
+        order = request.query_params.get('orderby', None)
+        bookings = get_user_bookings(request.user.id, order)
+        page = self.paginate_queryset(bookings)
+        if page is not None:
+            serializer = BookingsSerializer(page, many=True)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+            else:
+                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
+        else:
+            serializer = BookingsSerializer(bookings, many=True)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.data, status=status.HTTP_200_OK, content_type='application/json; charset=utf-8')
 class OwnerBookingsApiView(APIView, PaginationHandlerMixin):
     pagination_class = BasicPagination
     authentication_classes = [SessionAuth]
