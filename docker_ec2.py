@@ -3,7 +3,7 @@ import os
 import boto3
 
 command_cd = ['cd /home/ec2-user/']
-commands_crate_dc_file = ["""echo "
+command_create_dc_file = ["""echo "
         version: '3.9'
         services:
           backend-app:
@@ -12,6 +12,17 @@ commands_crate_dc_file = ["""echo "
             restart: always
             ports:
               - '80:8080'
+            volumes:
+                - ./migrations/bikes:./api/bikes/migrations
+                - ./migrations/users:./api/users/migrations
+                - ./migrations/bookings:./api/bookings/migrations
+                - ./migrations/chargers:./api/chargers/migrations
+                - ./migrations/chats:./api/chats/migrations 
+                - ./migrations/ratings:./api/ratings/migrations
+                - ./migrations/reports:./api/reports/migrations
+                - ./migrations/vehicles:./api/vehicles/migrations
+                - ./migrations/publications:./api/publications/migrations
+                 
             environment:
               DJANGO_SECRET_KEY: 'om%_rbj(rdm*t$dt^!q)2o(3uztqzxtmv361d@j0lpza+q#zd)'
               DJANGO_DATABASE_HOST: 'cloudformation-stack.cvktoxcvbtpd.eu-west-1.rds.amazonaws.com'
@@ -25,9 +36,9 @@ commands_crate_dc_file = ["""echo "
               CORS_ALLOW_ALL_ORIGINS: 'True'
         " > docker-compose.yml"""]
 
-commands_run_docker_compose = ['sudo /usr/local/bin/docker-compose up -d']
-
-commands = command_cd + commands_crate_dc_file + commands_run_docker_compose
+command_run_docker_compose = ['sudo /usr/local/bin/docker-compose up -d']
+command_pull_docker = ['sudo docker pull crismigo/greenwheel_backend:latest']
+commands = command_cd + command_create_dc_file + command_pull_docker + command_run_docker_compose
 
 access_key = os.getenv('AWS_ACCESS_KEY_ID')
 access_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
