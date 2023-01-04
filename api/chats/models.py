@@ -17,6 +17,7 @@ class ChatRoom(models.Model):
     last_message = models.CharField(max_length=1024, null=True)
     last_sent_user = models.ForeignKey(
         User, on_delete=models.PROTECT, null=True)
+    last_sent_time = models.DateTimeField(auto_now=True)
     open = models.BooleanField(default=True)
 
     def __str__(self):

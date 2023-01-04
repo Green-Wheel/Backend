@@ -4,23 +4,23 @@ from channels.layers import get_channel_layer
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from django.contrib.auth import get_user_model
-from django.db.models import Q
 
 from .models import ChatRoom, ChatRoomParticipants, ChatMessage, ChatParticipantsChannel
 
 User = get_user_model()
 class ChatConsumer(AsyncJsonWebsocketConsumer):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.user = None
+        self.user_id = None
+        self.to_user = None
+        self.chatroom_id = None
+
     async def connect(self):
         self.user_id = self.scope['url_route']['kwargs']['user_id']
 
         await self.save_user_channel()
-
-        # self.group_room_name = 'room'
-        # await self.channel_layer.group_add(
-        #     self.group_room_name,
-        #     self.channel_name
-        # )
 
         await self.accept()
 
@@ -28,62 +28,43 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
         await self.delete_user_channel()
 
-        # await self.channel_layer.group_discard(
-        #     self.group_room_name,
-        #     self.channel_name
-        # )
-
         await self.disconnect(close_code)
 
     async def receive_json(self, text_data=None, byte_data=None):
         message = text_data['message']
         self.to_user = text_data['to_user']
         to_user_channel, to_user_id = await self.get_user_channel(self.to_user)
-        self.group_name = f'{self.user_id}-{self.to_user}'
-        message_response = await self.save_message(self.group_name, self.user, message)
+        message_response = await self.save_message(self.to_user, self.user, message)
         message_response['type'] = 'send.message'
 
         channel_layer = get_channel_layer()
 
         await self.channel_layer.group_add(
-            self.group_name,
+            str(self.chatroom_id),
             str(self.channel_name)
         )
         if to_user_channel != None and to_user_id != None:
             await self.channel_layer.group_add(
-                self.group_name,
+                str(self.chatroom_id),
                 str(to_user_channel)
             )
 
         await channel_layer.group_send(
-            self.group_name, message_response
+            str(self.chatroom_id), message_response
         )
 
-        # await channel_layer.send(
-        #     str(self.channel_name), {
-        #         'type': 'send.message',
-        #         'from_user': self.user_id,
-        #         'to_user': str(to_user_id),
-        #         'message': message,
-        #     }
-        # )
-
     async def send_message(self, event):
-        # from_user = event['from_user']
-        # to_user = event['to_user']
-        # message = event['message']
 
-        print(event)
+        #print(event)
 
         await self.send(text_data=json.dumps(event))
 
     @database_sync_to_async
     def get_user_channel(self, to_user):
         try:
-            send_user_channel = ChatParticipantsChannel.objects.filter(
+            channel_name = ChatParticipantsChannel.objects.filter(
                 user=to_user).latest('id')
-            channel_name = send_user_channel
-            user_id = send_user_channel.user.id
+            user_id = channel_name.user.id
         except Exception as e:
             channel_name = None
             user_id = None
@@ -104,31 +85,28 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         ChatParticipantsChannel.objects.filter(user=self.user).delete()
 
     @database_sync_to_async
-    def save_message(self, room, user, content):
-        try:
-            ChatRoomParticipants.objects.get_or_create(
-                Q(room__name=f'{self.user.id}-{self.to_user}') |
-                Q(room__name=f'{self.to_user}-{self.user.id}'), user=self.user)
-            ChatRoomParticipants.objects.get_or_create(
-                Q(room__name=f'{self.user.id}-{self.to_user}') |
-                Q(room__name=f'{self.to_user}-{self.user.id}'), user=self.to_user)
-        except Exception as e:
-            print(e)
+    def save_message(self, to_user_id, user, message):
 
-        try:
-            chatroom = ChatRoom.objects.get(Q(name=f'{self.user.id}-{self.to_user}') |
-                                            Q(name=f'{self.to_user}-{self.user.id}'))
-            chatroom.last_message = content
-            chatroom.last_sent_user = self.user
-        except Exception as e:
-            chatroom = ChatRoom.objects.create(
-                name=str(room),
-                last_message=content,
-                last_sent_user=self.user
-            )
+        room_ids = list(ChatRoomParticipants.objects.filter(
+            user=user.id).values_list('room__id', flat=True))
+        chat_participant = ChatRoomParticipants.objects.filter(user__id=to_user_id).filter(
+            room__id__in=room_ids)
+        if chat_participant:
+            chatroom = ChatRoom.objects.get(id=chat_participant.latest('id').room.id)
+        else:
+            chatroom = ChatRoom.objects.create()
+            ChatRoomParticipants.objects.create(user=user, room=chatroom)
+            ChatRoomParticipants.objects.create(user_id=to_user_id, room=chatroom)
+
+        self.chatroom_id = chatroom.id
+
+
+        chatroom.last_message = message
+        chatroom.last_sent_user = self.user
+        chatroom.save()
 
         message = ChatMessage.objects.create(
-            room=chatroom, user=self.user, content=content
+            room=chatroom, user=self.user, content=message
         )
 
         message_response = {

@@ -49,14 +49,6 @@ class ConcreteChatApiView(APIView, PaginationHandlerMixin):
     def get(self, request, chat_id):
         try:
             chat_room = get_chat_room_by_id(chat_id, request.user.id)
-            page = self.paginate_queryset(chat_room)
-            if page is not None:
-                serializer = ChatRoomSerializer(page, many=True)
-                if request.accepted_renderer.media_type == 'text/html':
-                    return Response(serializer.data, status=status.HTTP_200_OK)
-                else:
-                    return Response(serializer.data, status=status.HTTP_200_OK,
-                                    content_type='application/json; charset=utf-8')
             serializer = ChatRoomSerializer(chat_room)
             if request.accepted_renderer.media_type == 'text/html':
                 return Response(serializer.data, status=status.HTTP_200_OK)
