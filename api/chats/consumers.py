@@ -6,6 +6,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.contrib.auth import get_user_model
 
 from .models import ChatRoom, ChatRoomParticipants, ChatMessage, ChatParticipantsChannel
+from ..users.serializers import BasicUserSerializer
 
 User = get_user_model()
 class ChatConsumer(AsyncJsonWebsocketConsumer):
@@ -93,10 +94,11 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             room__id__in=room_ids)
         if chat_participant:
             chatroom = ChatRoom.objects.get(id=chat_participant.latest('id').room.id)
+            chat_participant.update(unread=True)
         else:
             chatroom = ChatRoom.objects.create()
             ChatRoomParticipants.objects.create(user=user, room=chatroom)
-            ChatRoomParticipants.objects.create(user_id=to_user_id, room=chatroom)
+            ChatRoomParticipants.objects.create(user_id=to_user_id, room=chatroom,unread=True)
 
         self.chatroom_id = chatroom.id
 
@@ -110,11 +112,11 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         )
 
         message_response = {
-            'message_id': message.id,
-            'message_room': chatroom.id,
-            'message_content': message.content,
-            'message_user': str(message.user.id),
-            'message_created_at': str(message.created_at),
+            'id': message.id,
+            'room_id': chatroom.id,
+            'content': message.content,
+            'sender': BasicUserSerializer(message.user).data,
+            'created_at': str(message.created_at),
         }
 
         return message_response

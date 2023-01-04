@@ -37,3 +37,4 @@ class ChatMessage(models.Model):
 class ChatRoomParticipants(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     room = models.ForeignKey(ChatRoom, on_delete=models.PROTECT)
+    unread = models.BooleanField(default=False)
