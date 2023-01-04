@@ -13,15 +13,15 @@ command_create_dc_file = ["""echo "
             ports:
               - '80:8080'
             volumes:
-                - ./migrations/bikes:./api/bikes/migrations
-                - ./migrations/users:./api/users/migrations
-                - ./migrations/bookings:./api/bookings/migrations
-                - ./migrations/chargers:./api/chargers/migrations
-                - ./migrations/chats:./api/chats/migrations 
-                - ./migrations/ratings:./api/ratings/migrations
-                - ./migrations/reports:./api/reports/migrations
-                - ./migrations/vehicles:./api/vehicles/migrations
-                - ./migrations/publications:./api/publications/migrations
+                - ./migrations/bikes:/usr/src/app/api/bikes/migrations
+                - ./migrations/users:/usr/src/app/api/users/migrations
+                - ./migrations/bookings:/usr/src/app/api/bookings/migrations
+                - ./migrations/chargers:/usr/src/app/api/chargers/migrations
+                - ./migrations/chats:/usr/src/app/api/chats/migrations 
+                - ./migrations/ratings:/usr/src/app/api/ratings/migrations
+                - ./migrations/reports:/usr/src/app/api/reports/migrations
+                - ./migrations/vehicles:/usr/src/app/api/vehicles/migrations
+                - ./migrations/publications:/usr/src/app/api/publications/migrations
                  
             environment:
               DJANGO_SECRET_KEY: 'om%_rbj(rdm*t$dt^!q)2o(3uztqzxtmv361d@j0lpza+q#zd)'
