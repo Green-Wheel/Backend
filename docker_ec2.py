@@ -3,6 +3,8 @@ import os
 import boto3
 
 command_cd = ['cd /home/ec2-user/']
+command_delete_last_image = ['docker rmi $(docker images -q)']
+command_pull_docker = ['sudo docker pull crismigo/greenwheel_backend:latest']
 command_create_dc_file = ["""echo "
         version: '3.9'
         services:
@@ -27,7 +29,7 @@ command_create_dc_file = ["""echo "
         " > docker-compose.yml"""]
 
 command_run_docker_compose = ['sudo /usr/local/bin/docker-compose up -d']
-command_pull_docker = ['sudo docker pull crismigo/greenwheel_backend:latest']
+
 commands = command_cd + command_create_dc_file + command_pull_docker + command_run_docker_compose
 
 access_key = os.getenv('AWS_ACCESS_KEY_ID')
