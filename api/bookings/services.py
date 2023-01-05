@@ -6,11 +6,18 @@ from api.publications.models import OccupationRanges
 from api.publications.services import create_occupation, create_booking_occupation
 
 
-def get_user_bookings(user_id, order):
-    bookings = Bookings.objects.filter(user_id=user_id, end_date__gt=datetime.now(),
+def get_user_bookings(user_id, order, bookings_type='not_finished'):
+    if bookings_type == 'not_finished':
+        bookings = Bookings.objects.filter(user_id=user_id, end_date__gt=datetime.now(),
                                        status_id=1) | Bookings.objects.filter(user_id=user_id,
                                                                               end_date__gt=datetime.now(),
                                                                               status_id=2)
+    elif bookings_type == 'historial':
+        bookings = Bookings.objects.filter(user_id=user_id, end_date__lt=datetime.now(),
+                                           status_id=2) | Bookings.objects.filter(user_id=user_id,
+                                                                                  status_id__gte=3)
+    else:
+        bookings = Bookings.objects.filter(user_id=user_id)
     if order == 'date':
         bookings = bookings.order_by('start_date')
     elif order == 'town':
@@ -33,6 +40,11 @@ def get_owner_bookings(owner_id, booking_type):
         bookings = bookings.filter(publication__owner_id=owner_id, end_date__lte=datetime.now(), status_id=2)
     elif booking_type == 'cancelled':
         bookings = bookings.filter(publication__owner_id=owner_id, status_id=3)
+
+    elif booking_type == 'historial':
+        bookings = bookings.filter(publication__owner_id=owner_id, end_date__lt=datetime.now(),
+                                   status_id=2) | Bookings.objects.filter(publication__owner_id=owner_id,
+                                                                          status_id__gte=3)
     bookings = bookings.order_by('start_date')
     return bookings
 
