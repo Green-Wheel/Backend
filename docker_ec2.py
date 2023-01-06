@@ -12,6 +12,7 @@ command_create_dc_file = ["""echo "
           backend-app:
             container_name: backend_app
             image: crismigo/greenwheel_backend:latest
+            hostname: backend
             restart: always
             ports:
               - '80:8080'
