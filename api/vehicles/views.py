@@ -105,9 +105,9 @@ class ModelsBrandView(APIView):
 class ModelsBrandYearView(APIView):
     authentication_classes = [SessionAuth]
     permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
-    def get(self, request, brand_id, model_name):
+    def get(self, request, brand_id, model_id):
         try:
-            years = get_years_of_model(brand_id, model_name)
+            years = get_years_of_model(brand_id, model_id)
             print(years)
             serializer = CarsBrandYearSerializer(years, many=True)
             if request.accepted_renderer.media_type == 'text/html':

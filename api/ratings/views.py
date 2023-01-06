@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from .serializers import RatingSerializer
 from .services import get_ratings_from_publication, get_ratings_for_user, create_post_rating, \
-    create_client_rating
+    create_client_rating, get_rating
 from ..chargers.pagination import PaginationHandlerMixin
 from ..users.permissions import Check_API_KEY_Auth, SessionAuth
 
@@ -15,7 +15,19 @@ from ..users.permissions import Check_API_KEY_Auth, SessionAuth
 class BasicPagination(PageNumberPagination):
     page_size_query_param = 'limit'
 
+class ConcreteRatingApiView(APIView):
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
 
+    def get(self, request, rating_id):
+        rating = get_rating(rating_id)
+        if rating is None:
+            return Response("Rating not found", status=status.HTTP_404_NOT_FOUND)
+        if request.accepted_renderer.media_type == 'text/html':
+            return Response(RatingSerializer(rating).data, status=status.HTTP_200_OK)
+        else:
+            return Response(RatingSerializer(rating).data, status=status.HTTP_200_OK,
+                            content_type='application/json; charset=utf-8')
 class PublicationRatingsApiView(APIView, PaginationHandlerMixin):
     pagination_class = BasicPagination
     authentication_classes = [SessionAuth]
