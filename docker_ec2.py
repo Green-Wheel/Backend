@@ -16,15 +16,15 @@ command_create_dc_file = ["""echo "
             ports:
               - '80:8080'
             volumes:
-                - ./migrations/bikes:/usr/src/app/api/bikes/migrations
-                - ./migrations/users:/usr/src/app/api/users/migrations
-                - ./migrations/bookings:/usr/src/app/api/bookings/migrations
-                - ./migrations/chargers:/usr/src/app/api/chargers/migrations
-                - ./migrations/chats:/usr/src/app/api/chats/migrations 
-                - ./migrations/ratings:/usr/src/app/api/ratings/migrations
-                - ./migrations/reports:/usr/src/app/api/reports/migrations
-                - ./migrations/vehicles:/usr/src/app/api/vehicles/migrations
-                - ./migrations/publications:/usr/src/app/api/publications/migrations     
+                - bikes:/usr/src/app/api/bikes/migrations
+                - users:/usr/src/app/api/users/migrations
+                - bookings:/usr/src/app/api/bookings/migrations
+                - chargers:/usr/src/app/api/chargers/migrations
+                - chats:/usr/src/app/api/chats/migrations 
+                - ratings:/usr/src/app/api/ratings/migrations
+                - reports:/usr/src/app/api/reports/migrations
+                - vehicles:/usr/src/app/api/vehicles/migrations
+                - publications:/usr/src/app/api/publications/migrations     
             environment:
               DJANGO_SECRET_KEY: 'om%_rbj(rdm*t$dt^!q)2o(3uztqzxtmv361d@j0lpza+q#zd)'
               DJANGO_DATABASE_HOST: 'greenwheel-rds-pre.cvktoxcvbtpd.eu-west-1.rds.amazonaws.com'
@@ -36,6 +36,16 @@ command_create_dc_file = ["""echo "
               AWS_SECRET_ACCESS_KEY: """ + os.environ['AWS_SECRET_ACCESS_KEY'] + """
               DEBUG_MODE: 'False'
               CORS_ALLOW_ALL_ORIGINS: 'True'
+        volumes:
+          bikes:
+          users:
+          bookings:
+          chargers:
+          chats:
+          ratings:
+          reports:
+          vehicles:
+          publications:
         " > docker-compose.yml"""]
 
 command_run_docker_compose = ['sudo /usr/local/bin/docker-compose up -d']
