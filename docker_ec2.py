@@ -3,7 +3,8 @@ import os
 import boto3
 
 command_cd = ['cd /home/ec2-user/']
-command_delete_last_image = ['docker rmi $(docker images -a -q)']
+command_stop_images = ['docker stop $(docker ps -aq)']
+command_delete_images = ['docker rmi $(docker images -aq)']
 command_pull_docker = ['sudo docker pull crismigo/greenwheel_backend:latest']
 command_create_dc_file = ["""echo "
         version: '3.9'
