@@ -31,7 +31,7 @@ command_create_dc_file = ["""echo "
 
 command_run_docker_compose = ['sudo /usr/local/bin/docker-compose up -d']
 
-commands = command_cd + command_create_dc_file + command_pull_docker + command_run_docker_compose
+commands = command_cd + command_stop_images + command_delete_images + command_create_dc_file + command_pull_docker + command_run_docker_compose
 
 access_key = os.getenv('AWS_ACCESS_KEY_ID')
 access_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
