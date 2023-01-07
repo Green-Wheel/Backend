@@ -21,7 +21,7 @@ urlpatterns = [
     path("", views.VehiclesView.as_view()),
     path("<int:car_id>/", views.DetailedVehicleView.as_view()),
     path("brands/", views.BrandsView.as_view()),
-    path("brands/<int:brand_id>/models", views.ModelsBrandView.as_view()),
-    path("brands/<int:brand_id>/models/<int:model_id>/years", views.ModelsBrandYearView.as_view()),
+    path("brands/<int:brand_id>/models/", views.ModelsBrandView.as_view()),
+    path("brands/<int:brand_id>/models/<int:model_id>/years/", views.ModelsBrandYearView.as_view()),
     path("<int:car_id>/select/", views.SelectVehicleView.as_view()),
 ]
