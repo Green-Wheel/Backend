@@ -1,10 +1,10 @@
 from api.publications.models import Images
 from utils.imagesS3 import upload_image_to_s3
-from datetime import time
+from datetime import time, datetime, timedelta
 import requests
 
 from api.bookings.serializers import SimpleBookingsSerializer
-from api.chargers.models import PublicChargers
+from api.chargers.models import PublicChargers, Configs
 from api.publications.models import Publication, OccupationRepeatMode, OccupationRanges
 from api.publications.serializers import OccupationRangeSerializer
 
@@ -201,3 +201,27 @@ def get_contamination(latitude, longitude):
 
     else:
         raise Exception("Error getting data from estacions API")
+
+
+def __update_contamination():
+    publications = Publication.objects.all()
+    for publication in publications:
+        publication.contamination = get_contamination(publication.localization.latitude,
+                                                      publication.localization.longitude)
+        publication.save()
+
+
+def sincronize_data_with_API_contamination(signal, **kwargs):
+    now_date = datetime.now() - timedelta(hours=1)
+    fifteen_minutes_ago = now_date - timedelta(minutes=15)
+    try:
+        date_obj = Configs.objects.filter(key="last_date_contamination_checked")[0]
+        last_date = datetime.strptime(date_obj.value, "%Y-%m-%d %H:%M:%S.%f")
+    except Exception:
+        date_obj = Configs(key="last_date_contamination_checked", value=now_date)
+        last_date = datetime(1970, 1, 1)
+
+    if fifteen_minutes_ago > last_date:
+        __update_contamination()
+        date_obj.value = now_date
+        date_obj.save()

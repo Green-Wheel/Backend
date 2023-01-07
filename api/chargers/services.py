@@ -8,11 +8,11 @@ from api.chargers.models import PublicChargers
 from api.chargers.utils import get_all_speeds, get_all_connections, get_all_currents, \
     get_localization, get_town
 from api.publications.models import Province, Town, Localizations
-from api.publications.services import get_contamination
+from api.publications.services import get_contamination, sincronize_data_with_API_contamination
 from utils.nearby_publications import get_nearby_publications
 
 
-def __sincronize_data_with_API(signal, **kwargs):
+def __sincronize_data_with_API_chargers(signal, **kwargs):
     now_date = datetime.now() - timedelta(hours=1)
     an_hour_ago = now_date - timedelta(hours=1)
     try:
@@ -180,9 +180,6 @@ def __create_public_charger(agent, identifier, access, power, all_speeds, availa
     public_charger.save()
 
 
-
-
-
 def __save_chargers_to_db():
     print("Getting data from API")
     response = __get_data_from_chargers_api()
@@ -223,7 +220,9 @@ def get_filtered_chargers(filter_params):
     elif order is None:
         chargers = chargers.order_by('id')
 
-    request_finished.connect(__sincronize_data_with_API, dispatch_uid="sincronize_data_with_API")
+    request_finished.connect(__sincronize_data_with_API_chargers, dispatch_uid="sincronize_data_with_API_chargers")
+    request_finished.connect(sincronize_data_with_API_contamination,
+                             dispatch_uid="sincronize_data_with_API_contamination")
     return chargers
 
 
