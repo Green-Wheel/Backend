@@ -131,8 +131,8 @@ def get_brands():
 def get_models_by_brand_id(brand_id):
     return CarsModel.objects.filter(car_brand_id=brand_id)
 
-def get_years_of_model(brand_id, model_name):
-    return CarsModel.objects.filter(name=model_name, car_brand_id=brand_id)
+def get_years_of_model(brand_id, model_id):
+    return CarsModel.objects.filter(id=model_id, car_brand_id=brand_id)
 
 
 def get_car_by_id(car_id):

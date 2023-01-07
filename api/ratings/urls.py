@@ -17,6 +17,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('<int:rating_id>/', views.ConcreteRatingApiView.as_view()),
     path('publication/<int:publication_id>/', views.PublicationRatingsApiView.as_view()),
     path('client/<int:client_id>/', views.ClientRatingsApiView.as_view()),
 ]

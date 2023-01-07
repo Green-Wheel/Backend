@@ -20,6 +20,9 @@ def get_all_ratings():
     ratings = Ratings.objects.filter(active=True)
     return ratings
 
+def get_rating(rating_id):
+    return Ratings.objects.get(id=rating_id)
+
 
 def create_post_rating(rating):
     if rating.get("booking", None) is not None:
