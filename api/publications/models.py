@@ -52,6 +52,7 @@ class Publication(models.Model):
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    contamination = models.TextField(null=True, blank=False)
 
     class Meta:
         verbose_name = "Publication"
