@@ -1,17 +1,15 @@
-from api.publications.models import Images, Publication
+from api.publications.models import Images
 from utils.imagesS3 import upload_image_to_s3
-from calendar import monthrange
 from datetime import time
+import requests
 
-from api.bikes.models import Bikes
-from api.bikes.serializers import DetailedBikeSerializer, BikeListSerializer
 from api.bookings.serializers import SimpleBookingsSerializer
-from api.chargers.models import Chargers, PrivateChargers, PublicChargers
-from api.chargers.serializers import DetailedChargerSerializer, ChargerListSerializer
-from api.publications.models import Publication, OccupationRangesType, OccupationRepeatMode, OccupationRanges
+from api.chargers.models import PublicChargers
+from api.publications.models import Publication, OccupationRepeatMode, OccupationRanges
 from api.publications.serializers import OccupationRangeSerializer
 
-def create_booking_occupation(data,publication_id):
+
+def create_booking_occupation(data, publication_id):
     if PublicChargers.objects.filter(id=publication_id).count() > 0:
         raise Exception("You can't create an occupation for a public charger")
     data["related_publication"] = publication_id
@@ -22,6 +20,8 @@ def create_booking_occupation(data,publication_id):
         serializer.save()
     else:
         raise Exception(serializer.errors)
+
+
 def create_occupation(data, user_id, publication_id):
     publication = Publication.objects.get(id=publication_id)
     if publication.owner.id != user_id:
@@ -71,7 +71,8 @@ def delete_occupation(ocupation_id, user_id):
         raise Exception("You are not the owner of the publication")
     occupation.delete()
 
-def get_occupation_by_month(publication_id, year, month,day):
+
+def get_occupation_by_month(publication_id, year, month, day):
     occupations = OccupationRanges.objects.filter(related_publication=publication_id, start_date__year=year,
                                                   start_date__month=month)
     if day is not None:
@@ -105,6 +106,7 @@ def get_occupation_by_month(publication_id, year, month,day):
                 days.append(occupation_strip)
     return days
 
+
 def get_publication_by_id(publication_id):
     return Publication.objects.get(id=publication_id)
 
@@ -124,3 +126,78 @@ def upload_images(publication_id, images, user_id):
 
 def get_repeat_types():
     return OccupationRepeatMode.objects.all()
+
+
+def __calculate_NO2(m):
+    if m['valor'] < 54:
+        return 0
+    elif m['valor'] < 101:
+        return 1
+    elif m['valor'] < 361:
+        return 2
+    elif m['valor'] < 650:
+        return 3
+    elif m['valor'] < 1250:
+        return 4
+    else:
+        return 5
+
+
+def __calculate_PM10(m):
+    if m['valor'] < 54:
+        return 0
+    elif m['valor'] < 155:
+        return 1
+    elif m['valor'] < 255:
+        return 2
+    elif m['valor'] < 355:
+        return 3
+    elif m['valor'] < 251:
+        return 4
+    else:
+        return 5
+
+
+def __calculate_O3(m):
+    if m['valor'] < 60:
+        return 0
+    elif m['valor'] < 125:
+        return 1
+    elif m['valor'] < 165:
+        return 2
+    elif m['valor'] < 205:
+        return 3
+    elif m['valor'] < 405:
+        return 4
+    else:
+        return 5
+
+
+def get_contamination(latitude, longitude):
+    response = requests.get(
+        "http://10.4.41.47:6039/api/estaciones/?latitud=" + str(latitude) + "&longitud=" + str(longitude))
+    if response.status_code == 200:
+        resp = response.json()
+        NO2 = 0
+        PM10 = 0
+        O3 = 0
+        color_code = {
+            0: "green",
+            1: "yellow",
+            2: "orange",
+            3: "red",
+            4: "purple",
+            5: "maroon"
+        }
+        for m in resp['mediciones']:
+            if m['contamintante'] == 'NO2':
+                NO2 = __calculate_NO2(m)
+            elif m['contamintante'] == 'PM10':
+                PM10 = __calculate_PM10(m)
+            elif m['contamintante'] == 'O3':
+                O3 = __calculate_O3(m)
+        maximum = max(NO2, PM10, O3)
+        return color_code[maximum]
+
+    else:
+        raise Exception("Error getting data from estacions API")
