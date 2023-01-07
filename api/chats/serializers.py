@@ -24,6 +24,9 @@ class ChatRoomSerializer(serializers.ModelSerializer):
         fields = ["id", "to_user", "last_message", "last_sent_user","last_sent_time", "open","unread"]
 
 class ChatRoomMessageSerializer(serializers.ModelSerializer):
+    sender = serializers.SerializerMethodField("get_user")
+    def get_user(self, obj):
+        return BasicUserSerializer(Users.objects.get(id=obj.user.id)).data
     class Meta:
         model = ChatMessage
         fields = ["id","sender", "content", "created_at"]
