@@ -129,10 +129,11 @@ def get_brands():
     return CarsBrand.objects.all()
 
 def get_models_by_brand_id(brand_id):
-    return CarsModel.objects.filter(car_brand_id=brand_id)
+    return CarsModel.objects.filter(car_brand_id=brand_id).distinct("name")
 
 def get_years_of_model(brand_id, model_id):
-    return CarsModel.objects.filter(id=model_id, car_brand_id=brand_id)
+    model = CarsModel.objects.get(id=model_id)
+    return CarsModel.objects.filter(car_brand_id=brand_id, name=model.name).distinct("year")
 
 
 def get_car_by_id(car_id):
