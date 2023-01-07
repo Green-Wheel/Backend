@@ -86,6 +86,7 @@ class ChargerListSerializer(serializers.ModelSerializer):
             return PublicChargerSerializer(public_charger).data
         except:
             return None
+
     def get_private(self, obj):
         try:
             private_charger = PrivateChargers.objects.get(pk=obj.id)
@@ -95,7 +96,8 @@ class ChargerListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chargers
-        fields = ["id", "title", "localization", "connection_type", "avg_rating", "charger_type", "public", "private"]
+        fields = ["id", "title", "localization", "connection_type", "avg_rating", "charger_type", "public", "private",
+                  "contamination"]
 
 
 class DetailedChargerSerializer(serializers.ModelSerializer):
@@ -161,7 +163,7 @@ class DetailedChargerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chargers
         fields = ["id", "title", "description", "direction", "town", "localization", "speed", "connection_type",
-                  "current_type", "power", "avg_rating", "charger_type", "public", "private"]
+                  "current_type", "power", "avg_rating", "charger_type", "public", "private", "contamination"]
 
 
 class PrivateChargerSerializer(serializers.ModelSerializer):

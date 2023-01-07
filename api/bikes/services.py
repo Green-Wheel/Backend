@@ -1,5 +1,6 @@
 from api.bikes.models import BikeTypes, Bikes
 from api.chargers.utils import get_localization, get_town
+from api.publications.services import get_contamination
 from utils.nearby_publications import get_nearby_publications
 
 
@@ -30,7 +31,7 @@ def get_filtered_bikes(filter_params):
     bikes = Bikes.objects.filter(**filters)
     bikes = get_nearby_publications(bikes, filter_params)
     order = filter_params.get('order', None)
-    if order and order !="distance":
+    if order and order != "distance":
         bikes = bikes.order_by(order)
     elif order is None:
         bikes = bikes.order_by('id')
@@ -45,15 +46,10 @@ def create_bike(data, owner_id):
     localization = get_localization(data["latitude"], data["longitude"])
     town = get_town("Barcelona", "Barcelona")
     bike_type = BikeTypes.objects.get(id=data.get("bike_type", 1))
-    bike = Bikes(title=data['title'],
-                 description=data['description'],
-                 direction="Direccio del carrer hardcodejada",
-                 town=town,
-                 localization=localization,
-                 power=data["power"],
-                 price=data["price"],
-                 bike_type=bike_type,
-                 owner_id=owner_id)
+    contamination = get_contamination(data["latitude"], data["longitude"])
+    bike = Bikes(title=data['title'], description=data['description'], direction=data['direction'], town=town,
+                 localization=localization, power=data["power"], price=data["price"], bike_type=bike_type,
+                 owner_id=owner_id, contamination=contamination)
     bike.save()
     return bike
 
@@ -84,6 +80,3 @@ def inactive_bike(bike_id):
     bike.is_active = False
     bike.save()
     return bike
-
-
-
