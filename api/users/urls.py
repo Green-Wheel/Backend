@@ -28,4 +28,6 @@ urlpatterns = [
     path('password/recovery/', views.RecoverPasswordApiView.as_view()),
     path('password/change/', views.ChangePasswordApiView.as_view()),
     path('upload/', views.UploadProfileImageApiView.as_view()),
+    path('login/google/', views.GoogleLoginCallbackApiView.as_view()),
+    path('login/raco/', views.RacoLoginCallbackApiView.as_view()),
 ]

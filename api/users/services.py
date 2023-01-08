@@ -1,3 +1,4 @@
+import json
 import random
 import smtplib
 import string
@@ -6,8 +7,10 @@ from email.message import EmailMessage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+import requests
+
 from api.chargers.models import Publication
-from api.users.models import Users
+from api.users.models import Users, LoginMethods
 from api.users.serializers import UserSerializer, CreateUserSerializer
 from utils.imagesS3 import upload_image_to_s3
 
@@ -223,3 +226,70 @@ def validate_code(username, code):
         return user
     else:
         raise Exception("Wrong code")
+
+def create_or_get_google_user(data):
+    print(data["id"])
+    user = Users.objects.filter(google_id=data["id"], login_method_id=2).first()
+    if user is not None:
+        user.api_key = generate_api_key()
+        user.save()
+        return user
+    else:
+        user = Users()
+        user.username = data["email"].split("@")[0]
+        user.email = data["email"]
+        user.first_name = data["displayName"].split(" ")[0]
+        user.last_name = data["displayName"].split(" ")[1]
+        user.login_method = LoginMethods.objects.get(id=2)
+        user.password = "google"
+        user.google_id = data["id"]
+        user.api_key = generate_api_key()
+        if user.is_valid():
+            user.save()
+            return user
+        else:
+            raise Exception("User not valid")
+
+def create_or_get_raco_user(code):
+    try:
+        # Get token
+        url = "https://api.fib.upc.edu/v2/o/token"
+        body = {
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": "apifib://greenwheel",
+            "client_id": "7iaeoueYVnCVmABWy7ZsRibk5FsOXivIhBDatNjV",
+            "client_secret": "KTdE1JimloThzCe6lGale5gS1O2Pod3EbqqVtP4KMXd4LRGpFMzwptb11Zzxe4VncwQPTGgX3NTNFJRIMm8BCgNlGE79lDgGw8HzcxrEeqLu9BRoPUSrzFqLA9pV4Y4D"
+        }
+        headers = {
+            'Content-Type': "application/x-www-form-urlencoded"
+        }
+        response = requests.request("POST", url, data=body, headers=headers)
+        token = response.json()["access_token"]
+        api_call_headers = {'Authorization': 'Bearer ' + token, 'Accept': 'application/json'}
+        api_call_response = requests.get("https://api.fib.upc.edu/v2/jo/", headers=api_call_headers,
+                                         verify=True)
+        user_data = json.loads(api_call_response.text)
+        username = user_data["username"]
+        user = Users.objects.filter(username=username, login_method_id=3).first()
+        if user is not None:
+            user.api_key = generate_api_key()
+            user.save()
+            return user
+        else:
+            user = Users()
+            user.username = user_data["username"]
+            user.email = user_data["email"]
+            user.first_name = user_data["nom"]
+            user.last_name = user_data["cognoms"]
+            user.login_method = LoginMethods.objects.get(id=3)
+            user.password = "raco"
+            user.api_key = generate_api_key()
+            if user.is_valid():
+                user.save()
+                return user
+            else:
+                raise Exception("User not valid")
+    except Exception as e:
+        print(e)
+        raise Exception("No s'ha pogut obtenir la informacio de l'usuari")
