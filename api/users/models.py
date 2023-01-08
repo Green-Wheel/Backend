@@ -29,6 +29,18 @@ class Languages(models.Model):
         return self.name
 
 
+class Trophies(models.Model):
+    name = models.CharField(max_length=50, null=False, blank=False)
+    description = models.TextField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Trophy"
+        verbose_name_plural = "Trophies"
+
+    def __str__(self):
+        return self.name
+
+
 class Users(AbstractUser):
     about = models.TextField(null=True, blank=True)
     phone = models.CharField(max_length=20, null=True, blank=True)
@@ -41,6 +53,7 @@ class Users(AbstractUser):
     xp = models.IntegerField(null=False, blank=False, default=0)
     recover_password_code = models.CharField(max_length=6,null=True, blank=True)
     selected_car = models.ForeignKey('vehicles.Cars', on_delete=models.CASCADE, null=True, blank=True, default=None)
+    trophies = models.ManyToManyField(Trophies)
 
     class Meta:
         verbose_name = "User"

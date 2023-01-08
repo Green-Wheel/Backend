@@ -6,6 +6,13 @@ from ..ratings.models import ClientsRating
 
 class FullUserSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
+    trophies = serializers.SerializerMethodField("get_trophies")
+
+    def get_trophies(self, obj):
+        all_trophies = obj.trophies.all()
+        for trophy in all_trophies:
+            trophy["name"] = trophy["name"].replace("_", " ")
+        return obj.trophies.all().values("name")
 
     class Meta:
         model = Users
