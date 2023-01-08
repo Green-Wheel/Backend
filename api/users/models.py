@@ -64,3 +64,10 @@ class Users(AbstractUser):
         if self.birthdate is not None and self.birthdate >= (datetime.now() - timedelta(days=365 * 16)).date():
             raise ValueError("Invalid birthdate. You must be at least 16 years old")
         return True
+
+class NotificationsChannel(models.Model):
+    channel = models.CharField(max_length=256)
+    user = models.ForeignKey(Users, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return str(self.channel)

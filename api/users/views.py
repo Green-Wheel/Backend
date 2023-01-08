@@ -11,7 +11,7 @@ from .permissions import Check_API_KEY_Auth, SessionAuth
 from .serializers import UserSerializer
 from .services import get_user, langIdToString, update_language, update_user, get_user_posts, create_user, \
     remove_api_key, login_user, change_password, recover_password, validate_code, create_or_get_google_user, \
-    create_or_get_raco_user
+    create_or_get_raco_user, send_notification
 from ..chargers.pagination import PaginationHandlerMixin
 from ..publications.serializers import PublicationListSerializer
 from .services import get_user, langIdToString, update_language, update_user, upload_images
@@ -249,5 +249,13 @@ class RacoLoginCallbackApiView(APIView):
             user = create_or_get_raco_user(request.data["code"])
             login(request, user)
             return Response({"apikey": user.api_key}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class SendNotificationTest(APIView):
+    def get(self, request, user_id):
+        try:
+            send_notification("Title","Body",user_id)
+            return Response(status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)

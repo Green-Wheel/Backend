@@ -30,4 +30,5 @@ urlpatterns = [
     path('upload/', views.UploadProfileImageApiView.as_view()),
     path('login/google/', views.GoogleLoginCallbackApiView.as_view()),
     path('login/raco/', views.RacoLoginCallbackApiView.as_view()),
+    path('<int:user_id>/notifications/', views.SendNotificationTest.as_view()),
 ]

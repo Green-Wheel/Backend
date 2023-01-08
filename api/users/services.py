@@ -8,9 +8,12 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import requests
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 from api.chargers.models import Publication
-from api.users.models import Users, LoginMethods
+from api.users.consumers import NotificationsConsumer
+from api.users.models import Users, LoginMethods, NotificationsChannel
 from api.users.serializers import UserSerializer, CreateUserSerializer
 from utils.imagesS3 import upload_image_to_s3
 
@@ -293,3 +296,25 @@ def create_or_get_raco_user(code):
     except Exception as e:
         print(e)
         raise Exception("No s'ha pogut obtenir la informacio de l'usuari")
+
+def send_notification(to_user, title, body):
+    body = {
+        "title": title,
+        "body": body,
+        "type": "send.message"
+    }
+    channel_layer = get_channel_layer()
+    channel_name = get_user_channel(to_user)
+    async_to_sync(channel_layer.group_add)(str(to_user), str(channel_name))
+    async_to_sync(channel_layer.group_send)(str(to_user), body)
+
+def get_user_channel(to_user):
+    try:
+        channel_name = NotificationsChannel.objects.filter(
+            user=to_user).latest('id')
+
+    except Exception as e:
+        channel_name = None
+
+
+    return channel_name
