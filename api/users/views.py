@@ -255,7 +255,7 @@ class RacoLoginCallbackApiView(APIView):
 class SendNotificationTest(APIView):
     def get(self, request, user_id):
         try:
-            send_notification("Title","Body",user_id)
+            send_notification(user_id,"Title","Body")
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
