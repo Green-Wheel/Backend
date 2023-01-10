@@ -21,8 +21,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install flake8
       run: pip install flake8
-    #- name: run flake8 test
-    #  run: flake8 .
+#    - name: run flake8 test
+#      run: flake8 .
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
@@ -51,8 +51,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: crismigo/greenwheel_backend:latest
-
+          tags: crismigo/greenwheel_backend_pro:latest
 
   aws-deploy:
     runs-on: ubuntu-latest
@@ -75,5 +74,28 @@ jobs:
         name: cloudformation-stack
         template: cloudformation.yml
         no-fail-on-empty-changeset: 1
-        parameter-overrides: "DBUsername=greenwheel,DBPassword=${{ secrets.DB_PASSWORD }},Environment=prod, SGroup=sg-0d2c1a783e19eef43"
+        parameter-overrides: "DBUsername=greenwheel,DBPassword=${{ secrets.DB_PASSWORD }},Environment=pro, SGroup=sg-01174c2a1e9cbe7b5"
         capabilities: CAPABILITY_NAMED_IAM, CAPABILITY_AUTO_EXPAND
+
+  create-docker:
+    needs: [aws-deploy, docker-build]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v2 # checkout the repository content to github runner.
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9 #install the python needed
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install boto3
+      - name: execute py script
+        run: |
+          python docker_ec2_pro.py
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
