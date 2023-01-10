@@ -13,7 +13,7 @@ from channels.layers import get_channel_layer
 
 from api.chargers.models import Publication
 from api.users.consumers import NotificationsConsumer
-from api.users.models import Users, LoginMethods, NotificationsChannel
+from api.users.models import Users, LoginMethods, NotificationsChannel, Trophies
 from api.users.serializers import UserSerializer, CreateUserSerializer
 from utils.imagesS3 import upload_image_to_s3
 
@@ -100,6 +100,11 @@ def password_check(password):
         return val
 
 
+def set_user_trophie(user, trophie_id):
+    trophie = Trophies.objects.get(id=trophie_id)
+    user.trophies.add(trophie)
+
+
 def create_user(data):
     user = Users()
     password_check(data["password"])
@@ -113,6 +118,7 @@ def create_user(data):
         user.save()
         user.api_key = generate_api_key()
         user.save()
+        set_user_trophie(user, 12)
         return user
 
 
@@ -130,6 +136,7 @@ def update_user(data, user_id):
         user_instance.about = data["about"]
     if user_instance.is_valid():
         user_instance.save()
+        set_user_trophie(user_instance, 11)
         return user_instance
     else:
         raise Exception(user_instance.errors)
