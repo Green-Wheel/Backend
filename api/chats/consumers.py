@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 
 from .models import ChatRoom, ChatRoomParticipants, ChatMessage, ChatParticipantsChannel
 from ..users.serializers import BasicUserSerializer
+from ..users.services import send_notification, send_notification_async
 
 User = get_user_model()
 class ChatConsumer(AsyncJsonWebsocketConsumer):
@@ -53,6 +54,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         await channel_layer.group_send(
             str(self.chatroom_id), message_response
         )
+
+        await send_notification_async(self.to_user, "Tienes un nuevo mensaje!", self.user.username + ": " + message)
 
     async def send_message(self, event):
 
