@@ -45,7 +45,6 @@ def create_post_rating(rating):
     else:
         raise Exception(serializer.errors)
 
-
 def create_client_rating(rating):
     booking = Bookings.objects.get(id=rating["booking"])
     if booking.publication.owner.id != rating["user"]:

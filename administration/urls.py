@@ -15,17 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from . import views
 
 urlpatterns = [
-    path('bd/', admin.site.urls),
-    path('admin/', include('administration.urls'), name="admin_portal"),
-    path('api/bikes/', include('api.bikes.urls')),
-    path('api/bookings/', include('api.bookings.urls')),
-    path('api/chargers/', include('api.chargers.urls')),
-    path('api/chats/', include('api.chats.urls')),
-    path('api/ratings/', include('api.ratings.urls')),
-    path('api/reports/', include('api.reports.urls')),
-    path('api/users/', include('api.users.urls')),
-    path('api/vehicles/', include('api.vehicles.urls')),
-    path('api/publications/', include('api.publications.urls')),
+    path('', views.home, name="Home"),
+    path('signin/', views.signin, name="signin"),
+    path('logout/', views.signout, name="logout"),
 ]
