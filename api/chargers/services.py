@@ -1,5 +1,8 @@
+import asyncio
 from datetime import datetime, timedelta
+from threading import Thread
 
+from asgiref.sync import sync_to_async
 from django.core.signals import request_finished
 from api.chargers.models import Chargers, PrivateChargers, Configs, SpeedsType, ConnectionsType, CurrentsType
 import requests
@@ -11,10 +14,17 @@ from api.publications.models import Province, Town, Localizations
 from api.publications.services import get_contamination, sincronize_data_with_API_contamination
 from utils.nearby_publications import get_nearby_publications
 
+class SincronizeThread(Thread):
 
-def __sincronize_data_with_API_chargers(signal, **kwargs):
+    def __init__ (self):
+        Thread.__init__(self)
+
+    def run(self):
+        sincronize_data_with_API_chargers()
+def sincronize_data_with_API_chargers():
+
     now_date = datetime.now() - timedelta(hours=1)
-    an_hour_ago = now_date - timedelta(hours=1)
+    an_hour_ago = now_date - timedelta(hours=2)
     try:
         date_obj = Configs.objects.filter(key="last_date_checked")[0]
         last_date = datetime.strptime(date_obj.value, "%Y-%m-%d %H:%M:%S.%f")
@@ -23,7 +33,7 @@ def __sincronize_data_with_API_chargers(signal, **kwargs):
         last_date = datetime(1970, 1, 1)
 
     if an_hour_ago > last_date:
-        __save_chargers_to_db()
+        save_chargers_to_db()
         date_obj.value = now_date
         date_obj.save()
 
@@ -180,7 +190,7 @@ def __create_public_charger(agent, identifier, access, power, all_speeds, availa
     public_charger.save()
 
 
-def __save_chargers_to_db():
+def save_chargers_to_db():
     print("Getting data from API")
     response = __get_data_from_chargers_api()
     for charger in response:
@@ -192,9 +202,8 @@ def __save_chargers_to_db():
         title, description, direction = charger.get("designaci_descriptiva"), None, charger.get("adre_a")
         town, localization = __get_publication_info(charger.get("provincia"), charger.get("municipi"),
                                                     charger.get("latitud"), charger.get("longitud"))
-        contamination = get_contamination(localization.latitude, localization.longitude)
         __create_public_charger(agent, identifier, access, power, all_speeds, available, all_connections, all_currents,
-                                title, description, direction, town, localization, contamination)
+                                title, description, direction, town, localization, None)
 
     print("Finished get data from API")
 
@@ -220,9 +229,9 @@ def get_filtered_chargers(filter_params):
     elif order is None:
         chargers = chargers.order_by('id')
 
-    request_finished.connect(__sincronize_data_with_API_chargers, dispatch_uid="sincronize_data_with_API_chargers")
-    request_finished.connect(sincronize_data_with_API_contamination,
-                             dispatch_uid="sincronize_data_with_API_contamination")
+    # Sincronitzem carregadors
+    n = SincronizeThread()
+    n.start()
     return chargers
 
 

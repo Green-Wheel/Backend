@@ -10,7 +10,8 @@ from rest_framework.response import Response
 from .permissions import Check_API_KEY_Auth, SessionAuth
 from .serializers import UserSerializer
 from .services import get_user, langIdToString, update_language, update_user, get_user_posts, create_user, \
-    remove_api_key, login_user, change_password, recover_password, validate_code
+    remove_api_key, login_user, change_password, recover_password, validate_code, create_or_get_google_user, \
+    create_or_get_raco_user, send_notification
 from ..chargers.pagination import PaginationHandlerMixin
 from ..publications.serializers import PublicationListSerializer
 from .services import get_user, langIdToString, update_language, update_user, upload_images
@@ -228,5 +229,33 @@ class LoginApiView(APIView):
             return Response({"apikey": user.api_key}, status=status.HTTP_201_CREATED)
         except Users.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GoogleLoginCallbackApiView(APIView):
+    authentication_classes = ()
+
+    def post(self,request):
+        try:
+            user = create_or_get_google_user(request.data)
+            login(request, user)
+            return Response({"apikey": user.api_key}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+class RacoLoginCallbackApiView(APIView):
+    def post(self,request):
+        try:
+            user = create_or_get_raco_user(request.data["code"])
+            login(request, user)
+            return Response({"apikey": user.api_key}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class SendNotificationTest(APIView):
+    def get(self, request, user_id):
+        try:
+            send_notification(user_id,"Title","Body")
+            return Response(status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)

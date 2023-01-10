@@ -8,5 +8,12 @@
       <jdbc-url>jdbc:postgresql://localhost:5432/greenwheel</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="RDS" uuid="6af7aaeb-90be-4927-ba02-d9b40d152dd6">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://greenwheel-rds-pre.cvktoxcvbtpd.eu-west-1.rds.amazonaws.com:5432/GreenWheelDB</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
