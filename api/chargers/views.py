@@ -37,9 +37,9 @@ class ChargersView(APIView):
             new_private_charger = create_private_charger(request.data, request.user.id)
             # add charger to user
             if request.accepted_renderer.media_type == 'text/html':
-                return Response(DetailedChargerSerializer(new_private_charger).data, status=status.HTTP_200_OK)
+                return Response(DetailedChargerSerializer(new_private_charger, context={"user_id": request.user.id}).data, status=status.HTTP_200_OK)
             else:
-                return Response(DetailedChargerSerializer(new_private_charger).data, status=status.HTTP_200_OK,
+                return Response(DetailedChargerSerializer(new_private_charger, context={"user_id": request.user.id}).data, status=status.HTTP_200_OK,
                                 content_type='application/json; charset=utf-8')
         except Exception as e:
             print(e)
@@ -56,14 +56,14 @@ class ChargersListView(APIView, PaginationHandlerMixin):
             chargers = get_filtered_chargers(request.query_params)
             page = self.paginate_queryset(chargers)
             if page is not None:
-                serializer = ChargerListSerializer(page, many=True)
+                serializer = ChargerListSerializer(page, many=True, context={"user_id": request.user.id})
                 if request.accepted_renderer.media_type == 'text/html':
                     return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
                 else:
                     return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK,
                                     content_type='application/json; charset=utf-8')
             else:
-                serializer = ChargerListSerializer(chargers, many=True)
+                serializer = ChargerListSerializer(chargers, many=True, context={"user_id": request.user.id})
                 if request.accepted_renderer.media_type == 'text/html':
                     return Response(serializer.data, status=status.HTTP_200_OK)
                 else:
@@ -81,9 +81,9 @@ class DetailedChargerView(APIView):
         try:
             charger = get_charger_by_id(charger_id)
             if request.accepted_renderer.media_type == 'text/html':
-                return Response(DetailedChargerSerializer(charger).data, status=status.HTTP_200_OK)
+                return Response(DetailedChargerSerializer(charger, context={"user_id": request.user.id}).data, status=status.HTTP_200_OK)
             else:
-                return Response(DetailedChargerSerializer(charger).data, status=status.HTTP_200_OK,
+                return Response(DetailedChargerSerializer(charger, context={"user_id": request.user.id}).data, status=status.HTTP_200_OK,
                                 content_type='application/json; charset=utf-8')
         except Chargers.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -92,9 +92,9 @@ class DetailedChargerView(APIView):
         try:
             private_charger = update_private_charger(charger_id, request.data, request.user.id)
             if request.accepted_renderer.media_type == 'text/html':
-                return Response(DetailedChargerSerializer(private_charger).data, status=status.HTTP_200_OK)
+                return Response(DetailedChargerSerializer(private_charger, context={"user_id": request.user.id}).data, status=status.HTTP_200_OK)
             else:
-                return Response(DetailedChargerSerializer(private_charger).data, status=status.HTTP_200_OK,
+                return Response(DetailedChargerSerializer(private_charger, context={"user_id": request.user.id}).data, status=status.HTTP_200_OK,
                                 content_type='application/json; charset=utf-8')
         except Exception as e:
             print(e)

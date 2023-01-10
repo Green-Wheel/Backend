@@ -49,3 +49,5 @@ class Cars(models.Model):
 
     def __str__(self):
         return self.id
+
+
