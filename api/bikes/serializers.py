@@ -44,7 +44,7 @@ class DetailedBikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bikes
         fields = ["id", "title", "description", "direction", "localization", "town", "avg_rating", "bike_type", "power",
-                  "price", "owner"]
+                  "price", "owner", "contamination"]
 
 
 class BikeListSerializer(serializers.ModelSerializer):
@@ -67,7 +67,7 @@ class BikeListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bikes
-        fields = ["id", "title", "localization", "avg_rating", "bike_type", "price", "owner"]
+        fields = ["id", "title", "localization", "avg_rating", "bike_type", "price", "owner", "contamination"]
 
 
 class BikeTypeSerializer(serializers.ModelSerializer):

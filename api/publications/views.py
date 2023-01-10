@@ -12,12 +12,12 @@ from api.publications.services import create_occupation, get_occupation_by_month
 from api.users.permissions import Check_API_KEY_Auth
 
 
-
 # Create your views here.
 class PublicationOccupationApiView(APIView):
     authentication_classes = [SessionAuth]
     permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
-    def post(self, request,publication_id):
+
+    def post(self, request, publication_id):
         try:
             new_occupations = create_occupation(request.data, request.user.id, publication_id)
             # add charger to user
@@ -36,6 +36,7 @@ class PublicationOccupationApiView(APIView):
 class ConcretePublicationOccupationApiView(APIView):
     authentication_classes = [SessionAuth]
     permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+
     def get(self, request, publication_id, occupation_id):
         try:
             occupation = get_ocupation_by_id(occupation_id)
@@ -49,7 +50,7 @@ class ConcretePublicationOccupationApiView(APIView):
 
     def put(self, request, publication_id, occupation_id):
         try:
-            occupation = update_occupation(occupation_id, request.data,request.user.id)
+            occupation = update_occupation(occupation_id, request.data, request.user.id)
             if request.accepted_renderer.media_type == 'text/html':
                 return Response(OccupationRangeSerializer(occupation).data, status=status.HTTP_200_OK)
             else:
@@ -63,7 +64,7 @@ class ConcretePublicationOccupationApiView(APIView):
 
     def delete(self, request, publication_id, occupation_id):
         try:
-            delete_occupation(occupation_id,request.user.id,)
+            delete_occupation(occupation_id, request.user.id, )
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
@@ -73,9 +74,10 @@ class ConcretePublicationOccupationApiView(APIView):
 class MonthPublicationOccupation(APIView):
     authentication_classes = [SessionAuth]
     permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+
     def get(self, request, publication_id, year, month, day=None):
         try:
-            occupations = get_occupation_by_month(publication_id, year,month,day)
+            occupations = get_occupation_by_month(publication_id, year, month, day)
             if request.accepted_renderer.media_type == 'text/html':
                 return Response(occupations, status=status.HTTP_200_OK)
             else:
@@ -99,9 +101,11 @@ class UploadPublicationImageApiView(APIView):
                 return Response(PublicationSerializer(publication).data, status=status.HTTP_200_OK,
                                 content_type='application/json; charset=utf-8')
         except Publication.DoesNotExist:
-            return Response({"res": "Error: the publication with id " + str(publication_id) + "does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"res": "Error: the publication with id " + str(publication_id) + "does not exist"},
+                            status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class RepeatModeTypesApiView(APIView):
     authentication_classes = [SessionAuth]
@@ -110,6 +114,7 @@ class RepeatModeTypesApiView(APIView):
     def get(self, request):
         types = get_repeat_types()
         if request.accepted_renderer.media_type == 'text/html':
-            return Response(RepeatModeSerializer(types,many=True).data, status=status.HTTP_200_OK)
+            return Response(RepeatModeSerializer(types, many=True).data, status=status.HTTP_200_OK)
         else:
-            return Response(RepeatModeSerializer(types, many=True).data, status=status.HTTP_200_OK, content_type='application/json; charset=utf-8')
+            return Response(RepeatModeSerializer(types, many=True).data, status=status.HTTP_200_OK,
+                            content_type='application/json; charset=utf-8')

@@ -102,7 +102,7 @@ class DetailedBikeApiView(APIView):
 
     def delete(self, request, bike_id):
         try:
-            inactive_bike(bike_id)
+            inactive_bike(bike_id, request.user.id)
             return Response(status=status.HTTP_200_OK)
         except Bikes.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)

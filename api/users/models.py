@@ -29,6 +29,18 @@ class Languages(models.Model):
         return self.name
 
 
+class Trophies(models.Model):
+    name = models.CharField(max_length=50, null=False, blank=False)
+    description = models.TextField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Trophy"
+        verbose_name_plural = "Trophies"
+
+    def __str__(self):
+        return self.name
+
+
 class Users(AbstractUser):
     about = models.TextField(null=True, blank=True)
     phone = models.CharField(max_length=20, null=True, blank=True)
@@ -39,8 +51,10 @@ class Users(AbstractUser):
     login_method = models.ForeignKey(LoginMethods, on_delete=models.CASCADE, null=True, blank=True, default=1)
     level = models.IntegerField(null=False, blank=False, default=1)
     xp = models.IntegerField(null=False, blank=False, default=0)
-    recover_password_code = models.CharField(max_length=6,null=True, blank=True)
+    recover_password_code = models.CharField(max_length=6, null=True, blank=True)
     selected_car = models.ForeignKey('vehicles.Cars', on_delete=models.CASCADE, null=True, blank=True, default=None)
+    google_id = models.CharField(max_length=100, null=True, blank=True)
+    trophies = models.ManyToManyField(Trophies)
 
     class Meta:
         verbose_name = "User"
@@ -61,3 +75,10 @@ class Users(AbstractUser):
         if self.birthdate is not None and self.birthdate >= (datetime.now() - timedelta(days=365 * 16)).date():
             raise ValueError("Invalid birthdate. You must be at least 16 years old")
         return True
+
+class NotificationsChannel(models.Model):
+    channel = models.CharField(max_length=256)
+    user = models.ForeignKey(Users, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return str(self.channel)

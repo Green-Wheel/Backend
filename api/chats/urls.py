@@ -21,8 +21,8 @@ from .views import ChatsApiView, ConcreteChatApiView, ChatRoomMessagesApiView, U
 
 urlpatterns = [
     path('', ChatsApiView.as_view()),
-    path('<int:chat_id>/', ConcreteChatApiView.as_view()),
-    path('<int:chat_id>/messages/', ChatRoomMessagesApiView.as_view()),
+    path('<int:user_id>/', ConcreteChatApiView.as_view()),
+    path('<int:user_id>/messages/', ChatRoomMessagesApiView.as_view()),
     path('unread/', UnreadChatsApiView.as_view()),
     path('unread/<int:chat_id>/', UnreadConcreteChatApiView.as_view()),
 ]

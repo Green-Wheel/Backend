@@ -1,22 +1,31 @@
+import asyncio
 from datetime import datetime, timedelta
+from threading import Thread
 
+from asgiref.sync import sync_to_async
 from django.core.signals import request_finished
-from requests.auth import HTTPBasicAuth
 from api.chargers.models import Chargers, PrivateChargers, Configs, SpeedsType, ConnectionsType, CurrentsType
 import requests
 import logging
-from django.db.models.functions import Radians, Power, Sin, Cos, ATan2, Sqrt, Radians
-from django.db.models import F
 from api.chargers.models import PublicChargers
-from api.chargers.utils import get_all_speeds, get_all_connections, get_all_currents,\
+from api.chargers.utils import get_all_speeds, get_all_connections, get_all_currents, \
     get_localization, get_town
 from api.publications.models import Province, Town, Localizations
+from api.publications.services import get_contamination, sincronize_data_with_API_contamination
+from api.users.models import Trophies, Users
 from utils.nearby_publications import get_nearby_publications
 
+class SincronizeThread(Thread):
 
-def __sincronize_data_with_API(signal, **kwargs):
+    def __init__ (self):
+        Thread.__init__(self)
+
+    def run(self):
+        sincronize_data_with_API_chargers()
+def sincronize_data_with_API_chargers():
+
     now_date = datetime.now() - timedelta(hours=1)
-    an_hour_ago = now_date - timedelta(hours=1)
+    an_hour_ago = now_date - timedelta(hours=2)
     try:
         date_obj = Configs.objects.filter(key="last_date_checked")[0]
         last_date = datetime.strptime(date_obj.value, "%Y-%m-%d %H:%M:%S.%f")
@@ -25,7 +34,7 @@ def __sincronize_data_with_API(signal, **kwargs):
         last_date = datetime(1970, 1, 1)
 
     if an_hour_ago > last_date:
-        __save_chargers_to_db()
+        save_chargers_to_db()
         date_obj.value = now_date
         date_obj.save()
 
@@ -74,7 +83,8 @@ def __get_filter(query_params):
 
 def __get_data_from_chargers_api():
     # petició api i actualitzar base de dades
-    response = requests.get("https://analisi.transparenciacatalunya.cat/resource/tb2m-m33b.json?", headers={'X-App-Token': '6oG2O7KYidOwxhULmHtNXWVkJ'})
+    response = requests.get("https://analisi.transparenciacatalunya.cat/resource/tb2m-m33b.json?",
+                            headers={'X-App-Token': '6oG2O7KYidOwxhULmHtNXWVkJ'})
     if response.status_code == 200:
         return response.json()
     else:
@@ -115,6 +125,7 @@ def __get_publication_info(c_province, c_town, c_latitude, c_longitude):
 
     return obj_town, obj_localization
 
+
 def __parse_speed_types(speeds):
     speed_types = []
     print(speeds)
@@ -122,17 +133,20 @@ def __parse_speed_types(speeds):
         speed_types.append(SpeedsType.objects.get(id=speed))
     return speed_types
 
+
 def __parse_current_types(currents):
     current_types = []
     for current in currents:
         current_types.append(CurrentsType.objects.get(id=current))
     return current_types
 
+
 def __parse_connections_types(connections):
     connections_types = []
     for connection in connections:
         connections_types.append(ConnectionsType.objects.get(id=connection))
     return connections_types
+
 
 def __filter_localization(c_latitude, c_longitude, c_direction):
     try:
@@ -144,13 +158,14 @@ def __filter_localization(c_latitude, c_longitude, c_direction):
 
 
 def __create_public_charger(agent, identifier, access, power, all_speeds, available, all_connections,
-                            all_currents, title, description, direction, town, localization):
+                            all_currents, title, description, direction, town, localization, contamination):
     public_charger = __filter_localization(localization.latitude, localization.longitude, direction)
 
     if public_charger is None:
         public_charger = PublicChargers(agent=agent, identifier=identifier, access=access, power=power,
                                         active=available, title=title, description=description,
-                                        localization=localization, town=town, direction=direction, owner=None)
+                                        localization=localization, town=town, direction=direction, owner=None,
+                                        contamination=contamination)
     else:
         public_charger.agent = agent
         public_charger.identifier = identifier
@@ -162,6 +177,7 @@ def __create_public_charger(agent, identifier, access, power, all_speeds, availa
         public_charger.localization = localization
         public_charger.town = town
         public_charger.direction = direction
+        public_charger.contamination = contamination
 
     public_charger.save()
 
@@ -175,7 +191,7 @@ def __create_public_charger(agent, identifier, access, power, all_speeds, availa
     public_charger.save()
 
 
-def __save_chargers_to_db():
+def save_chargers_to_db():
     print("Getting data from API")
     response = __get_data_from_chargers_api()
     for charger in response:
@@ -184,11 +200,11 @@ def __save_chargers_to_db():
         all_speeds, available, all_connections, all_currents = __get_charger_info(charger.get("tipus_velocitat"),
                                                                                   charger.get("tipus_connexi"),
                                                                                   charger.get("ac_dc"))
-        title, description, direction = charger.get("designaci_descriptiva"),None, charger.get("adre_a")
+        title, description, direction = charger.get("designaci_descriptiva"), None, charger.get("adre_a")
         town, localization = __get_publication_info(charger.get("provincia"), charger.get("municipi"),
                                                     charger.get("latitud"), charger.get("longitud"))
         __create_public_charger(agent, identifier, access, power, all_speeds, available, all_connections, all_currents,
-                                title, description, direction, town, localization)
+                                title, description, direction, town, localization, None)
 
     print("Finished get data from API")
 
@@ -214,12 +230,25 @@ def get_filtered_chargers(filter_params):
     elif order is None:
         chargers = chargers.order_by('id')
 
-    request_finished.connect(__sincronize_data_with_API, dispatch_uid="sincronize_data_with_API")
+    # Sincronitzem carregadors
+    n = SincronizeThread()
+    n.start()
     return chargers
 
 
 def get_charger_by_id(charge_id):
     return Chargers.objects.get(id=charge_id)
+
+
+def set_chargers_trophies(owner_id):
+    owner = Users.objects.get(id=owner_id)
+    num_chargers = PrivateChargers.objects.filter(owner_id=owner_id).count()
+    if num_chargers == 1:
+        trophie = Trophies.objects.get(id=5)
+        owner.trophies.add(trophie)
+    elif num_chargers == 2:
+        trophie = Trophies.objects.get(id=6)
+        owner.trophies.add(trophie)
 
 
 def create_private_charger(data, owner_id):
@@ -228,32 +257,31 @@ def create_private_charger(data, owner_id):
     connection_type = __parse_connections_types(data["connection_type"])
     current_type = __parse_current_types(data["current_type"])
     town = get_town(data["town"]["name"], data["town"]["province"])
+    contamination = get_contamination(localization.latitude, localization.longitude)
 
-
-    private = PrivateChargers(title=data['title'],
-                              description=data['description'],
-                              direction="Direccio del carrer hardcodejada",
-                              town=town,
-                              localization=localization,
-                              power=data["power"],
-                              price=data["price"],
-                              owner_id=owner_id)
+    private = PrivateChargers(title=data['title'], description=data['description'], direction=data['direction'],
+                              town=town, localization=localization, power=data["power"], price=data["price"],
+                              owner_id=owner_id, contamination=contamination)
     private.save()
     private.speed.set(speed_type)
     private.connection_type.set(connection_type)
     private.current_type.set(current_type)
     private.save()
+
+    set_chargers_trophies(owner_id)
+
     return private
 
 
-def update_private_charger(charger_id, data):
+def update_private_charger(charger_id, data, user):
+    private = PrivateChargers.objects.get(id=charger_id)
+    if private.owner_id != user:
+        raise Exception("User not owner of the charger")
     localization = get_localization(data["latitude"], data["longitude"])
     speed_type = __parse_speed_types(data["speed"])
     connection_type = __parse_connections_types(data["connection_type"])
     current_type = __parse_current_types(data["current_type"])
     town = get_town(data["town"]["name"], data["town"]["province"])
-
-    private = PrivateChargers.objects.get(id=charger_id)
 
     private.title = data["title"]
     private.description = data["description"]
@@ -267,17 +295,17 @@ def update_private_charger(charger_id, data):
     private.current_type.set(current_type)
 
     private.save()
-
     return private
 
 
-def delete_private_charger(charger_id):
+def delete_private_charger(charger_id, user):
     private = PrivateChargers.objects.get(id=charger_id)
+    if private.owner_id != user:
+        raise Exception("User not owner of the charger")
     if not private.active:
         raise Exception("This charger is already inactive")
     private.active = False
     private.save()
-
 
 
 def get_speeds():
@@ -290,4 +318,3 @@ def get_connections():
 
 def get_currents():
     return CurrentsType.objects.all()
-

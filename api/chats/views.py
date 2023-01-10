@@ -46,9 +46,9 @@ class ConcreteChatApiView(APIView, PaginationHandlerMixin):
     permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
     pagination_class = BasicPagination
 
-    def get(self, request, chat_id):
+    def get(self, request, user_id):
         try:
-            chat_room = get_chat_room_by_id(chat_id, request.user.id)
+            chat_room = get_chat_room_by_id(user_id, request.user.id)
             serializer = ChatRoomSerializer(chat_room)
             if request.accepted_renderer.media_type == 'text/html':
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -72,9 +72,9 @@ class ChatRoomMessagesApiView(APIView, PaginationHandlerMixin):
     permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
     pagination_class = BasicPagination
 
-    def get(self, request, chat_id):
+    def get(self, request, user_id):
         try:
-            messages = get_chat_room_by_id_messages(chat_id, request.user.id)
+            messages = get_chat_room_by_id_messages(user_id, request.user.id)
             page = self.paginate_queryset(messages)
             if page is not None:
                 serializer = ChatRoomMessageSerializer(page, many=True)
@@ -83,7 +83,7 @@ class ChatRoomMessagesApiView(APIView, PaginationHandlerMixin):
                 else:
                     return Response(serializer.data, status=status.HTTP_200_OK,
                                     content_type='application/json; charset=utf-8')
-            serializer = ChatRoomMessageSerializer(messages)
+            serializer = ChatRoomMessageSerializer(messages, many=True)
             if request.accepted_renderer.media_type == 'text/html':
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
