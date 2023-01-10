@@ -111,11 +111,11 @@ def set_vehicles_trophies(car_owner_id):
     num_cars = Cars.objects.filter(car_owner_id=car_owner_id).count()
     user = Users.objects.get(id=car_owner_id)
     if num_cars == 1:
-        trophie = Trophies.objects.get(id=1)
-        user.trophies.add(trophie)
+        trophy = Trophies.objects.get(id=1)
+        user.trophies.add(trophy)
     elif num_cars == 2:
-        trophie = Trophies.objects.get(id=2)
-        user.trophies.add(trophie)
+        trophy = Trophies.objects.get(id=2)
+        user.trophies.add(trophy)
 
 
 def create_car(data, car_owner_id):
