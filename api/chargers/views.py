@@ -90,7 +90,7 @@ class DetailedChargerView(APIView):
 
     def put(self, request, charger_id):
         try:
-            private_charger = update_private_charger(charger_id, request.data)
+            private_charger = update_private_charger(charger_id, request.data, request.user.id)
             if request.accepted_renderer.media_type == 'text/html':
                 return Response(DetailedChargerSerializer(private_charger).data, status=status.HTTP_200_OK)
             else:
@@ -102,7 +102,7 @@ class DetailedChargerView(APIView):
 
     def delete(self, request, charger_id):
         try:
-            delete_private_charger(charger_id)
+            delete_private_charger(charger_id, request.user.id)
             return Response({"res": "Charger deleted"}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
