@@ -28,7 +28,7 @@ command_create_dc_file = ["""echo "
                 - publications:/usr/src/app/api/publications/migrations     
             environment:
               DJANGO_SECRET_KEY: 'om%_rbj(rdm*t$dt^!q)2o(3uztqzxtmv361d@j0lpza+q#zd)'
-              DJANGO_DATABASE_HOST: 'greenwheel-db-pre.cvktoxcvbtpd.eu-west-1.rds.amazonaws.com'
+              DJANGO_DATABASE_HOST: 'greenwheel-db-production.cjyqkzaxsbrt.eu-west-1.rds.amazonaws.com'
               DJANGO_DATABASE_PORT: '5432'
               DJANGO_DATABASE_NAME: 'GreenWheelDB'
               DJANGO_DATABASE_USER: 'greenwheel'
