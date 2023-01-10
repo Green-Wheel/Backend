@@ -57,7 +57,6 @@ def set_bikes_trophies(owner_id):
     elif num_chargers == 2:
         trophie = Trophies.objects.get(id=4)
         owner.trophies.add(trophie)
-    owner.save()
 
 
 def create_bike(data, owner_id):

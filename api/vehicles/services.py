@@ -4,7 +4,7 @@ import requests
 from django.core.signals import request_finished
 
 from api.chargers.models import CurrentsType, ConnectionsType, Configs
-from api.users.models import Users
+from api.users.models import Users, Trophies
 from api.vehicles.models import CarsModel, CarsBrand, Cars
 
 
@@ -107,6 +107,17 @@ def __get_data_vehicles():
     print("Finished get data from API")
 
 
+def set_vehicles_trophies(car_owner_id):
+    num_cars = Cars.objects.filter(car_owner_id=car_owner_id).count()
+    user = Users.objects.get(id=car_owner_id)
+    if num_cars == 1:
+        trophie = Trophies.objects.get(id=1)
+        user.trophies.add(trophie)
+    elif num_cars == 2:
+        trophie = Trophies.objects.get(id=2)
+        user.trophies.add(trophie)
+
+
 def create_car(data, car_owner_id):
     car_alias = data["alias"]
     car_license = data["car_license"]
@@ -116,6 +127,7 @@ def create_car(data, car_owner_id):
         car = Cars(alias=car_alias, charge_capacity=charge_capacity, car_license=car_license, model_id=car_model_id,
                    car_owner_id=car_owner_id)
         car.save()
+        set_vehicles_trophies(car_owner_id)
         return car
     except Exception as e:
         logging.error(e, "Error creating car")

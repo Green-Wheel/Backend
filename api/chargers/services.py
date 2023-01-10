@@ -249,7 +249,6 @@ def set_chargers_trophies(owner_id):
     elif num_chargers == 2:
         trophie = Trophies.objects.get(id=6)
         owner.trophies.add(trophie)
-    owner.save()
 
 
 def create_private_charger(data, owner_id):

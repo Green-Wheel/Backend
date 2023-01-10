@@ -65,7 +65,6 @@ def set_bookings_trophies(user):
     elif num_bookings == 10:
         trophie = Trophies.objects.get(id=9)
         user.trophies.add(trophie)
-    user.save()
 
 
 def create_booking(booking):
