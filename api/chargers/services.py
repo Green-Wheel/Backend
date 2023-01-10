@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime, timedelta
+from threading import Thread
 
 from asgiref.sync import sync_to_async
 from django.core.signals import request_finished
@@ -13,7 +14,13 @@ from api.publications.models import Province, Town, Localizations
 from api.publications.services import get_contamination, sincronize_data_with_API_contamination
 from utils.nearby_publications import get_nearby_publications
 
+class SincronizeThread(Thread):
 
+    def __init__ (self):
+        Thread.__init__(self)
+
+    def run(self):
+        sincronize_data_with_API_chargers()
 def sincronize_data_with_API_chargers():
 
     now_date = datetime.now() - timedelta(hours=1)
@@ -222,8 +229,9 @@ def get_filtered_chargers(filter_params):
     elif order is None:
         chargers = chargers.order_by('id')
 
-    sincronize_data_with_API_chargers()
-    #request_finished.connect(sincronize_data_with_API_contamination,dispatch_uid="sincronize_data_with_API_contamination")
+    # Sincronitzem carregadors
+    n = SincronizeThread()
+    n.start()
     return chargers
 
 

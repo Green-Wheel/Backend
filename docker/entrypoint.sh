@@ -42,7 +42,6 @@ python manage.py loaddata fixtures/inicial_data.json
 
 # create service user
 python manage.py loaddata fixtures/service_user.json
-python manage.py crontab add
 
 # create superuser
 #python manage.py shell -c "from api.users.models import Users; Users.objects.create_superuser('admin', 'admin@example.com', '90np3AE7#IH&')"
