@@ -60,7 +60,6 @@ def create_post_rating(rating):
     else:
         raise Exception(serializer.errors)
 
-
 def create_client_rating(rating):
     if rating.get("booking", None) is not None:
         booking = Bookings.objects.get(id=rating["booking"])

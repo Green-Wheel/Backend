@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_title %}
+    Home
+{% endblock %}
+{% block content %}
+    <h1>Usuarios</h1>
+    <br>
+    <table class="table table-striped"  style="text-align: center">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nombre de usuario</th>
+            <th scope="col">Ultimo acceso</th>
+            <th scope="col">Es moderador</th>
+            <th scope="col">Está activo</th>
+            <th scope="col">Metodo de acceso</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <th scope="row">{{ user.id }}</th>
+                <td>{{ user.username }}</td>
+                <td>{{ user.last_login }}</td>
+                <form action="{% url "change_user" user.id %}" method="post">
+                {% csrf_token %}
+                <td><input class="form-check-input" onchange="this.form.submit()" type="checkbox" name="is_staff" {% if user.is_staff %}checked{% endif %}></td>
+                <td><input class="form-check-input" onchange="this.form.submit()" type="checkbox" name="is_active" {% if user.is_active %}checked{% endif %}></td>
+                </form>
+                <td>{{ user.login_method.name }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
