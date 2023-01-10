@@ -6,10 +6,18 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.contrib.auth import get_user_model
 
 from .models import ChatRoom, ChatRoomParticipants, ChatMessage, ChatParticipantsChannel
+from ..users.models import Trophies
 from ..users.serializers import BasicUserSerializer
 from ..users.services import send_notification, send_notification_async
 
 User = get_user_model()
+
+
+def set_message_trophie(user):
+    trophie = Trophies.objects.get(id=10)
+    user.trophies.add(trophie)
+
+
 class ChatConsumer(AsyncJsonWebsocketConsumer):
 
     def __init__(self, *args, **kwargs):
@@ -45,7 +53,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             str(self.chatroom_id),
             str(self.channel_name)
         )
-        if to_user_channel != None and to_user_id != None:
+        if to_user_channel is not None and to_user_id != None:
             await self.channel_layer.group_add(
                 str(self.chatroom_id),
                 str(to_user_channel)
@@ -59,7 +67,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
     async def send_message(self, event):
 
-        #print(event)
+        # print(event)
 
         await self.send(text_data=json.dumps(event))
 
@@ -101,10 +109,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         else:
             chatroom = ChatRoom.objects.create()
             ChatRoomParticipants.objects.create(user=user, room=chatroom)
-            ChatRoomParticipants.objects.create(user_id=to_user_id, room=chatroom,unread=True)
+            ChatRoomParticipants.objects.create(user_id=to_user_id, room=chatroom, unread=True)
 
         self.chatroom_id = chatroom.id
-
 
         chatroom.last_message = message
         chatroom.last_sent_user = self.user
@@ -121,5 +128,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             'sender': BasicUserSerializer(message.user).data,
             'created_at': str(message.created_at),
         }
+
+        set_message_trophie(user)
 
         return message_response

@@ -4,6 +4,7 @@ from api.bookings.models import Bookings
 from api.bookings.serializers import BookingsEditSerializer
 from api.publications.models import OccupationRanges
 from api.publications.services import create_occupation, create_booking_occupation
+from api.users.models import Trophies
 from api.users.services import send_notification
 
 
@@ -83,6 +84,19 @@ def send_booking_user_confirmation_notification(booking):
     send_notification(user, title, body)
 
 
+def set_bookings_trophies(user):
+    num_bookings = Bookings.objects.filter(user_id=user.id).count()
+    if num_bookings == 1:
+        trophie = Trophies.objects.get(id=7)
+        user.trophies.add(trophie)
+    elif num_bookings == 5:
+        trophie = Trophies.objects.get(id=8)
+        user.trophies.add(trophie)
+    elif num_bookings == 10:
+        trophie = Trophies.objects.get(id=9)
+        user.trophies.add(trophie)
+
+
 def create_booking(booking):
     booking_instance = BookingsEditSerializer(data=booking)
     if booking_instance.is_valid():
@@ -95,6 +109,7 @@ def create_booking(booking):
         }
         send_booking_owner_notification(booking)
         create_booking_occupation(data, booking_instance.data["publication"])
+        set_bookings_trophies(booking.user)
         return booking
     raise Exception(booking_instance.errors)
 

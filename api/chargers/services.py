@@ -12,6 +12,7 @@ from api.chargers.utils import get_all_speeds, get_all_connections, get_all_curr
     get_localization, get_town
 from api.publications.models import Province, Town, Localizations
 from api.publications.services import get_contamination, sincronize_data_with_API_contamination
+from api.users.models import Trophies, Users
 from utils.nearby_publications import get_nearby_publications
 
 class SincronizeThread(Thread):
@@ -239,6 +240,17 @@ def get_charger_by_id(charge_id):
     return Chargers.objects.get(id=charge_id)
 
 
+def set_chargers_trophies(owner_id):
+    owner = Users.objects.get(id=owner_id)
+    num_chargers = PrivateChargers.objects.filter(owner_id=owner_id).count()
+    if num_chargers == 1:
+        trophie = Trophies.objects.get(id=5)
+        owner.trophies.add(trophie)
+    elif num_chargers == 2:
+        trophie = Trophies.objects.get(id=6)
+        owner.trophies.add(trophie)
+
+
 def create_private_charger(data, owner_id):
     localization = get_localization(data["latitude"], data["longitude"])
     speed_type = __parse_speed_types(data["speed"])
@@ -255,17 +267,21 @@ def create_private_charger(data, owner_id):
     private.connection_type.set(connection_type)
     private.current_type.set(current_type)
     private.save()
+
+    set_chargers_trophies(owner_id)
+
     return private
 
 
-def update_private_charger(charger_id, data):
+def update_private_charger(charger_id, data, user):
+    private = PrivateChargers.objects.get(id=charger_id)
+    if private.owner_id != user:
+        raise Exception("User not owner of the charger")
     localization = get_localization(data["latitude"], data["longitude"])
     speed_type = __parse_speed_types(data["speed"])
     connection_type = __parse_connections_types(data["connection_type"])
     current_type = __parse_current_types(data["current_type"])
     town = get_town(data["town"]["name"], data["town"]["province"])
-
-    private = PrivateChargers.objects.get(id=charger_id)
 
     private.title = data["title"]
     private.description = data["description"]
@@ -279,12 +295,13 @@ def update_private_charger(charger_id, data):
     private.current_type.set(current_type)
 
     private.save()
-
     return private
 
 
-def delete_private_charger(charger_id):
+def delete_private_charger(charger_id, user):
     private = PrivateChargers.objects.get(id=charger_id)
+    if private.owner_id != user:
+        raise Exception("User not owner of the charger")
     if not private.active:
         raise Exception("This charger is already inactive")
     private.active = False
