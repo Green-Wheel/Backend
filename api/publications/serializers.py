@@ -94,7 +94,7 @@ class PublicationListSerializer(serializers.ModelSerializer):
     def get_bike(self, obj):
         try:
             return DetailedBikeSerializer(Bikes.objects.get(id=obj.id)).data
-        except Chargers.DoesNotExist:
+        except Bikes.DoesNotExist:
             return None
 
     class Meta:

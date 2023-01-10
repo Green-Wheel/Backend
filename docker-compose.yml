@@ -29,15 +29,5 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
-  greenwheel-app:
-    container_name: greenwheel_app
-    image: customer-ec2:latest
-    restart: on-failure
-    ports:
-      - "8080:8080"
-    networks:
-      - customer-ec2-network
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/customers
 volumes:
   db_data:

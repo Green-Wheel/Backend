@@ -10,7 +10,7 @@ from .models import Users
 class Check_API_KEY_Auth(BasePermission):
     def has_permission(self, request, view):
         key = request.META.get('HTTP_API_KEY')
-        print(request.user.is_authenticated)
+
         if key:
             user = Users.objects.filter(api_key=key)
             if user.count() > 0:

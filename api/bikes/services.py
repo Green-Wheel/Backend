@@ -1,5 +1,10 @@
+from django.core.signals import request_finished
+
 from api.bikes.models import BikeTypes, Bikes
 from api.chargers.utils import get_localization, get_town
+from api.publications.services import get_contamination, sincronize_data_with_API_contamination
+from api.users.models import Users, Trophies
+from utils.nearby_publications import get_nearby_publications
 
 
 def __get_filter(filter_params):
@@ -27,11 +32,15 @@ def get_filtered_bikes(filter_params):
     filters = __get_filter(filter_params)
     filters['active'] = True
     bikes = Bikes.objects.filter(**filters)
+    bikes = get_nearby_publications(bikes, filter_params)
     order = filter_params.get('order', None)
-    if order:
+    if order and order != "distance":
         bikes = bikes.order_by(order)
-    else:
+    elif order is None:
         bikes = bikes.order_by('id')
+
+    request_finished.connect(sincronize_data_with_API_contamination,
+                             dispatch_uid="sincronize_data_with_API_contamination")
     return bikes
 
 
@@ -39,20 +48,27 @@ def get_bikes_type():
     return BikeTypes.objects.all()
 
 
+def set_bikes_trophies(owner_id):
+    owner = Users.objects.get(id=owner_id)
+    num_chargers = Bikes.objects.filter(owner_id=owner_id).count()
+    if num_chargers == 1:
+        trophie = Trophies.objects.get(id=3)
+        owner.trophies.add(trophie)
+    elif num_chargers == 2:
+        trophie = Trophies.objects.get(id=4)
+        owner.trophies.add(trophie)
+
+
 def create_bike(data, owner_id):
     localization = get_localization(data["latitude"], data["longitude"])
     town = get_town("Barcelona", "Barcelona")
     bike_type = BikeTypes.objects.get(id=data.get("bike_type", 1))
-    bike = Bikes(title=data['title'],
-                 description=data['description'],
-                 direction="Direccio del carrer hardcodejada",
-                 town=town,
-                 localization=localization,
-                 power=data["power"],
-                 price=data["price"],
-                 bike_type=bike_type,
-                 owner_id=owner_id)
+    contamination = get_contamination(data["latitude"], data["longitude"])
+    bike = Bikes(title=data['title'], description=data['description'], direction=data['direction'], town=town,
+                 localization=localization, power=data["power"], price=data["price"], bike_type=bike_type,
+                 owner_id=owner_id, contamination=contamination)
     bike.save()
+    set_bikes_trophies(owner_id)
     return bike
 
 
@@ -75,13 +91,11 @@ def update_bike(bike_id, data, user):
     return bike
 
 
-def inactive_bike(bike_id):
+def inactive_bike(bike_id, user):
     bike = get_bike_by_id(bike_id)
+    if bike.owner.id != user:
+        raise Exception("User not owner of bike")
     if not bike.active:
         raise Exception("Bike already inactive")
     bike.is_active = False
     bike.save()
-    return bike
-
-
-

@@ -148,5 +148,162 @@
     "fields" : {
       "name" : "Electric"
     }
+  },
+  {
+    "model" : "chargers.ConnectionsType",
+    "pk" : 1,
+    "fields" : {
+      "name" : "SCHUKO",
+      "current_type" : 1
+    }
+  },
+  {
+    "model" : "chargers.ConnectionsType",
+    "pk" : 2,
+    "fields" : {
+      "name" : "MENNEKES",
+      "current_type" : 1
+    }
+  },
+  {
+    "model" : "chargers.ConnectionsType",
+    "pk" : 3,
+    "fields" : {
+      "name" : "TESLA",
+      "current_type" : 2
+    }
+  },
+  {
+    "model" : "chargers.ConnectionsType",
+    "pk" : 4,
+    "fields" : {
+      "name" : "CCS",
+      "current_type" : 2
+    }
+  },
+  {
+    "model" : "chargers.ConnectionsType",
+    "pk" : 5,
+    "fields" : {
+      "name" : "CHADEMO",
+      "current_type" : 2
+    }
+  },
+  {
+    "model" : "reports.ReportReasons",
+    "pk" : 1,
+    "fields" : {
+      "name" : "Spam"
+    }
+  },
+  {
+    "model" : "reports.ReportReasons",
+    "pk" : 2,
+    "fields" : {
+      "name" : "Inappropriate"
+    }
+  },
+  {
+    "model" : "reports.ReportReasons",
+    "pk" : 99,
+    "fields" : {
+      "name" : "Other"
+    }
+  },
+  {
+    "model" : "users.Trophies",
+    "pk" : 1,
+    "fields" : {
+      "name" : "First vehicle",
+      "description" : "First vehicle registered"
+    }
+  },
+  {
+    "model" : "users.Trophies",
+    "pk" : 2,
+    "fields" : {
+      "name" : "Multiple vehicles",
+      "description" : "Multiple vehicles registered"
+    }
+  },
+  {
+    "model" : "users.Trophies",
+    "pk" : 3,
+    "fields" : {
+      "name" : "First bike publication",
+      "description" : "First bike published"
+    }
+  },
+  {
+    "model" : "users.Trophies",
+    "pk" : 4,
+    "fields" : {
+      "name" : "Multiple bikes publications",
+      "description" : "Multiple bikes published"
+    }
+  },
+  {
+    "model" : "users.Trophies",
+    "pk" : 5,
+    "fields" : {
+      "name" : "First charger publication",
+      "description" : "First charger published"
+    }
+  },
+  {
+    "model" : "users.Trophies",
+    "pk" : 6,
+    "fields" : {
+      "name" : "Multiple chargers publications",
+      "description" : "Multiple chargers published"
+    }
+  },
+  {
+    "model": "users.Trophies",
+    "pk": 7,
+    "fields": {
+      "name": "First booking",
+      "description": "First booking made"
+    }
+  },
+  {
+    "model": "users.Trophies",
+    "pk": 8,
+    "fields": {
+      "name": "5 bookings",
+      "description": "Fifth bookings made"
+    }
+  },
+  {
+    "model": "users.Trophies",
+    "pk": 9,
+    "fields": {
+      "name": "10 bookings",
+      "description": "10 bookings made"
+    }
+  },
+  {
+    "model": "users.Trophies",
+    "pk": 10,
+    "fields": {
+      "name": "First chat message",
+      "description": "First chat message sent"
+    }
+  },
+  {
+    "model": "users.Trophies",
+    "pk": 11,
+    "fields": {
+      "name": "Edit profile",
+      "description": "Profile edited for the first time"
+    }
+  },
+  {
+    "model": "users.Trophies",
+    "pk": 12,
+    "fields": {
+      "name": "First registration",
+      "description": "First registration made"
+    }
   }
 ]

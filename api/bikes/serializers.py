@@ -3,6 +3,7 @@ from rest_framework import serializers
 from api.bikes.models import Bikes, BikeTypes
 from api.chargers.serializers import LocalizationSerializer, TownSerializer
 from api.ratings.models import PostRating
+from api.users.serializers import BasicUserSerializer
 
 
 class BikeSerializer(serializers.ModelSerializer):
@@ -23,6 +24,10 @@ class DetailedBikeSerializer(serializers.ModelSerializer):
     town = serializers.SerializerMethodField("get_town")
     avg_rating = serializers.SerializerMethodField("get_avg_rating")
     bike_type = serializers.SerializerMethodField("get_bike_type")
+    owner = serializers.SerializerMethodField("get_owner")
+
+    def get_owner(self, obj):
+        return BasicUserSerializer(obj.owner).data
 
     def get_localization(self, obj):
         return LocalizationSerializer(obj.localization).data
@@ -39,7 +44,7 @@ class DetailedBikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bikes
         fields = ["id", "title", "description", "direction", "localization", "town", "avg_rating", "bike_type", "power",
-                  "price"]
+                  "price", "owner", "contamination"]
 
 
 class BikeListSerializer(serializers.ModelSerializer):
@@ -47,6 +52,10 @@ class BikeListSerializer(serializers.ModelSerializer):
     localization = serializers.SerializerMethodField("get_localization")
     avg_rating = serializers.SerializerMethodField("get_avg_rating")
     bike_type = serializers.SerializerMethodField("get_bike_type")
+    owner = serializers.SerializerMethodField("get_owner")
+
+    def get_owner(self, obj):
+        return BasicUserSerializer(obj.owner).data
     def get_localization(self, obj):
         return LocalizationSerializer(obj.localization).data
 
@@ -58,7 +67,7 @@ class BikeListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bikes
-        fields = ["id", "title", "localization", "avg_rating", "bike_type", "price"]
+        fields = ["id", "title", "localization", "avg_rating", "bike_type", "price", "owner", "contamination"]
 
 
 class BikeTypeSerializer(serializers.ModelSerializer):

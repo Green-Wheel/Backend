@@ -13,17 +13,31 @@ class RatingSerializer(serializers.ModelSerializer):
             return BasicUserSerializer(Users.objects.get(id=obj.user.id)).data
         except Users.DoesNotExist:
             return None
+
     class Meta:
         model = Ratings
-        fields = ["id","user", "rate", "comment", "created_at"]
+        fields = ["id", "user", "rate", "comment", "created_at"]
+
+
+class PublicPostRatingSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = PostRating
+        fields = ["id", "user", "rate", "comment", "publication"]
+
 
 class PostRatingSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = PostRating
-        fields = ["id","user", "booking","rate", "comment",  "publication"]
+        fields = ["id", "user", "booking", "rate", "comment", "publication"]
+
+
 class ClientsRatingSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = ClientsRating
-        fields = ["id","user", "booking","rate", "comment", "client"]
+        fields = ["id", "user", "booking", "rate", "comment", "client"]

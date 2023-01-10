@@ -16,5 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from .views import ChatsApiView, ConcreteChatApiView, ChatRoomMessagesApiView, UnreadChatsApiView, \
+    UnreadConcreteChatApiView
 
-urlpatterns = []
+urlpatterns = [
+    path('', ChatsApiView.as_view()),
+    path('<int:user_id>/', ConcreteChatApiView.as_view()),
+    path('<int:user_id>/messages/', ChatRoomMessagesApiView.as_view()),
+    path('unread/', UnreadChatsApiView.as_view()),
+    path('unread/<int:chat_id>/', UnreadConcreteChatApiView.as_view()),
+]

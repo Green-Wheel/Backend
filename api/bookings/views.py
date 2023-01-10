@@ -27,25 +27,55 @@ class UserBookingsApiView(APIView, PaginationHandlerMixin):
         page = self.paginate_queryset(bookings)
         if page is not None:
             serializer = BookingsSerializer(page, many=True)
-            return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+            else:
+                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         else:
             serializer = BookingsSerializer(bookings, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.data, status=status.HTTP_200_OK, content_type='application/json; charset=utf-8')
 
 
     def post(self, request):
-        booking = request.data
-        booking['user'] = request.user.id
-        booking["confirmed"] = False
-        booking["cancelled"] = False
+        data = request.data
+        booking = {"publication": data["publication"], "start_date": data["start_date"], "end_date": data["end_date"],
+                   'user': request.user.id, "confirmed": False, "cancelled": False}
         try:
             booking = create_booking(booking)
-            return Response(BookingsSerializer(booking).data, status=status.HTTP_201_CREATED)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(BookingsSerializer(booking).data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(BookingsSerializer(booking).data, status=status.HTTP_201_CREATED,
+                                content_type='application/json; charset=utf-8')
         except Exception as e:
             print(e)
             return Response(e.args[0], status=status.HTTP_400_BAD_REQUEST)
 
-
+class UserHistorialApiView(APIView, PaginationHandlerMixin):
+    pagination_class = BasicPagination
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+    def get(self, request):
+        order = request.query_params.get('orderby', None)
+        bookings = get_user_bookings(request.user.id, order,'historial')
+        page = self.paginate_queryset(bookings)
+        if page is not None:
+            serializer = BookingsSerializer(page, many=True)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+            else:
+                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
+        else:
+            serializer = BookingsSerializer(bookings, many=True)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.data, status=status.HTTP_200_OK, content_type='application/json; charset=utf-8')
 class OwnerBookingsApiView(APIView, PaginationHandlerMixin):
     pagination_class = BasicPagination
     authentication_classes = [SessionAuth]
@@ -56,11 +86,38 @@ class OwnerBookingsApiView(APIView, PaginationHandlerMixin):
         page = self.paginate_queryset(bookings)
         if page is not None:
             serializer = BookingsSerializer(page, many=True)
-            return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+            else:
+                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         else:
             serializer = BookingsSerializer(bookings, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.data, status=status.HTTP_200_OK, content_type='application/json; charset=utf-8')
 
+class OwnerHistorialBookingsApiView(APIView, PaginationHandlerMixin):
+    pagination_class = BasicPagination
+    authentication_classes = [SessionAuth]
+    permission_classes = [IsAuthenticated | Check_API_KEY_Auth]
+    def get(self, request):
+        bookings = get_owner_bookings(request.user.id, 'historial')
+        page = self.paginate_queryset(bookings)
+        if page is not None:
+            serializer = BookingsSerializer(page, many=True)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK)
+            else:
+                return Response(self.get_paginated_response(serializer.data).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
+        else:
+            serializer = BookingsSerializer(bookings, many=True)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.data, status=status.HTTP_200_OK, content_type='application/json; charset=utf-8')
 
 class ConcreteBookingApiView(APIView):
     authentication_classes = [SessionAuth]
@@ -68,8 +125,11 @@ class ConcreteBookingApiView(APIView):
     def get(self, request, booking_id):
         try:
             booking = get_booking(booking_id)
-
-            return Response(BookingsSerializer(booking).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(BookingsSerializer(booking).data, status=status.HTTP_200_OK)
+            else:
+                return Response(BookingsSerializer(booking).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         except:
             return Response(
                 {"res": "Booking with the id doesn't exist"},
@@ -78,7 +138,11 @@ class ConcreteBookingApiView(APIView):
     def put(self, request, booking_id):
         try:
             booking = confirm_booking(booking_id, request.data.get("confirmed"))
-            return Response(BookingsSerializer(booking).data, status=status.HTTP_200_OK)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(BookingsSerializer(booking).data, status=status.HTTP_200_OK)
+            else:
+                return Response(BookingsSerializer(booking).data, status=status.HTTP_200_OK,
+                                content_type='application/json; charset=utf-8')
         except Bookings.DoesNotExist:
             return Response(
                 {"res": "Booking with the id doesn't exist"},
@@ -93,7 +157,11 @@ class ConcreteBookingApiView(APIView):
     def delete(self, request, booking_id):
         try:
             booking = cancel_booking(booking_id)
-            return Response(BookingsSerializer(booking).data, status=status.HTTP_204_NO_CONTENT)
+            if request.accepted_renderer.media_type == 'text/html':
+                return Response(BookingsSerializer(booking).data, status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response(BookingsSerializer(booking).data, status=status.HTTP_204_NO_CONTENT,
+                                content_type='application/json; charset=utf-8')
 
         except Bookings.DoesNotExist:
             return Response(
