@@ -174,30 +174,33 @@ def __calculate_O3(m):
 
 
 def get_contamination(latitude, longitude):
-    response = requests.get(
-        "http://10.4.41.47:6039/api/estaciones/?latitud=" + str(latitude) + "&longitud=" + str(longitude))
-    if response.status_code == 200:
-        resp = response.json()
-        NO2 = 0
-        PM10 = 0
-        O3 = 0
-        color_code = {
-            0: "green",
-            1: "yellow",
-            2: "orange",
-            3: "red",
-            4: "purple",
-            5: "maroon"
-        }
-        for m in resp['mediciones']:
-            if m['contamintante'] == 'NO2':
-                NO2 = __calculate_NO2(m)
-            elif m['contamintante'] == 'PM10':
-                PM10 = __calculate_PM10(m)
-            elif m['contamintante'] == 'O3':
-                O3 = __calculate_O3(m)
-        maximum = max(NO2, PM10, O3)
-        return color_code[maximum]
+    try:
+        response = requests.get(
+            "http://10.4.41.47:6039/api/estaciones/?latitud=" + str(latitude) + "&longitud=" + str(longitude))
+        if response.status_code == 200:
+            resp = response.json()
+            NO2 = 0
+            PM10 = 0
+            O3 = 0
+            color_code = {
+                0: "green",
+                1: "yellow",
+                2: "orange",
+                3: "red",
+                4: "purple",
+                5: "maroon"
+            }
+            for m in resp['mediciones']:
+                if m['contamintante'] == 'NO2':
+                    NO2 = __calculate_NO2(m)
+                elif m['contamintante'] == 'PM10':
+                    PM10 = __calculate_PM10(m)
+                elif m['contamintante'] == 'O3':
+                    O3 = __calculate_O3(m)
+            maximum = max(NO2, PM10, O3)
+            return color_code[maximum]
+    except:
+        return None
 
     else:
         raise Exception("Error getting data from estacions API")

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'api.publications',
     'rest_framework',
     'corsheaders',
+    'django_crontab',
 
 ]
 
@@ -161,3 +162,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [],
     'DEFAULT_AUTHENTICATION_CLASSES': [],
 }
+CRONJOBS = [
+    ('* * * * *', 'api.chargers.sincronize_data_with_API_chargers_cron')
+]
