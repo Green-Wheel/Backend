@@ -4,8 +4,9 @@ import requests
 from django.core.signals import request_finished
 
 from api.chargers.models import CurrentsType, ConnectionsType, Configs
-from api.users.models import Users
+from api.users.models import Users, Trophies
 from api.vehicles.models import CarsModel, CarsBrand, Cars
+
 
 def __sincronize_data_from_api(signal, **kwargs):
     now_date = datetime.now() - timedelta(hours=1)
@@ -21,6 +22,8 @@ def __sincronize_data_from_api(signal, **kwargs):
         __get_data_vehicles()
         date_obj.value = now_date
         date_obj.save()
+
+
 def __get_data_from_vehicles_api():
     response = requests.get("https://raw.githubusercontent.com/chargeprice/open-ev-data/master/data/ev-data.json")
     if response.status_code == 200:
@@ -104,18 +107,32 @@ def __get_data_vehicles():
     print("Finished get data from API")
 
 
+def set_vehicles_trophies(car_owner_id):
+    num_cars = Cars.objects.filter(car_owner_id=car_owner_id).count()
+    user = Users.objects.get(id=car_owner_id)
+    if num_cars == 1:
+        trophy = Trophies.objects.get(id=1)
+        user.trophies.add(trophy)
+    elif num_cars == 2:
+        trophy = Trophies.objects.get(id=2)
+        user.trophies.add(trophy)
+
+
 def create_car(data, car_owner_id):
     car_alias = data["alias"]
     car_license = data["car_license"]
     car_model_id = data["model"]
     charge_capacity = data["charge_capacity"]
     try:
-        car = Cars(alias=car_alias, charge_capacity=charge_capacity, car_license=car_license, model_id=car_model_id, car_owner_id=car_owner_id)
+        car = Cars(alias=car_alias, charge_capacity=charge_capacity, car_license=car_license, model_id=car_model_id,
+                   car_owner_id=car_owner_id)
         car.save()
+        set_vehicles_trophies(car_owner_id)
         return car
     except Exception as e:
         logging.error(e, "Error creating car")
         return None
+
 
 def get_filtered_vehicles(filter_params, user_id):
     cars = Cars.objects.filter(car_owner=user_id)
@@ -124,12 +141,16 @@ def get_filtered_vehicles(filter_params, user_id):
     else:
         cars = cars.order_by("id")
     return cars
+
+
 def get_brands():
     request_finished.connect(__sincronize_data_from_api, dispatch_uid="sincronize_vehicles_data_from_API")
     return CarsBrand.objects.all()
 
+
 def get_models_by_brand_id(brand_id):
     return CarsModel.objects.filter(car_brand_id=brand_id).distinct("name")
+
 
 def get_years_of_model(brand_id, model_id):
     model = CarsModel.objects.get(id=model_id)
@@ -152,12 +173,14 @@ def update_car(car_id, data, user_id):
     else:
         raise Exception("You are not the owner of this car")
 
-def delete_car(car_id,user_id):
+
+def delete_car(car_id, user_id):
     car = get_car_by_id(car_id)
     if car.car_owner_id == user_id:
         car.delete()
     else:
         raise Exception("You are not the owner of this car")
+
 
 def select_car(car_id, user_id):
     car = get_car_by_id(car_id)

@@ -1,16 +1,28 @@
 from django.db.models import Avg
 from rest_framework import serializers
-from .models import Users
+from .models import Users, Trophies
 from ..ratings.models import ClientsRating
 
 
 class FullUserSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
+    trophies = serializers.SerializerMethodField("get_trophies")
+
+    def get_trophies(self, obj):
+        all_trophies = Trophies.objects.all()
+        user_trophies = obj.trophies.all()
+        trophies = []
+        for trophy in all_trophies:
+            if trophy in user_trophies:
+                trophies.append({"id": trophy.id, "achieved": True})
+            else:
+                trophies.append({"id": trophy.id, "achieved": False})
+        return trophies
 
     class Meta:
         model = Users
         fields = ["id", "last_login", "username", "first_name", "last_name", "email", "is_active", "date_joined",
-                  "about", "phone", "birthdate", "profile_picture", "language_id", "level", "xp", "selected_car"]
+                  "about", "phone", "birthdate", "profile_picture", "language_id", "level", "xp", "selected_car", "trophies"]
 
 
 class BasicUserSerializer(serializers.ModelSerializer):

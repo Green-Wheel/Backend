@@ -3,6 +3,7 @@ from django.core.signals import request_finished
 from api.bikes.models import BikeTypes, Bikes
 from api.chargers.utils import get_localization, get_town
 from api.publications.services import get_contamination, sincronize_data_with_API_contamination
+from api.users.models import Users, Trophies
 from utils.nearby_publications import get_nearby_publications
 
 
@@ -47,6 +48,17 @@ def get_bikes_type():
     return BikeTypes.objects.all()
 
 
+def set_bikes_trophies(owner_id):
+    owner = Users.objects.get(id=owner_id)
+    num_chargers = Bikes.objects.filter(owner_id=owner_id).count()
+    if num_chargers == 1:
+        trophie = Trophies.objects.get(id=3)
+        owner.trophies.add(trophie)
+    elif num_chargers == 2:
+        trophie = Trophies.objects.get(id=4)
+        owner.trophies.add(trophie)
+
+
 def create_bike(data, owner_id):
     localization = get_localization(data["latitude"], data["longitude"])
     town = get_town("Barcelona", "Barcelona")
@@ -56,6 +68,7 @@ def create_bike(data, owner_id):
                  localization=localization, power=data["power"], price=data["price"], bike_type=bike_type,
                  owner_id=owner_id, contamination=contamination)
     bike.save()
+    set_bikes_trophies(owner_id)
     return bike
 
 
@@ -78,10 +91,11 @@ def update_bike(bike_id, data, user):
     return bike
 
 
-def inactive_bike(bike_id):
+def inactive_bike(bike_id, user):
     bike = get_bike_by_id(bike_id)
+    if bike.owner.id != user:
+        raise Exception("User not owner of bike")
     if not bike.active:
         raise Exception("Bike already inactive")
     bike.is_active = False
     bike.save()
-    return bike

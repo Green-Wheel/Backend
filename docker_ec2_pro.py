@@ -5,13 +5,13 @@ import boto3
 command_cd = ['cd /home/ec2-user/']
 command_stop_images = ['docker stop $(docker ps -aq)']
 command_delete_images = ['docker rmi $(docker images -aq)']
-command_pull_docker = ['sudo docker pull crismigo/greenwheel_backend:latest']
+command_pull_docker = ['sudo docker pull crismigo/greenwheel_backend_pro:latest']
 command_create_dc_file = ["""echo "
         version: '3.9'
         services:
           backend-app:
             container_name: backend_app
-            image: crismigo/greenwheel_backend:latest
+            image: crismigo/greenwheel_backend_pro:latest
             hostname: backend
             restart: always
             ports:
