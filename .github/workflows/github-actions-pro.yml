@@ -74,7 +74,7 @@ jobs:
         name: cloudformation-stack
         template: cloudformation.yml
         no-fail-on-empty-changeset: 1
-        parameter-overrides: "DBUsername=greenwheel,DBPassword=${{ secrets.DB_PASSWORD }},Environment=pro, SGroup=sg-01174c2a1e9cbe7b5"
+        parameter-overrides: "DBUsername=greenwheel,DBPassword=${{ secrets.DB_PASSWORD }},Environment=prod, SGroup=sg-01174c2a1e9cbe7b5"
         capabilities: CAPABILITY_NAMED_IAM, CAPABILITY_AUTO_EXPAND
 
   create-docker:
