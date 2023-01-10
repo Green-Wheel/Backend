@@ -6,7 +6,7 @@
 {% block content %}
     <h1>Quejas pendientes</h1>
     <br>
-    <table class="table table-striped">
+    <table class="table table-striped" style="text-align: center">
         <thead>
         <tr>
             <th scope="col">#</th>
@@ -15,7 +15,6 @@
             <th scope="col">Razón</th>
             <th scope="col">Mensaje</th>
             <th scope="col">Usuario</th>
-            <th></th>
             <th></th>
         </tr>
         </thead>
@@ -36,11 +35,8 @@
                 <td>{{ report.reason.name }}</td>
                 <td>{{ report.message }}</td>
                 <td>{{ report.user.username }}</td>
-                <td><a href="{% url 'Home' %}">
-                    <button type="button" style="padding-top: 0; padding-bottom: 0" class="btn btn-info">Ver</button>
-                </a></td>
                 <td>
-                    <button type="button" style="padding-top: 0; padding-bottom: 0" class="btn btn-warning" data-bs-toggle="modal"
+                    <button type="button" style="padding-top: 0; padding-bottom: 0" class="btn btn-outline-primary" data-bs-toggle="modal"
                             data-bs-target="#feedback-{{ report.id }}">Resolver
                     </button>
                 </td>
@@ -67,7 +63,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="message-text" class="col-form-label">Mensaje:</label>
-                                    <textarea class="form-control" required name="message" id="message-text" name="message"></textarea>
+                                    <textarea class="form-control" required id="message-text" name="message"></textarea>
                                 </div>
 
                             </div>

@@ -18,6 +18,30 @@ def home(request):
     else:
         return redirect("signin")
 
+def users(request):
+    if request.user.is_authenticated:
+        users = Users.objects.all()
+        users=users.order_by("id")
+        return render(request, "users.html", {"users": users})
+    else:
+        return redirect("signin")
+
+def change_user(request, user_id):
+    if request.user.is_authenticated:
+        user = Users.objects.get(id=user_id)
+        if request.POST.get("is_staff"):
+            user.is_staff=True
+        else:
+            user.is_staff = False
+        if request.POST.get("is_active"):
+            user.is_active = True
+        else:
+            user.is_active = False
+        user.save()
+        return redirect("gestio_usuaris")
+    else:
+        return redirect("signin")
+
 
 def solve_report(request, report_id):
     report = Report.objects.get(id=report_id)
