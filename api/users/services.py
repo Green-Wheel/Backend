@@ -315,6 +315,17 @@ def send_notification(to_user, title, body):
     async_to_sync(channel_layer.group_add)(str(to_user), str(channel_name))
     async_to_sync(channel_layer.group_send)(str(to_user), body)
 
+async def send_notification_async(to_user, title, body):
+    body = {
+        "title": title,
+        "body": body,
+        "type": "send.message"
+    }
+    channel_layer = get_channel_layer()
+    channel_name = get_user_channel(to_user)
+    await channel_layer.group_add(str(to_user), str(channel_name))
+    await channel_layer.group_send(str(to_user), body)
+
 def get_user_channel(to_user):
     try:
         channel_name = NotificationsChannel.objects.filter(
