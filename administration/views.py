@@ -1,16 +1,58 @@
 from django.contrib.auth import logout, authenticate, login
 from django.shortcuts import render, redirect
 
+from api.publications.models import Publication
+from api.ratings.models import Ratings
+from api.reports.models import Report, FeedbackReport, TypeResolution
 from api.users.models import Users
+from api.users.services import send_notification
 
 
 # Create your views here.
 def home(request):
     if request.user.is_authenticated:
-        return render(request, "index.html")
+        reports = Report.objects.filter(closed=False)
+        reports.order_by("-date_reported")
+        resolutions = TypeResolution.objects.all()
+        return render(request, "index.html", {"reports":reports,"resolutions": resolutions})
     else:
         return redirect("signin")
 
+
+def solve_report(request, report_id):
+    report = Report.objects.get(id=report_id)
+    action = int(request.POST.get("action"))
+    message = request.POST.get("message")
+
+    feedback = FeedbackReport()
+    feedback.message = message
+    feedback.moderator = request.user
+    feedback.report_id = report_id
+    feedback.resolution = TypeResolution.objects.get(id=action)
+    feedback.save()
+    if action == 2:
+        if report.rating:
+            send_notification(report.rating.user,"Amonestacion de conducta -> Uno de tus comentarios ha sido reportado", message)
+        elif report.publication:
+            send_notification(report.publication.owner, "Amonestacion de publicacion", "La publicacion con titulo:\"" + report.publication.title + " ha infringido alguna norma. Por favor, modificala. Mensaje del moderador: " + message)
+        elif report.reported_user:
+            send_notification(report.reported_user,"Amonestacion de conducta -> Incumplimiento de la normativa", message)
+    elif action==3:
+        if report.rating:
+            rating = Ratings.objects.get(id=report.rating.id)
+            rating.active=False
+            rating.save()
+        elif report.publication:
+            publication = Publication.objects.get(id = report.publication.id)
+            publication.active=False
+            publication.save()
+        elif report.reported_user:
+            user = Users.objects.get(id=report.reported_user.id)
+            user.is_active=False
+            user.save()
+    report.closed=True
+    report.save()
+    return redirect("Home")
 
 def signin(request):
     if request.user.is_authenticated:
@@ -23,8 +65,11 @@ def signin(request):
         if check_if_user_exists:
             user = authenticate(request, username=username, password=password)
             if user is not None:
-                login(request,user)
-                return redirect("Home")
+                if user.is_staff and user.is_active:
+                    login(request,user)
+                    return redirect("Home")
+                else:
+                    errors.append("No tienes permiso para acceder a esta página. Contacta con un administrador si se trata de un error.")
             else:
                 errors.append("La contraseña no es correcta")
         else:

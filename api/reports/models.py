@@ -20,6 +20,7 @@ class Report(models.Model):
     publication = models.ForeignKey(Publication, on_delete=models.CASCADE, null=True, blank=False)
     reported_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=False,
                                       related_name="reported_user")
+    closed = models.BooleanField(default=False)
 
 
     class Meta:
@@ -48,7 +49,7 @@ class FeedbackReport(models.Model):
     report = models.ForeignKey(Report, on_delete=models.CASCADE, null=False, blank=False)
     resolution = models.ForeignKey(TypeResolution, on_delete=models.CASCADE, null=False, blank=False)
     message = models.TextField(null=False, blank=False)
-    date_resolution = models.DateTimeField(null=True, blank=True)
+    date_resolution = models.DateTimeField(null=True, blank=True, auto_now_add=True)
 
     class Meta:
         verbose_name = "Feedback Report"

@@ -209,5 +209,26 @@
     "fields" : {
       "name" : "Other"
     }
+  },
+  {
+    "model" : "reports.TypeResolution",
+    "pk" : 1,
+    "fields" : {
+      "type" : "Sin acción"
+    }
+  },
+  {
+    "model" : "reports.TypeResolution",
+    "pk" : 2,
+    "fields" : {
+      "type" : "Avisar"
+    }
+  },
+  {
+    "model" : "reports.TypeResolution",
+    "pk" : 3,
+    "fields" : {
+      "type" : "Desactivar"
+    }
   }
 ]
