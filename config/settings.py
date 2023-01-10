@@ -163,5 +163,5 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [],
 }
 CRONJOBS = [
-    ('* * * * *', 'api.chargers.sincronize_data_with_API_chargers_cron')
+    ('* * * * *', 'api.chargers.sincronize_data_with_API_chargers_cron', '>> /usr/src/app/logs/cron.log')
 ]
