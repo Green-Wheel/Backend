@@ -115,7 +115,7 @@ Resources:
     Type: AWS::RDS::DBInstance
     DeletionPolicy: Delete
     Properties:
-      DBInstanceIdentifier: !Join ["-", ["greenwheel-rds", !Ref Environment]]
+      DBInstanceIdentifier: !Join ["-", ["greenwheel-db", !Ref Environment]]
       BackupRetentionPeriod: 0
       DBName: "GreenWheelDB"
       DBInstanceClass: db.t2.micro

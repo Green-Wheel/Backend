@@ -2,7 +2,7 @@ name: Django CI
 
 on:
   push:
-    branches: [dev, feature-353-Seguir-configurant-servidors-i-automatitzacions]
+    branches: [dev]
 
 jobs:
   test:
