@@ -104,9 +104,11 @@ def password_check(password):
         return val
 
 
-def set_user_trophie(user, trophie_id):
-    trophie = Trophies.objects.get(id=trophie_id)
-    user.trophies.add(trophie)
+def set_user_trophy(user, trophie_id):
+    trophy = Trophies.objects.get(id=trophie_id)
+    user.trophies.add(trophy)
+    user.level = user.trophies.count()
+    user.save()
 
 
 def create_user(data):
@@ -123,7 +125,7 @@ def create_user(data):
         user.save()
         user.api_key = generate_api_key()
         user.save()
-        set_user_trophie(user, 12)
+        set_user_trophy(user, 12)
         return user
 
 
@@ -141,7 +143,7 @@ def update_user(data, user_id):
         user_instance.about = data["about"]
     if user_instance.is_valid():
         user_instance.save()
-        set_user_trophie(user_instance, 11)
+        set_user_trophy(user_instance, 11)
         return user_instance
     else:
         raise Exception(user_instance.errors)

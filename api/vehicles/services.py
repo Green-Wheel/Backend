@@ -116,6 +116,7 @@ def set_vehicles_trophies(car_owner_id):
     elif num_cars == 2:
         trophy = Trophies.objects.get(id=2)
         user.trophies.add(trophy)
+    user.level = user.trophies.count()
 
 
 def create_car(data, car_owner_id):

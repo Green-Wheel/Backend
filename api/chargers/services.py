@@ -245,11 +245,13 @@ def set_chargers_trophies(owner_id):
     owner = Users.objects.get(id=owner_id)
     num_chargers = PrivateChargers.objects.filter(owner_id=owner_id).count()
     if num_chargers == 1:
-        trophie = Trophies.objects.get(id=5)
-        owner.trophies.add(trophie)
+        trophy = Trophies.objects.get(id=5)
+        owner.trophies.add(trophy)
     elif num_chargers == 2:
-        trophie = Trophies.objects.get(id=6)
-        owner.trophies.add(trophie)
+        trophy = Trophies.objects.get(id=6)
+        owner.trophies.add(trophy)
+    owner.level = owner.trophies.count()
+    owner.save()
 
 
 def create_private_charger(data, owner_id):

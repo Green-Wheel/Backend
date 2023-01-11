@@ -52,11 +52,13 @@ def set_bikes_trophies(owner_id):
     owner = Users.objects.get(id=owner_id)
     num_chargers = Bikes.objects.filter(owner_id=owner_id).count()
     if num_chargers == 1:
-        trophie = Trophies.objects.get(id=3)
-        owner.trophies.add(trophie)
+        trophy = Trophies.objects.get(id=3)
+        owner.trophies.add(trophy)
     elif num_chargers == 2:
-        trophie = Trophies.objects.get(id=4)
-        owner.trophies.add(trophie)
+        trophy = Trophies.objects.get(id=4)
+        owner.trophies.add(trophy)
+    owner.level = owner.trophies.count()
+    owner.save()
 
 
 def create_bike(data, owner_id):

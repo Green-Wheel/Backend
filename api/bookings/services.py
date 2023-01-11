@@ -87,14 +87,16 @@ def send_booking_user_confirmation_notification(booking):
 def set_bookings_trophies(user):
     num_bookings = Bookings.objects.filter(user_id=user.id).count()
     if num_bookings == 1:
-        trophie = Trophies.objects.get(id=7)
-        user.trophies.add(trophie)
+        trophy = Trophies.objects.get(id=7)
+        user.trophies.add(trophy)
     elif num_bookings == 5:
-        trophie = Trophies.objects.get(id=8)
-        user.trophies.add(trophie)
+        trophy = Trophies.objects.get(id=8)
+        user.trophies.add(trophy)
     elif num_bookings == 10:
-        trophie = Trophies.objects.get(id=9)
-        user.trophies.add(trophie)
+        trophy = Trophies.objects.get(id=9)
+        user.trophies.add(trophy)
+    user.level = user.trophies.count()
+    user.save()
 
 
 def create_booking(booking):
