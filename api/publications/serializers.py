@@ -105,12 +105,6 @@ class PublicationListSerializer(serializers.ModelSerializer):
 class ImageSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
 
-    # image = serializers.SerializerMethodField("get_image")
-    #
-    # def get_image(self, obj):
-    #     img = get_image_from_s3(obj.image_path)
-    #     return img
-
     class Meta:
         model = Images
         fields = ["id", "image_path"]

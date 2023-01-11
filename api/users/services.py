@@ -164,13 +164,10 @@ def login_user(username, password):
 
 def upload_images(user_id, images):
     user = get_user(user_id)
-    print("upload_image")
     if not user.is_active:
         raise Exception("User not active")
     for file in images:
         path = "profile/" + str(user_id) + "/" + file.name
-        print(path)
-        print("upload_image_to_s3")
         s3_path = upload_image_to_s3(file, path)
         user = Users.objects.get(id=user_id)
         user.profile_picture = s3_path
