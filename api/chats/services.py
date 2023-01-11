@@ -47,8 +47,9 @@ def get_chat_room_by_id(to_user_id, user_id):
 def get_chat_room_by_id_messages(to_user_id, user_id):
     chat_id = _get_chat_room_by_by_users(user_id, to_user_id)
     user_chat = ChatRoomParticipants.objects.filter(room__id=chat_id, user__id=user_id)
-    print(user_chat.first().room.id)
     if user_chat.exists():
+        user_chat.unread = False
+        user_chat.save()
         return ChatMessage.objects.filter(room__id=user_chat.first().room.id).order_by('-created_at')
 
 

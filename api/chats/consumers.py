@@ -107,10 +107,11 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             room__id__in=room_ids)
         if chat_participant:
             chatroom = ChatRoom.objects.get(id=chat_participant.latest('id').room.id)
-            chat_participant.update(unread=True)
+            chat_participant.unread=True
+            chat_participant.save()
         else:
             chatroom = ChatRoom.objects.create()
-            ChatRoomParticipants.objects.create(user=user, room=chatroom)
+            ChatRoomParticipants.objects.create(user=user, room=chatroom,unread=False)
             ChatRoomParticipants.objects.create(user_id=to_user_id, room=chatroom, unread=True)
 
         self.chatroom_id = chatroom.id
