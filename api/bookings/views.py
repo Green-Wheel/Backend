@@ -52,7 +52,7 @@ class UserBookingsApiView(APIView, PaginationHandlerMixin):
                 return Response(BookingsSerializer(booking).data, status=status.HTTP_201_CREATED,
                                 content_type='application/json; charset=utf-8')
         except Exception as e:
-            print("HOLII")
+
             print(e)
             return Response(e.args[0], status=status.HTTP_400_BAD_REQUEST)
 
