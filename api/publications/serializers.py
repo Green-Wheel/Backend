@@ -133,9 +133,9 @@ class OccupationRangeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Booking is required for a booking occupation range")
 
         start_occupations = OccupationRanges.objects.filter(start_date__gte=attrs['start_date'],
-                                                            start_date__lte=attrs['end_date']).exclude(id=occupation_id)
+                                                            start_date__lte=attrs['end_date'],booking__publication_id=attrs['related_publication'].id).exclude(id=occupation_id)
         end_occupations = OccupationRanges.objects.filter(end_date__gte=attrs['start_date'],
-                                                          end_date__lte=attrs['end_date']).exclude(id=occupation_id)
+                                                          end_date__lte=attrs['end_date'],booking__publication_id=attrs['related_publication'].id).exclude(id=occupation_id)
         if start_occupations or end_occupations:
             raise serializers.ValidationError("Occupation range already exists")
 
