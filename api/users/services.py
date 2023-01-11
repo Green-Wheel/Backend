@@ -67,11 +67,15 @@ def get_user_posts(user_id):
 
 
 def generate_api_key():
-    chars = ''.join([string.ascii_letters, string.digits, string.punctuation]).replace('\'', '').replace('"',
-                                                                                                         '').replace(
-        '\\', '')
+    unique = False
+    while not unique:
+        chars = ''.join([string.ascii_letters, string.digits, string.punctuation]).replace('\'', '').replace('"',
+                                                                                                             '').replace(
+            '\\', '')
 
-    SECRET_KEY = ''.join([random.SystemRandom().choice(chars) for i in range(32)])
+        SECRET_KEY = ''.join([random.SystemRandom().choice(chars) for i in range(32)])
+        if not Users.objects.filter(api_key=SECRET_KEY).exists():
+            unique = True
     return SECRET_KEY
 
 
