@@ -114,6 +114,7 @@ def create_user(data):
     user.last_name = data["last_name"]
     user.set_password(data["password"])
     user.api_key = generate_api_key()
+
     if user.is_valid():
         user.save()
         user.api_key = generate_api_key()

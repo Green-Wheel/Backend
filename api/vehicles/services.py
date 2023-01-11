@@ -123,6 +123,7 @@ def create_car(data, car_owner_id):
     car_license = data["car_license"]
     car_model_id = data["model"]
     charge_capacity = data["charge_capacity"]
+
     try:
         car = Cars(alias=car_alias, charge_capacity=charge_capacity, car_license=car_license, model_id=car_model_id,
                    car_owner_id=car_owner_id)

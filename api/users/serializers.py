@@ -39,6 +39,18 @@ class UserSerializer(serializers.ModelSerializer):
     level = serializers.IntegerField(read_only=True)
     xp = serializers.IntegerField(read_only=True)
     username = serializers.CharField(read_only=True)
+    trophies = serializers.SerializerMethodField("get_trophies")
+
+    def get_trophies(self, obj):
+        all_trophies = Trophies.objects.all()
+        user_trophies = obj.trophies.all()
+        trophies = []
+        for trophy in all_trophies:
+            if trophy in user_trophies:
+                trophies.append({"id": trophy.id, "achieved": True})
+            else:
+                trophies.append({"id": trophy.id, "achieved": False})
+        return trophies
 
     def get_rating(self, obj):
         return ClientsRating.objects.filter(client=obj.id).aggregate(Avg('rate'))['rate__avg']
@@ -48,7 +60,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = Users
 
         fields = ["id", "username", "first_name", "last_name", "email","about", "profile_picture", "language_id", "level", "xp",
-                  "rating", "selected_car"]
+                  "rating", "selected_car", "trophies"]
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
