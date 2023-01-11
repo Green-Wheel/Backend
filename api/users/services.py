@@ -67,11 +67,15 @@ def get_user_posts(user_id):
 
 
 def generate_api_key():
-    chars = ''.join([string.ascii_letters, string.digits, string.punctuation]).replace('\'', '').replace('"',
-                                                                                                         '').replace(
-        '\\', '')
+    unique = False
+    while not unique:
+        chars = ''.join([string.ascii_letters, string.digits, string.punctuation]).replace('\'', '').replace('"',
+                                                                                                             '').replace(
+            '\\', '')
 
-    SECRET_KEY = ''.join([random.SystemRandom().choice(chars) for i in range(32)])
+        SECRET_KEY = ''.join([random.SystemRandom().choice(chars) for i in range(32)])
+        if not Users.objects.filter(api_key=SECRET_KEY).exists():
+            unique = True
     return SECRET_KEY
 
 
@@ -155,8 +159,9 @@ def login_user(username, password):
     if not user.is_active:
         raise Exception("User not active")
     if user.check_password(password):
-        user.api_key = generate_api_key()
-        user.save()
+        if not user.api_key:
+            user.api_key = generate_api_key()
+            user.save()
         return user
     else:
         raise Exception("Wrong password")
@@ -231,9 +236,10 @@ def validate_code(username, code):
     if user.login_method.id != 1:
         raise Exception("User not allowed to change password")
     if int(user.recover_password_code) == code:
-        user.api_key = generate_api_key()
         user.recover_password_code = None
-        user.save()
+        if not user.api_key:
+            user.api_key = generate_api_key()
+            user.save()
         return user
     else:
         raise Exception("Wrong code")
@@ -242,8 +248,9 @@ def create_or_get_google_user(data):
     print(data["id"])
     user = Users.objects.filter(google_id=data["id"], login_method_id=2).first()
     if user is not None:
-        user.api_key = generate_api_key()
-        user.save()
+        if not user.api_key:
+            user.api_key = generate_api_key()
+            user.save()
         return user
     else:
         user = Users()
@@ -284,8 +291,9 @@ def create_or_get_raco_user(code):
         username = user_data["username"]
         user = Users.objects.filter(username=username, login_method_id=3).first()
         if user is not None:
-            user.api_key = generate_api_key()
-            user.save()
+            if not user.api_key:
+                user.api_key = generate_api_key()
+                user.save()
             return user
         else:
             user = Users()
