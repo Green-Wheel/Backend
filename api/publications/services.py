@@ -174,6 +174,7 @@ def __calculate_O3(m):
 
 
 def get_contamination(latitude, longitude):
+    return None
     try:
         response = requests.get(
             "http://10.4.41.47:6039/api/estaciones/?latitud=" + str(latitude) + "&longitud=" + str(longitude))
