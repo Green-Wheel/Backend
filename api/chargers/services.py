@@ -22,6 +22,7 @@ class SincronizeThread(Thread):
 
     def run(self):
         sincronize_data_with_API_chargers()
+        sincronize_data_with_API_contamination()
 def sincronize_data_with_API_chargers():
 
     now_date = datetime.now() - timedelta(hours=1)
