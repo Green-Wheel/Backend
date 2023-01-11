@@ -245,7 +245,6 @@ class PrivateChargerSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField("get_owner")
 
     def get_owner(self, obj):
-        print("OWNER:"+obj.owner)
         return BasicUserSerializer(obj.owner).data
 
     class Meta:
