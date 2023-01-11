@@ -8,7 +8,10 @@ import os
 def get_session():
     access_key = os.getenv('AWS_ACCESS_KEY_ID')
     access_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
-
+    print("access_key")
+    print(access_key)
+    print("access_secret")
+    print(access_secret_key)
     session = boto3.session.Session(
         aws_access_key_id=access_key,
         aws_secret_access_key=access_secret_key
@@ -18,13 +21,16 @@ def get_session():
 
 def upload_image_to_s3(file, path):
     session = get_session()
+    print("session")
+    print(session)
     s3 = session.resource('s3')
     bucket_name = os.getenv('BUCKET_NAME')
-
+    print("bucket_name", bucket_name)
     # Upload the file
     try:
         s3.Bucket(bucket_name).put_object(Key=path, Body=file, ContentType=file.content_type, ACL='public-read')
         s3_path = "https://" + bucket_name + ".s3.eu-west-1.amazonaws.com/" + path
+        print("s3_path", s3_path)
         return s3_path
     except ClientError as e:
         logging.error(e)
