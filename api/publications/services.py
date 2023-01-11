@@ -1,4 +1,4 @@
-from api.publications.models import Images
+from api.publications.models import Images, Contamination
 from utils.imagesS3 import upload_image_to_s3
 from datetime import time, datetime, timedelta
 import requests
@@ -199,22 +199,36 @@ def get_contamination(latitude, longitude):
                     O3 = __calculate_O3(m)
             maximum = max(NO2, PM10, O3)
             return color_code[maximum]
+        else:
+            raise Exception("Error getting data from estacions API")
     except:
+        print("Error getting contamination")
         return None
 
-    else:
-        raise Exception("Error getting data from estacions API")
+
 
 
 def __update_contamination():
+    print("Updating contamination")
     publications = Publication.objects.all()
     for publication in publications:
-        publication.contamination = get_contamination(publication.localization.latitude,
+        contamination = get_contamination(publication.localization.latitude,
                                                       publication.localization.longitude)
-        publication.save()
+        if contamination is None:
+            print("No connection with contamination API")
+            return
+        contamination_instance = Contamination.objects.filter(publication=publication).first()
+        if contamination_instance is None:
+            contamination_instance = Contamination(publication=publication, contamination=contamination)
+            contamination_instance.save()
+        else:
+            contamination_instance.contamination = contamination
+            contamination_instance.save()
+    print("Contamination updated")
 
 
-def sincronize_data_with_API_contamination(signal, **kwargs):
+def sincronize_data_with_API_contamination():
+
     now_date = datetime.now() - timedelta(hours=1)
     fifteen_minutes_ago = now_date - timedelta(minutes=15)
     try:

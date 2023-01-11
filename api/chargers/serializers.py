@@ -1,6 +1,6 @@
 from django.db.models import Avg
 from rest_framework import serializers
-from api.publications.models import Localizations, Province, Town
+from api.publications.models import Localizations, Province, Town, Contamination
 from api.chargers.models import PublicChargers, Chargers, PrivateChargers, ConnectionsType, SpeedsType, CurrentsType
 from api.ratings.models import PostRating
 from api.users.models import Users
@@ -61,6 +61,7 @@ class ChargerListSerializer(serializers.ModelSerializer):
     charger_type = serializers.SerializerMethodField("get_type")
     public = serializers.SerializerMethodField("get_public")
     private = serializers.SerializerMethodField("get_private")
+    contamination = serializers.SerializerMethodField("get_contamination")
     compatible = serializers.SerializerMethodField("get_compatible")
 
     def get_compatible(self, obj):
@@ -120,6 +121,12 @@ class ChargerListSerializer(serializers.ModelSerializer):
         except:
             return None
 
+    def get_contamination(self,obj):
+        try:
+            return Contamination.objects.get(publication=obj.id).contamination
+        except:
+            return None
+
     class Meta:
         model = Chargers
         fields = ["id", "title", "localization", "connection_type", "avg_rating", "charger_type", "public", "private",
@@ -162,6 +169,7 @@ class DetailedChargerSerializer(serializers.ModelSerializer):
                     current_compatible = True
                     break
         return connection_compatible and current_compatible
+    contamination = serializers.SerializerMethodField("get_contamination")
 
     def get_localization(self, obj):
         return LocalizationSerializer(obj.localization).data
@@ -208,6 +216,12 @@ class DetailedChargerSerializer(serializers.ModelSerializer):
         try:
             private_charger = PrivateChargers.objects.get(pk=obj.id)
             return PrivateChargerSerializer(private_charger).data
+        except:
+            return None
+
+    def get_contamination(self,obj):
+        try:
+            return Contamination.objects.get(publication=obj.id).contamination
         except:
             return None
 
