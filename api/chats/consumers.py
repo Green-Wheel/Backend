@@ -16,6 +16,8 @@ User = get_user_model()
 def set_message_trophie(user):
     trophie = Trophies.objects.get(id=10)
     user.trophies.add(trophie)
+    user.level = user.trophies.count()
+    user.save()
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
