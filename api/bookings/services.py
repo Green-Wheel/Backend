@@ -108,7 +108,7 @@ def create_booking(booking):
             "booking": booking.id
         }
         send_booking_owner_notification(booking)
-        create_booking_occupation(data, booking_instance.data["publication"])
+        create_booking_occupation(data, booking.publication.id)
         set_bookings_trophies(booking.user)
         return booking
     raise Exception(booking_instance.errors)

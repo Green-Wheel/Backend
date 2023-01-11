@@ -149,31 +149,35 @@ class DetailedChargerSerializer(serializers.ModelSerializer):
     compatible = serializers.SerializerMethodField("get_compatible")
 
     def get_compatible(self, obj):
-        user_id = self.context.get("user_id")
-        user = Users.objects.get(id=user_id)
-        car = user.selected_car
-        if car is not None:
-            car_connections = car.model.connection_type.all()
-            car_currents = car.model.current_type.all()
-            charger_connections = obj.connection_type.all()
-            charger_currents = obj.current_type.all()
-            connection_compatible = False
-            current_compatible = False
-            for connection in car_connections:
-                if connection in charger_connections:
-                    connection_compatible = True
-                    break
-            ac_dc = CurrentsType.objects.get(name="AC/DC")
-            if ac_dc in charger_currents:
-                current_compatible = True
-            else:
-                for current in car_currents:
-                    if current in charger_currents:
-                        current_compatible = True
+        try:
+            user_id = self.context.get("user_id")
+            user = Users.objects.get(id=user_id)
+            car = user.selected_car
+            if car is not None:
+                car_connections = car.model.connection_type.all()
+                car_currents = car.model.current_type.all()
+                charger_connections = obj.connection_type.all()
+                charger_currents = obj.current_type.all()
+                connection_compatible = False
+                current_compatible = False
+                for connection in car_connections:
+                    if connection in charger_connections:
+                        connection_compatible = True
                         break
-            return connection_compatible and current_compatible
-        else:
+                ac_dc = CurrentsType.objects.get(name="AC/DC")
+                if ac_dc in charger_currents:
+                    current_compatible = True
+                else:
+                    for current in car_currents:
+                        if current in charger_currents:
+                            current_compatible = True
+                            break
+                return connection_compatible and current_compatible
+            else:
+                return None
+        except:
             return None
+
     contamination = serializers.SerializerMethodField("get_contamination")
 
     def get_localization(self, obj):
@@ -241,6 +245,7 @@ class PrivateChargerSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField("get_owner")
 
     def get_owner(self, obj):
+        print("OWNER:"+obj.owner)
         return BasicUserSerializer(obj.owner).data
 
     class Meta:

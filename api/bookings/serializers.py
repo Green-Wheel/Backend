@@ -36,13 +36,15 @@ class BookingsSerializer(serializers.ModelSerializer):
         try:
             return PublicationSerializer(Publication.objects.get(id=obj.publication.id), many=False).data
         except Publication.DoesNotExist:
-            print("Publication does not exist")
+            return None
+        except:
             return None
 
     def getStatus(self, obj):
         try:
             return BookingStatusSerializer(BookingStatus.objects.get(id=obj.status.id)).data
         except BookingStatus.DoesNotExist:
+            print("Status does not exist")
             return None
 
     class Meta:
@@ -94,9 +96,9 @@ class BookingsEditSerializer(serializers.ModelSerializer):
                 id=attrs['publication'].id).count() == 0:
             raise serializers.ValidationError("You cannot book your own publication")
         start_occupations = OccupationRanges.objects.filter(start_date__gte=attrs["start_date"],
-                                                            start_date__lte=attrs["end_date"])
+                                                            start_date__lte=attrs["end_date"],related_publication_id=attrs["publication"].id)
         end_occupations = OccupationRanges.objects.filter(end_date__gte=attrs["start_date"],
-                                                          end_date__lte=attrs["end_date"])
+                                                          end_date__lte=attrs["end_date"],related_publication_id=attrs["publication"].id)
         if start_occupations or end_occupations:
             raise serializers.ValidationError("Publication is already booked for the selected dates")
         return attrs
