@@ -2,7 +2,7 @@ from django.db.models import Avg
 from rest_framework import serializers
 from api.bikes.models import Bikes, BikeTypes
 from api.chargers.serializers import LocalizationSerializer, TownSerializer
-from api.publications.models import Images
+from api.publications.models import Images, Contamination
 from api.ratings.models import PostRating
 from api.users.serializers import BasicUserSerializer
 
@@ -27,6 +27,7 @@ class DetailedBikeSerializer(serializers.ModelSerializer):
     bike_type = serializers.SerializerMethodField("get_bike_type")
     owner = serializers.SerializerMethodField("get_owner")
     images = serializers.SerializerMethodField("get_image")
+    contamination = serializers.SerializerMethodField("get_contamination")
 
     def get_owner(self, obj):
         return BasicUserSerializer(obj.owner).data
@@ -49,6 +50,12 @@ class DetailedBikeSerializer(serializers.ModelSerializer):
         for image in saved_images:
             images.append(ImageSerializer(image).data)
         return images
+
+    def get_contamination(self,obj):
+        try:
+            return Contamination.objects.get(publication=obj.id).contamination
+        except:
+            return None
 
     class Meta:
         model = Bikes
@@ -76,7 +83,7 @@ class BikeListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bikes
-        fields = ["id", "title", "localization", "avg_rating", "bike_type", "price", "owner", "contamination"]
+        fields = ["id", "title", "localization", "avg_rating", "bike_type", "price", "owner"]
 
 
 class BikeTypeSerializer(serializers.ModelSerializer):

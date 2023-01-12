@@ -43,6 +43,7 @@ class BikesApiView(APIView):
                 return Response(DetailedBikeSerializer(new_bike).data, status=status.HTTP_200_OK,
                                 content_type='application/json; charset=utf-8')
         except Exception as e:
+            print(e)
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -70,6 +71,7 @@ class BikesListApiView(APIView, PaginationHandlerMixin):
                     return Response(serializer.data, status=status.HTTP_200_OK,
                                     content_type='application/json; charset=utf-8')
         except Exception as e:
+            print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -85,7 +87,10 @@ class DetailedBikeApiView(APIView):
             else:
                 return Response(DetailedBikeSerializer(bike).data, status=status.HTTP_200_OK,
                                 content_type='application/json; charset=utf-8')
+        except Bikes.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
+            print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, bike_id):
@@ -99,6 +104,7 @@ class DetailedBikeApiView(APIView):
         except Bikes.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
+            print(e)
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, bike_id):
@@ -108,6 +114,7 @@ class DetailedBikeApiView(APIView):
         except Bikes.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
+            print(e)
             return Response({"res": "Error: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
