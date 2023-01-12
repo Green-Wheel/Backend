@@ -28,7 +28,7 @@ command_create_dc_file = ["""echo "
                 - publications:/usr/src/app/api/publications/migrations     
             environment:
               DJANGO_SECRET_KEY: 'om%_rbj(rdm*t$dt^!q)2o(3uztqzxtmv361d@j0lpza+q#zd)'
-              DJANGO_DATABASE_HOST: 'greenwheel-db-pre.cvktoxcvbtpd.eu-west-1.rds.amazonaws.com'
+              DJANGO_DATABASE_HOST: 'greenwheel-db-production.cjyqkzaxsbrt.eu-west-1.rds.amazonaws.com'
               DJANGO_DATABASE_PORT: '5432'
               DJANGO_DATABASE_NAME: 'GreenWheelDB'
               DJANGO_DATABASE_USER: 'greenwheel'
@@ -51,8 +51,8 @@ command_create_dc_file = ["""echo "
         " > docker-compose.yml"""]
 
 command_run_docker_compose = ['sudo /usr/local/bin/docker-compose up -d']
-
-commands = command_cd + command_stop_images + command_delete_images + command_create_dc_file + command_pull_docker + command_run_docker_compose
+commands = command_cd + command_stop_images + command_delete_images + command_create_dc_file + command_pull_docker + \
+           command_run_docker_compose
 
 access_key = os.getenv('AWS_ACCESS_KEY_ID')
 access_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
@@ -65,7 +65,7 @@ session = boto3.session.Session(
 
 ssm_client = session.client('ssm')
 response = ssm_client.send_command(
-    InstanceIds=['i-0378d5026cfb1453b'],
+    InstanceIds=['i-07e46ef6c6623bec3'],
     DocumentName="AWS-RunShellScript",
     Parameters=
     {

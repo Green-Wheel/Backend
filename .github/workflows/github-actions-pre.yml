@@ -94,7 +94,7 @@ jobs:
           pip install boto3
       - name: execute py script
         run: |
-          python docker_ec2.py
+          python docker_ec2_pre.py
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
