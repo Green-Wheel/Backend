@@ -104,7 +104,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         room_ids = list(ChatRoomParticipants.objects.filter(
             user=user.id).values_list('room__id', flat=True))
         chat_participant = ChatRoomParticipants.objects.filter(user__id=to_user_id).filter(
-            room__id__in=room_ids)
+            room__id__in=room_ids).first()
         if chat_participant:
             chatroom = ChatRoom.objects.get(id=chat_participant.latest('id').room.id)
             chat_participant.unread=True
