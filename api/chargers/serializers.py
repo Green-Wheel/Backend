@@ -63,7 +63,6 @@ class ChargerListSerializer(serializers.ModelSerializer):
     private = serializers.SerializerMethodField("get_private")
     contamination = serializers.SerializerMethodField("get_contamination")
     compatible = serializers.SerializerMethodField("get_compatible")
-    images = serializers.SerializerMethodField("get_image")
 
     def get_compatible(self, obj):
         user_id = self.context.get("user_id")
@@ -91,6 +90,7 @@ class ChargerListSerializer(serializers.ModelSerializer):
             return connection_compatible and current_compatible
         else:
             return None
+
     def get_localization(self, obj):
         return LocalizationSerializer(obj.localization).data
 
@@ -124,23 +124,16 @@ class ChargerListSerializer(serializers.ModelSerializer):
         except:
             return None
 
-    def get_contamination(self,obj):
+    def get_contamination(self, obj):
         try:
             return Contamination.objects.get(publication=obj.id).contamination
         except:
             return None
 
-    def get_image(self, obj):
-        saved_images = Images.objects.filter(publication=obj.id)
-        images = []
-        for image in saved_images:
-            images.append(ImageSerializer(image).data)
-        return images
-
     class Meta:
         model = Chargers
         fields = ["id", "title", "localization", "connection_type", "avg_rating", "charger_type", "public", "private",
-                  "contamination", "compatible", "images"]
+                  "contamination", "compatible"]
 
 
 class DetailedChargerSerializer(serializers.ModelSerializer):
@@ -155,6 +148,7 @@ class DetailedChargerSerializer(serializers.ModelSerializer):
     public = serializers.SerializerMethodField("get_public")
     private = serializers.SerializerMethodField("get_private")
     compatible = serializers.SerializerMethodField("get_compatible")
+    images = serializers.SerializerMethodField("get_image")
 
     def get_compatible(self, obj):
         try:
@@ -236,17 +230,24 @@ class DetailedChargerSerializer(serializers.ModelSerializer):
         except:
             return None
 
-    def get_contamination(self,obj):
+    def get_contamination(self, obj):
         try:
             return Contamination.objects.get(publication=obj.id).contamination
         except:
             return None
 
+    def get_image(self, obj):
+        saved_images = Images.objects.filter(publication=obj.id)
+        images = []
+        for image in saved_images:
+            images.append(ImageSerializer(image).data)
+        return images
+
     class Meta:
         model = Chargers
         fields = ["id", "title", "description", "direction", "town", "localization", "speed", "connection_type",
                   "current_type", "power", "avg_rating", "charger_type", "public", "private", "contamination",
-                  "compatible"]
+                  "compatible", "images"]
 
 
 class PrivateChargerSerializer(serializers.ModelSerializer):
