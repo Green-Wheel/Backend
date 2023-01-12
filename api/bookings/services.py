@@ -17,7 +17,8 @@ def get_user_bookings(user_id, order, bookings_type='not_finished'):
     elif bookings_type == 'historial':
         bookings = Bookings.objects.filter(user_id=user_id, end_date__lt=datetime.now(),
                                            status_id=2) | Bookings.objects.filter(user_id=user_id,
-                                                                                  status_id__gte=3)
+                                                                                  status_id__gte=3) | Bookings.objects.filter(user_id=user_id,
+                                                                                  status_id__gte=4)
     else:
         bookings = Bookings.objects.filter(user_id=user_id)
     if order == 'date':
@@ -46,7 +47,8 @@ def get_owner_bookings(owner_id, booking_type):
     elif booking_type == 'historial':
         bookings = bookings.filter(publication__owner_id=owner_id, end_date__lt=datetime.now(),
                                    status_id=2) | Bookings.objects.filter(publication__owner_id=owner_id,
-                                                                          status_id__gte=3)
+                                                                          status_id__gte=3) | Bookings.objects.filter(publication__owner_id=owner_id,
+                                                                          status_id__gte=4)
     bookings = bookings.order_by('start_date')
     return bookings
 
