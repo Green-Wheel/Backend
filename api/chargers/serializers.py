@@ -2,7 +2,6 @@ from django.db.models import Avg
 from rest_framework import serializers
 from api.publications.models import Localizations, Province, Town, Contamination, Images
 from api.chargers.models import PublicChargers, Chargers, PrivateChargers, ConnectionsType, SpeedsType, CurrentsType
-from api.publications.serializers import ImageSerializer
 from api.ratings.models import PostRating
 from api.users.models import Users
 from api.users.serializers import BasicUserSerializer
@@ -289,6 +288,14 @@ class CurrentTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CurrentsType
         fields = ["id", "name"]
+
+
+class ImageSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Images
+        fields = ["id", "image_path"]
 
 
 """class FullPrivateChargerSerializer(serializers.ModelSerializer):

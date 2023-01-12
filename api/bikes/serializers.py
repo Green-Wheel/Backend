@@ -3,7 +3,6 @@ from rest_framework import serializers
 from api.bikes.models import Bikes, BikeTypes
 from api.chargers.serializers import LocalizationSerializer, TownSerializer
 from api.publications.models import Images
-from api.publications.serializers import ImageSerializer
 from api.ratings.models import PostRating
 from api.users.serializers import BasicUserSerializer
 
@@ -86,3 +85,11 @@ class BikeTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = BikeTypes
         fields = ["id", "name"]
+
+
+class ImageSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Images
+        fields = ["id", "image_path"]
