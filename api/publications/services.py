@@ -71,39 +71,187 @@ def delete_occupation(ocupation_id, user_id):
         raise Exception("You are not the owner of the publication")
     occupation.delete()
 
-
-def get_occupation_by_month(publication_id, year, month, day):
-    occupations = OccupationRanges.objects.filter(related_publication=publication_id, start_date__year=year,
-                                                  start_date__month=month)
-    if day is not None:
-        occupations = occupations.filter(start_date__day=day)
+def __get_never_repeat_occupations(publication_id, year, month, day):
     start_day_time = time(0, 0, 0)
     end_day_time = time(23, 59, 59)
+    occupations = OccupationRanges.objects.filter(related_publication=publication_id, start_date__year=year,
+                                                  start_date__month=month, repeat_mode=1)
+    if day is not None:
+        occupations = occupations.filter(start_date__day=day)
+        if day is None:
+            days = {}
+        else:
+            days = []
+        for occupation in occupations:
+            for i in range(occupation.start_date.day, occupation.end_date.day + 1):
+                occupation_strip = {}
+                if i not in days and day is None:
+                    days[i] = []
+                if occupation.start_date.day == i:
+                    occupation_strip["start_time"] = occupation.start_date.time()
+                else:
+                    occupation_strip["start_time"] = start_day_time
+                if occupation.end_date.day == i:
+                    occupation_strip["end_time"] = occupation.end_date.time()
+                else:
+                    occupation_strip["end_time"] = end_day_time
+                occupation_strip["id"] = occupation.id
+                occupation_strip["occupation_range_type"] = occupation.occupation_range_type.id
+                if occupation_strip["occupation_range_type"] == 1:
+                    occupation_strip["booking"] = SimpleBookingsSerializer(occupation.booking).data
+                if day is None:
+                    days[i].append(occupation_strip)
+                else:
+                    days.append(occupation_strip)
+    return days
+
+def __get_every_day_repeat_occupations(publication_id, year, month, day):
+    start_day_time = time(0, 0, 0)
+    end_day_time = time(23, 59, 59)
+    occupations = OccupationRanges.objects.filter(related_publication=publication_id, start_date__year=year,
+                                                  start_date__month=month, repeat_mode=2)
+    if day is not None:
+        occupations = occupations.filter(start_date__day=day)
+        if day is None:
+            days = {}
+        else:
+            days = []
+        for occupation in occupations:
+            for i in range(occupation.start_date.day, occupation.end_date.day + 1):
+                occupation_strip = {}
+                if i not in days and day is None:
+                    days[i] = []
+                if occupation.start_date.day == i:
+                    occupation_strip["start_time"] = occupation.start_date.time()
+                else:
+                    occupation_strip["start_time"] = start_day_time
+                if occupation.end_date.day == i:
+                    occupation_strip["end_time"] = occupation.end_date.time()
+                else:
+                    occupation_strip["end_time"] = end_day_time
+                occupation_strip["id"] = occupation.id
+                occupation_strip["occupation_range_type"] = occupation.occupation_range_type.id
+                if occupation_strip["occupation_range_type"] == 1:
+                    occupation_strip["booking"] = SimpleBookingsSerializer(occupation.booking).data
+                if day is None:
+                    days[i].append(occupation_strip)
+                else:
+                    days.append(occupation_strip)
+    return days
+
+def __get_every_week_repeat_occupations(publication_id, year, month, day):
+    start_day_time = time(0, 0, 0)
+    end_day_time = time(23, 59, 59)
+    occupations = OccupationRanges.objects.filter(related_publication=publication_id, start_date__year=year,
+                                                  start_date__month=month, repeat_mode=3)
+    if day is not None:
+        occupations = occupations.filter(start_date__day=day)
+        if day is None:
+            days = {}
+        else:
+            days = []
+        for occupation in occupations:
+            for i in range(occupation.start_date.day, occupation.end_date.day + 1):
+                occupation_strip = {}
+                if i not in days and day is None:
+                    days[i] = []
+                if occupation.start_date.day == i:
+                    occupation_strip["start_time"] = occupation.start_date.time()
+                else:
+                    occupation_strip["start_time"] = start_day_time
+                if occupation.end_date.day == i:
+                    occupation_strip["end_time"] = occupation.end_date.time()
+                else:
+                    occupation_strip["end_time"] = end_day_time
+                occupation_strip["id"] = occupation.id
+                occupation_strip["occupation_range_type"] = occupation.occupation_range_type.id
+                if occupation_strip["occupation_range_type"] == 1:
+                    occupation_strip["booking"] = SimpleBookingsSerializer(occupation.booking).data
+                if day is None:
+                    days[i].append(occupation_strip)
+                else:
+                    days.append(occupation_strip)
+    return days
+
+def __get_every_month_repeat_occupations(publication_id, year, month, day):
+    start_day_time = time(0, 0, 0)
+    end_day_time = time(23, 59, 59)
+    occupations = OccupationRanges.objects.filter(related_publication=publication_id, start_date__year=year,
+                                                  start_date__month=month, repeat_mode=4)
+    if day is not None:
+        occupations = occupations.filter(start_date__day=day)
+        if day is None:
+            days = {}
+        else:
+            days = []
+        for occupation in occupations:
+            for i in range(occupation.start_date.day, occupation.end_date.day + 1):
+                occupation_strip = {}
+                if i not in days and day is None:
+                    days[i] = []
+                if occupation.start_date.day == i:
+                    occupation_strip["start_time"] = occupation.start_date.time()
+                else:
+                    occupation_strip["start_time"] = start_day_time
+                if occupation.end_date.day == i:
+                    occupation_strip["end_time"] = occupation.end_date.time()
+                else:
+                    occupation_strip["end_time"] = end_day_time
+                occupation_strip["id"] = occupation.id
+                occupation_strip["occupation_range_type"] = occupation.occupation_range_type.id
+                if occupation_strip["occupation_range_type"] == 1:
+                    occupation_strip["booking"] = SimpleBookingsSerializer(occupation.booking).data
+                if day is None:
+                    days[i].append(occupation_strip)
+                else:
+                    days.append(occupation_strip)
+    return days
+
+def __get_every_year_repeat_occupations(publication_id, year, month, day):
+    start_day_time = time(0, 0, 0)
+    end_day_time = time(23, 59, 59)
+    occupations = OccupationRanges.objects.filter(related_publication=publication_id, start_date__year=year,
+                                                  start_date__month=month, repeat_mode=5)
+    if day is not None:
+        occupations = occupations.filter(start_date__day=day)
+        if day is None:
+            days = {}
+        else:
+            days = []
+        for occupation in occupations:
+            for i in range(occupation.start_date.day, occupation.end_date.day + 1):
+                occupation_strip = {}
+                if i not in days and day is None:
+                    days[i] = []
+                if occupation.start_date.day == i:
+                    occupation_strip["start_time"] = occupation.start_date.time()
+                else:
+                    occupation_strip["start_time"] = start_day_time
+                if occupation.end_date.day == i:
+                    occupation_strip["end_time"] = occupation.end_date.time()
+                else:
+                    occupation_strip["end_time"] = end_day_time
+                occupation_strip["id"] = occupation.id
+                occupation_strip["occupation_range_type"] = occupation.occupation_range_type.id
+                if occupation_strip["occupation_range_type"] == 1:
+                    occupation_strip["booking"] = SimpleBookingsSerializer(occupation.booking).data
+                if day is None:
+                    days[i].append(occupation_strip)
+                else:
+                    days.append(occupation_strip)
+    return days
+
+
+def get_occupation_by_month(publication_id, year, month, day):
     if day is None:
         days = {}
     else:
         days = []
-    for occupation in occupations:
-        for i in range(occupation.start_date.day, occupation.end_date.day + 1):
-            occupation_strip = {}
-            if i not in days and day is None:
-                days[i] = []
-            if occupation.start_date.day == i:
-                occupation_strip["start_time"] = occupation.start_date.time()
-            else:
-                occupation_strip["start_time"] = start_day_time
-            if occupation.end_date.day == i:
-                occupation_strip["end_time"] = occupation.end_date.time()
-            else:
-                occupation_strip["end_time"] = end_day_time
-            occupation_strip["id"] = occupation.id
-            occupation_strip["occupation_range_type"] = occupation.occupation_range_type.id
-            if occupation_strip["occupation_range_type"] == 1:
-                occupation_strip["booking"] = SimpleBookingsSerializer(occupation.booking).data
-            if day is None:
-                days[i].append(occupation_strip)
-            else:
-                days.append(occupation_strip)
+    days.append(__get_never_repeat_occupations(publication_id, year, month, day))
+    days.append(__get_every_day_repeat_occupations(publication_id, year, month, day))
+    days.append(__get_every_week_repeat_occupations(publication_id, year, month, day))
+    days.append(__get_every_month_repeat_occupations(publication_id, year, month, day))
+
     return days
 
 
