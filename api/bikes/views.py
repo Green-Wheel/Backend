@@ -30,6 +30,7 @@ class BikesApiView(APIView):
             else:
                 return Response(serializer.data, status=status.HTTP_200_OK, content_type='application/json; charset=utf-8')
         except Exception as e:
+            print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
