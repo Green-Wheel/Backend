@@ -1,5 +1,3 @@
-from django.core.signals import request_finished
-
 from api.bikes.models import BikeTypes, Bikes
 from api.chargers.utils import get_localization, get_town
 from api.publications.services import get_contamination, sincronize_data_with_API_contamination
@@ -39,8 +37,6 @@ def get_filtered_bikes(filter_params):
     elif order is None:
         bikes = bikes.order_by('id')
 
-    request_finished.connect(sincronize_data_with_API_contamination,
-                             dispatch_uid="sincronize_data_with_API_contamination")
     return bikes
 
 
