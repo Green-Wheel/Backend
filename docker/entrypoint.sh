@@ -42,8 +42,9 @@ python manage.py loaddata fixtures/inicial_data.json
 
 # create service user
 python manage.py loaddata fixtures/service_user.json
+python manage.py loaddata fixtures/contamination.json
 
 # create superuser
-#python manage.py shell -c "from api.users.models import Users; Users.objects.create_superuser('admin', 'admin@example.com', '90np3AE7#IH&')"
+#python manage.py shell -c "from api.users.models import Users; Users.objects.create_superuser('administration', 'administration@example.com', '90np3AE7#IH&')"
 
 exec "$@"

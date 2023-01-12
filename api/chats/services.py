@@ -36,9 +36,9 @@ def get_unread_chat_rooms_user(user_id):
 
 def get_chat_room_by_id(to_user_id, user_id):
     chat_id = _get_chat_room_by_by_users(user_id, to_user_id)
-    print(chat_id)
     chat_room = ChatRoomParticipants.objects.filter(room__id=chat_id).exclude(user__id=user_id).values('room__id',
-                                                                                                      'user')
+                                      'room__last_message', 'room__last_sent_user__username', 'room__last_sent_time',
+                                      'user')
     if chat_room.exists():
         return chat_room.first()
     raise Exception("Chat room not found")
@@ -46,10 +46,11 @@ def get_chat_room_by_id(to_user_id, user_id):
 
 def get_chat_room_by_id_messages(to_user_id, user_id):
     chat_id = _get_chat_room_by_by_users(user_id, to_user_id)
-    user_chat = ChatRoomParticipants.objects.filter(room__id=chat_id, user__id=user_id)
-    print(user_chat.first().room.id)
-    if user_chat.exists():
-        return ChatMessage.objects.filter(room__id=user_chat.first().room.id).order_by('-created_at')
+    user_chat = ChatRoomParticipants.objects.filter(room__id=chat_id, user__id=user_id).first()
+    if user_chat:
+        user_chat.unread = False
+        user_chat.save()
+        return ChatMessage.objects.filter(room__id=user_chat.room.id).order_by('-created_at')
 
 
 def remove_user_from_chat(chat_id, user_id):

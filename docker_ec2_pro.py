@@ -32,9 +32,10 @@ command_create_dc_file = ["""echo "
               DJANGO_DATABASE_PORT: '5432'
               DJANGO_DATABASE_NAME: 'GreenWheelDB'
               DJANGO_DATABASE_USER: 'greenwheel'
-              DJANGO_DATABASE_PASSWORD: """ + os.environ['DB_PASSWORD'] + """
-              AWS_ACCESS_KEY_ID: """ + os.environ['AWS_ACCESS_KEY_ID'] + """
-              AWS_SECRET_ACCESS_KEY: """ + os.environ['AWS_SECRET_ACCESS_KEY'] + """
+              DJANGO_DATABASE_PASSWORD: """ + os.getenv('DB_PASSWORD') + """
+              AWS_ACCESS_KEY_ID: """ + os.getenv('AWS_ACCESS_KEY_ID') + """
+              AWS_SECRET_ACCESS_KEY: """ + os.getenv('AWS_SECRET_ACCESS_KEY') + """
+              BUCKET_NAME: """ + os.getenv('BUCKET_NAME') + """
               DEBUG_MODE: 'False'
               CORS_ALLOW_ALL_ORIGINS: 'True'
         volumes:
@@ -50,8 +51,8 @@ command_create_dc_file = ["""echo "
         " > docker-compose.yml"""]
 
 command_run_docker_compose = ['sudo /usr/local/bin/docker-compose up -d']
-
-commands = command_cd + command_stop_images + command_delete_images + command_create_dc_file + command_pull_docker + command_run_docker_compose
+commands = command_cd + command_stop_images + command_delete_images + command_create_dc_file + command_pull_docker + \
+           command_run_docker_compose
 
 access_key = os.getenv('AWS_ACCESS_KEY_ID')
 access_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')

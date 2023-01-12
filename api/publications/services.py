@@ -1,4 +1,4 @@
-from api.publications.models import Images
+from api.publications.models import Images, Contamination
 from utils.imagesS3 import upload_image_to_s3
 from datetime import time, datetime, timedelta
 import requests
@@ -73,37 +73,37 @@ def delete_occupation(ocupation_id, user_id):
 
 
 def get_occupation_by_month(publication_id, year, month, day):
+    start_day_time = time(0, 0, 0)
+    end_day_time = time(23, 59, 59)
     occupations = OccupationRanges.objects.filter(related_publication=publication_id, start_date__year=year,
                                                   start_date__month=month)
     if day is not None:
         occupations = occupations.filter(start_date__day=day)
-    start_day_time = time(0, 0, 0)
-    end_day_time = time(23, 59, 59)
-    if day is None:
-        days = {}
-    else:
-        days = []
-    for occupation in occupations:
-        for i in range(occupation.start_date.day, occupation.end_date.day + 1):
-            occupation_strip = {}
-            if i not in days and day is None:
-                days[i] = []
-            if occupation.start_date.day == i:
-                occupation_strip["start_time"] = occupation.start_date.time()
-            else:
-                occupation_strip["start_time"] = start_day_time
-            if occupation.end_date.day == i:
-                occupation_strip["end_time"] = occupation.end_date.time()
-            else:
-                occupation_strip["end_time"] = end_day_time
-            occupation_strip["id"] = occupation.id
-            occupation_strip["occupation_range_type"] = occupation.occupation_range_type.id
-            if occupation_strip["occupation_range_type"] == 1:
-                occupation_strip["booking"] = SimpleBookingsSerializer(occupation.booking).data
-            if day is None:
-                days[i].append(occupation_strip)
-            else:
-                days.append(occupation_strip)
+        if day is None:
+            days = {}
+        else:
+            days = []
+        for occupation in occupations:
+            for i in range(occupation.start_date.day, occupation.end_date.day + 1):
+                occupation_strip = {}
+                if i not in days and day is None:
+                    days[i] = []
+                if occupation.start_date.day == i:
+                    occupation_strip["start_time"] = occupation.start_date.time()
+                else:
+                    occupation_strip["start_time"] = start_day_time
+                if occupation.end_date.day == i:
+                    occupation_strip["end_time"] = occupation.end_date.time()
+                else:
+                    occupation_strip["end_time"] = end_day_time
+                occupation_strip["id"] = occupation.id
+                occupation_strip["occupation_range_type"] = occupation.occupation_range_type.id
+                if occupation_strip["occupation_range_type"] == 1:
+                    occupation_strip["booking"] = SimpleBookingsSerializer(occupation.booking).data
+                if day is None:
+                    days[i].append(occupation_strip)
+                else:
+                    days.append(occupation_strip)
     return days
 
 
@@ -174,6 +174,7 @@ def __calculate_O3(m):
 
 
 def get_contamination(latitude, longitude):
+    return None
     try:
         response = requests.get(
             "http://10.4.41.47:6039/api/estaciones/?latitud=" + str(latitude) + "&longitud=" + str(longitude))
@@ -199,22 +200,36 @@ def get_contamination(latitude, longitude):
                     O3 = __calculate_O3(m)
             maximum = max(NO2, PM10, O3)
             return color_code[maximum]
+        else:
+            raise Exception("Error getting data from estacions API")
     except:
+        print("Error getting contamination")
         return None
 
-    else:
-        raise Exception("Error getting data from estacions API")
+
 
 
 def __update_contamination():
+    print("Updating contamination")
     publications = Publication.objects.all()
     for publication in publications:
-        publication.contamination = get_contamination(publication.localization.latitude,
+        contamination = get_contamination(publication.localization.latitude,
                                                       publication.localization.longitude)
-        publication.save()
+        if contamination is None:
+            print("No connection with contamination API")
+            return
+        contamination_instance = Contamination.objects.filter(publication=publication).first()
+        if contamination_instance is None:
+            contamination_instance = Contamination(publication=publication, contamination=contamination)
+            contamination_instance.save()
+        else:
+            contamination_instance.contamination = contamination
+            contamination_instance.save()
+    print("Contamination updated")
 
 
-def sincronize_data_with_API_contamination(signal, **kwargs):
+def sincronize_data_with_API_contamination():
+
     now_date = datetime.now() - timedelta(hours=1)
     fifteen_minutes_ago = now_date - timedelta(minutes=15)
     try:

@@ -22,6 +22,7 @@ class SincronizeThread(Thread):
 
     def run(self):
         sincronize_data_with_API_chargers()
+        #sincronize_data_with_API_contamination()
 def sincronize_data_with_API_chargers():
 
     now_date = datetime.now() - timedelta(hours=1)
@@ -244,11 +245,13 @@ def set_chargers_trophies(owner_id):
     owner = Users.objects.get(id=owner_id)
     num_chargers = PrivateChargers.objects.filter(owner_id=owner_id).count()
     if num_chargers == 1:
-        trophie = Trophies.objects.get(id=5)
-        owner.trophies.add(trophie)
+        trophy = Trophies.objects.get(id=5)
+        owner.trophies.add(trophy)
     elif num_chargers == 2:
-        trophie = Trophies.objects.get(id=6)
-        owner.trophies.add(trophie)
+        trophy = Trophies.objects.get(id=6)
+        owner.trophies.add(trophy)
+    owner.level = owner.trophies.count()
+    owner.save()
 
 
 def create_private_charger(data, owner_id):

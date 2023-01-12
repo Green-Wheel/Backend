@@ -105,12 +105,6 @@ class PublicationListSerializer(serializers.ModelSerializer):
 class ImageSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
 
-    # image = serializers.SerializerMethodField("get_image")
-    #
-    # def get_image(self, obj):
-    #     img = get_image_from_s3(obj.image_path)
-    #     return img
-
     class Meta:
         model = Images
         fields = ["id", "image_path"]
@@ -133,9 +127,9 @@ class OccupationRangeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Booking is required for a booking occupation range")
 
         start_occupations = OccupationRanges.objects.filter(start_date__gte=attrs['start_date'],
-                                                            start_date__lte=attrs['end_date']).exclude(id=occupation_id)
+                                                            start_date__lte=attrs['end_date'],booking__publication_id=attrs['related_publication'].id).exclude(id=occupation_id)
         end_occupations = OccupationRanges.objects.filter(end_date__gte=attrs['start_date'],
-                                                          end_date__lte=attrs['end_date']).exclude(id=occupation_id)
+                                                          end_date__lte=attrs['end_date'],booking__publication_id=attrs['related_publication'].id).exclude(id=occupation_id)
         if start_occupations or end_occupations:
             raise serializers.ValidationError("Occupation range already exists")
 

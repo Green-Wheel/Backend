@@ -23,8 +23,8 @@ El nostre projecte consisteix en el desenvolupament d’una aplicació mòbil la
 Jordi Piguillem Poch ( [jpiguillem@essi.upc.edu](mailto:jpiguillem@essi.upc.edu) )
 
 ### Enllaços
-- [Enllaç al entorn de PRE (NO DISPONIBLE)]()
-- [Enllaç al entorn de PRODUCCIÓ (NO DISPONIBLE)]()
+- [Enllaç al entorn de PRE](http://3.250.219.80/)
+- [Enllaç al entorn de PRODUCCIÓ](http://3.253.100.204/)
 - [Enllaç al projecte Taiga](https://tree.taiga.io/project/arnau147-pes-green-whee/)
 - [Repositori GitHub](https://github.com/orgs/Green-Wheel/repositories)
 

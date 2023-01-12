@@ -52,7 +52,6 @@ class Publication(models.Model):
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    contamination = models.TextField(null=True, blank=False)
 
     class Meta:
         verbose_name = "Publication"
@@ -60,6 +59,13 @@ class Publication(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+class Contamination(models.Model):
+    publication = models.ForeignKey(Publication, on_delete=models.DO_NOTHING, null=False, blank=False)
+    contamination = models.TextField(null=True, blank=False)
+    class Meta:
+        verbose_name = "Contamination"
+        verbose_name_plural = "Contaminations"
 
 
 class OccupationRangesType(models.Model):

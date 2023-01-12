@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_title %}
+    Home
+{% endblock %}
+{% block content %}
+    <h1>Quejas pendientes</h1>
+    <br>
+    <table class="table table-striped" style="text-align: center">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Razón</th>
+            <th scope="col">Mensaje</th>
+            <th scope="col">Usuario</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for report in reports %}
+            <tr>
+                <th scope="row">{{ report.id }}</th>
+                <td>{{ report.date_reported }}</td>
+                <td>
+                    {% if report.rating %}
+                        {{ "Valoracion" }}
+                    {% elif report.publication %}
+                        {{ "Publicación" }}
+                    {% else %}
+                        {{ "Usuario" }}
+                    {% endif %}
+                </td>
+                <td>{{ report.reason.name }}</td>
+                <td>{{ report.message }}</td>
+                <td>{{ report.user.username }}</td>
+                <td>
+                    <button type="button" style="padding-top: 0; padding-bottom: 0" class="btn btn-outline-primary" data-bs-toggle="modal"
+                            data-bs-target="#feedback-{{ report.id }}">Resolver
+                    </button>
+                </td>
+            </tr>
+            <div class="modal fade" id="feedback-{{ report.id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Feedback de la resolución</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{% url 'solve_report' report.id %}" method="POST">
+                            <div class="modal-body">
+
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="action" class="col-form-label">Acción:</label>
+                                    <select class="form-select" required id="action" name="action" aria-label="Default select example">
+                                        {% for resolution in resolutions %}
+                                            <option value="{{ resolution.id }}">{{ resolution.type }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="message-text" class="col-form-label">Mensaje:</label>
+                                    <textarea class="form-control" required id="message-text" name="message"></textarea>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer" style="justify-content: space-between">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
