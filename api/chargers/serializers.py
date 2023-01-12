@@ -1,7 +1,8 @@
 from django.db.models import Avg
 from rest_framework import serializers
-from api.publications.models import Localizations, Province, Town, Contamination
+from api.publications.models import Localizations, Province, Town, Contamination, Images
 from api.chargers.models import PublicChargers, Chargers, PrivateChargers, ConnectionsType, SpeedsType, CurrentsType
+from api.publications.serializers import ImageSerializer
 from api.ratings.models import PostRating
 from api.users.models import Users
 from api.users.serializers import BasicUserSerializer
@@ -63,6 +64,7 @@ class ChargerListSerializer(serializers.ModelSerializer):
     private = serializers.SerializerMethodField("get_private")
     contamination = serializers.SerializerMethodField("get_contamination")
     compatible = serializers.SerializerMethodField("get_compatible")
+    images = serializers.SerializerMethodField("get_image")
 
     def get_compatible(self, obj):
         user_id = self.context.get("user_id")
@@ -129,10 +131,17 @@ class ChargerListSerializer(serializers.ModelSerializer):
         except:
             return None
 
+    def get_image(self, obj):
+        saved_images = Images.objects.filter(publication=obj.id)
+        images = []
+        for image in saved_images:
+            images.append(ImageSerializer(image).data)
+        return images
+
     class Meta:
         model = Chargers
         fields = ["id", "title", "localization", "connection_type", "avg_rating", "charger_type", "public", "private",
-                  "contamination", "compatible"]
+                  "contamination", "compatible", "images"]
 
 
 class DetailedChargerSerializer(serializers.ModelSerializer):
