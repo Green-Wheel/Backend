@@ -8,7 +8,7 @@ from api.users.services import send_notification
 
 
 def get_ratings_for_user(user_id):
-    ratings = ClientsRating.objects.filter(user_id=user_id, active=True)
+    ratings = ClientsRating.objects.filter(client_id=user_id, active=True)
     return ratings
 
 
