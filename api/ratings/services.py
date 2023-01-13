@@ -25,13 +25,15 @@ def get_rating(rating_id):
     return Ratings.objects.get(id=rating_id)
 
 def send_new_post_rating_notification(rating):
-    user = rating.publication.owner.id
+    post_rating = PostRating.objects.get(id=rating.id)
+    user = post_rating.publication.owner.id
     title = "New rating for your publication"
     body = "Your publication has been rated by a client"
     send_notification(user, title, body)
 
 def send_new_client_rating_notification(rating):
-    user = rating.client.id
+    client_rating = ClientsRating.objects.get(id=rating.id)
+    user = client_rating.client.id
     title = "New rating for your booking"
     body = "Your booking has been rated by the owner"
     send_notification(user, title, body)
